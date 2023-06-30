@@ -1,0 +1,17 @@
+cmake_minimum_required(VERSION 3.25.0)
+project(Anterle_deps)
+
+set_property(GLOBAL PROPERTY GLFW_BUILD_EXAMPLES OFF)
+set_property(GLOBAL PROPERTY GLFW_BUILD_TESTS OFF)
+set_property(GLOBAL PROPERTY GLFW_BUILD_DOCS OFF)
+set_property(GLOBAL PROPERTY GLFW_INSTALL OFF)
+set_property(GLOBAL PROPERTY GLFW_BUILD_WAYLAND ON)
+set_property(GLOBAL PROPERTY GLFW_USE_HYBRID_HPG ON)
+
+add_subdirectory("glad")
+add_subdirectory("glfw")
+add_subdirectory("imgui")
+add_subdirectory("miniaudio")
+add_subdirectory("glm")
+add_subdirectory("alpaca")
+add_subdirectory("spdlog")
