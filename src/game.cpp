@@ -57,13 +57,13 @@ void Game::Init() {
   Text->Load("KingthingsClarity", 24);
 
   GameLevel one;
-  one.Load("resources/levels/one.lvl");
+  one.Load("one");
   GameLevel two;
-  two.Load("resources/levels/two.lvl");
+  two.Load("two");
   GameLevel three;
-  three.Load("resources/levels/three.lvl");
+  three.Load("three");
   GameLevel four;
-  four.Load("resources/levels/four.lvl");
+  four.Load("four");
   this->Levels.push_back(one);
   this->Levels.push_back(two);
   this->Levels.push_back(three);
@@ -108,8 +108,6 @@ void Game::ProcessInput(float dt) {
 void Game::Render() {
   if (this->State == GAME_MENU) {
     Text->RenderText("Press ENTER to start", 250.0f, this->Height / 2.0f, 1.0f);
-    Text->RenderText("Press W or S to select level", 245.0f,
-                     this->Height / 2.0f + 20.0f, 0.75f);
   }
   if (this->State == GAME_WIN) {
     Text->RenderText("You WON!!!", 320.0f, this->Height / 2.0f - 20.0f, 1.0f,
@@ -121,11 +119,11 @@ void Game::Render() {
 
 void Game::ResetLevel() {
   if (this->Configs.CurentLevel == 0)
-    this->Levels[0].Load("resources/levels/one.lvl");
+    this->Levels[0].Load("one");
   else if (this->Configs.CurentLevel == 1)
-    this->Levels[1].Load("resources/levels/two.lvl");
+    this->Levels[1].Load("two");
   else if (this->Configs.CurentLevel == 2)
-    this->Levels[2].Load("resources/levels/three.lvl");
+    this->Levels[2].Load("three");
   else if (this->Configs.CurentLevel == 3)
-    this->Levels[3].Load("resources/levels/four.lvl");
+    this->Levels[3].Load("four");
 }

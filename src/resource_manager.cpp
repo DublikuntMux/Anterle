@@ -6,9 +6,7 @@
 #include "spdlog/spdlog.h"
 #include <glad/gl.h>
 
-#define STBI_ONLY_PNG
-#define STB_IMAGE_IMPLEMENTATION
-#include <stb_image.hpp>
+#include <fpng.hpp>
 
 #include "resource_manager.hpp"
 
@@ -81,7 +79,7 @@ Texture2D ResourceManager::loadTextureFromFile(std::string file, bool alpha) {
     texture.Internal_Format = GL_RGBA;
     texture.Image_Format = GL_RGBA;
   }
-  int32_t width, height, nrChannels;
+  uint32_t width, height, nrChannels;
 
   std::string file_patch = "./resources/textures/" + file + ".png";
 
@@ -93,9 +91,12 @@ Texture2D ResourceManager::loadTextureFromFile(std::string file, bool alpha) {
     spdlog::error("Failed to load level: {0}", file_patch);
   }
 
-  unsigned char *data =
-      stbi_load(file_patch.c_str(), &width, &height, &nrChannels, 0);
+  std::vector<uint8_t> data;
+  int res = fpng::fpng_decode_file(file_patch.c_str(), data, width, height, nrChannels, 0);
+  if (res != fpng::FPNG_DECODE_SUCCESS)
+	{
+		spdlog::error("Failed to decode image!");
+	}
   texture.Generate(width, height, data);
-  stbi_image_free(data);
   return texture;
 }

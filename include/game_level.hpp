@@ -12,7 +12,7 @@ public:
 
   GameLevel() {}
 
-  void Load(const char *file_name);
+  void Load(std::string name);
   bool IsCompleted();
 
 private:

@@ -7,10 +7,10 @@
 
 #include "game_level.hpp"
 
-void GameLevel::Load(const char *file_name) {
+void GameLevel::Load(std::string name) {
   std::vector<std::string> lines;
 
-  this->Objects.clear();
+  std::string file_name = "resources/levels/" + name + ".lvl";
 
   std::string line;
   std::ifstream fileStream(file_name);
