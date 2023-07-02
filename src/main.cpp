@@ -2,9 +2,9 @@
 #include <iostream>
 
 #include <imgui.h>
-#include <imgui_impl_glfw.h>
-#include <imgui_impl_opengl3.h>
-#include <plot_var.h>
+#include "imgui/imgui_impl_glfw.hpp"
+#include "imgui/imgui_impl_opengl3.hpp"
+#include "imgui/plot_var.hpp"
 
 #include <spdlog/spdlog.h>
 
@@ -12,8 +12,8 @@
 #include <GLFW/glfw3.h>
 
 #include "game.hpp"
-#include "profiler.hpp"
-#include "resource_manager.hpp"
+#include "debug/profiler.hpp"
+#include "resource/resource_manager.hpp"
 
 const uint32_t SCREEN_WIDTH = 800;
 const uint32_t SCREEN_HEIGHT = 600;
@@ -61,7 +61,7 @@ int main(int argc, char *argv[]) {
   glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
   glfwWindowHint(GLFW_RESIZABLE, false);
 
-  GLFWwindow *window = glfwCreateWindow(SCREEN_WIDTH, SCREEN_HEIGHT, "Breakout",
+  GLFWwindow *window = glfwCreateWindow(SCREEN_WIDTH, SCREEN_HEIGHT, "Antele",
                                         nullptr, nullptr);
   glfwMakeContextCurrent(window);
   if (window == nullptr)
@@ -82,6 +82,8 @@ int main(int argc, char *argv[]) {
   (void)io;
   io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;
   io.ConfigFlags |= ImGuiConfigFlags_NavEnableGamepad;
+  io.ConfigFlags |= ImGuiConfigFlags_ViewportsEnable;
+  io.ConfigViewportsNoTaskBarIcon = true;
   io.IniFilename = NULL;
 
   ImGui::StyleColorsDark();
@@ -143,6 +145,13 @@ int main(int argc, char *argv[]) {
     profiler.Begin(Profiler::Stage::ImguiRender);
     ImGui::Render();
     ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
+    if (io.ConfigFlags & ImGuiConfigFlags_ViewportsEnable)
+    {
+        GLFWwindow* backup_current_context = glfwGetCurrentContext();
+        ImGui::UpdatePlatformWindows();
+        ImGui::RenderPlatformWindowsDefault();
+        glfwMakeContextCurrent(backup_current_context);
+    }
     profiler.End(Profiler::Stage::ImguiRender);
 
     profiler.Begin(Profiler::Stage::SwapBuffer);

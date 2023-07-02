@@ -2,8 +2,8 @@
 
 #include <glm/glm.hpp>
 
-#include "sprite_renderer.hpp"
-#include "texture.hpp"
+#include "render/sprite_renderer.hpp"
+#include "resource/texture.hpp"
 
 class GameObject {
 public:

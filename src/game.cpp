@@ -3,19 +3,19 @@
 #include <sstream>
 
 #include <imgui.h>
-#include <imgui_impl_glfw.h>
-#include <imgui_impl_opengl3.h>
+#include "imgui/imgui_impl_glfw.hpp"
+#include "imgui/imgui_impl_opengl3.hpp"
 
 #include <GLFW/glfw3.h>
 #include <glm/ext.hpp>
 
 #include "game.hpp"
-#include "game_level.hpp"
-#include "game_object.hpp"
-#include "particle_generator.hpp"
-#include "resource_manager.hpp"
-#include "sprite_renderer.hpp"
-#include "text_renderer.hpp"
+#include "object/game_level.hpp"
+#include "object/game_object.hpp"
+#include "object/particle_generator.hpp"
+#include "resource/resource_manager.hpp"
+#include "render/sprite_renderer.hpp"
+#include "render/text_renderer.hpp"
 
 SpriteRenderer *Renderer;
 ParticleGenerator *Particles;
@@ -109,7 +109,11 @@ void Game::Render() {
   if (this->State == GAME_MENU) {
     Text->RenderText("Press ENTER to start", 250.0f, this->Height / 2.0f, 1.0f);
   }
-  if (this->State == GAME_WIN) {
+  else if (this->State == GAME_ACTIVE) {
+      Renderer->DrawSprite(ResourceManager::GetTexture("face"),
+          glm::vec2(200.0f, 200.0f), glm::vec2(300.0f, 400.0f), 45.0f, glm::vec3(0.0f, 1.0f, 0.0f));
+  }
+  else if (this->State == GAME_WIN) {
     Text->RenderText("You WON!!!", 320.0f, this->Height / 2.0f - 20.0f, 1.0f,
                      glm::vec3(0.0f, 1.0f, 0.0f));
     Text->RenderText("Press ENTER to retry or ESC to quit", 130.0f,

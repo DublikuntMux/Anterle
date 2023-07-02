@@ -9,8 +9,8 @@
 #include <ft2build.h>
 #include FT_FREETYPE_H
 
-#include "resource_manager.hpp"
-#include "text_renderer.hpp"
+#include "resource/resource_manager.hpp"
+#include "render/text_renderer.hpp"
 
 TextRenderer::TextRenderer(uint32_t width, uint32_t height) {
   this->TextShader = ResourceManager::LoadShader("text");

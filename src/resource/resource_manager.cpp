@@ -3,12 +3,14 @@
 #include <iostream>
 #include <sstream>
 
-#include "spdlog/spdlog.h"
+#include <spdlog/spdlog.h>
 #include <glad/gl.h>
 
-#include <fpng.hpp>
+#define STB_IMAGE_IMPLEMENTATION
+#define STBI_ONLY_PNG
+#include "stb_image.hpp"
 
-#include "resource_manager.hpp"
+#include "resource/resource_manager.hpp"
 
 std::map<std::string, Texture2D> ResourceManager::Textures;
 std::map<std::string, Shader> ResourceManager::Shaders;
@@ -30,10 +32,10 @@ Texture2D ResourceManager::GetTexture(std::string name) {
 }
 
 void ResourceManager::Clear() {
-  for (auto iter : Shaders)
+    for (auto& iter : Shaders)
     glDeleteProgram(iter.second.ID);
 
-  for (auto iter : Textures)
+    for (auto& iter : Textures)
     glDeleteTextures(1, &iter.second.ID);
 }
 
@@ -79,7 +81,7 @@ Texture2D ResourceManager::loadTextureFromFile(std::string file, bool alpha) {
     texture.Internal_Format = GL_RGBA;
     texture.Image_Format = GL_RGBA;
   }
-  uint32_t width, height, nrChannels;
+  int width, height, nrChannels;
 
   std::string file_patch = "./resources/textures/" + file + ".png";
 
@@ -91,12 +93,7 @@ Texture2D ResourceManager::loadTextureFromFile(std::string file, bool alpha) {
     spdlog::error("Failed to load level: {0}", file_patch);
   }
 
-  std::vector<uint8_t> data;
-  int res = fpng::fpng_decode_file(file_patch.c_str(), data, width, height, nrChannels, 0);
-  if (res != fpng::FPNG_DECODE_SUCCESS)
-	{
-		spdlog::error("Failed to decode image!");
-	}
+  unsigned char* data = stbi_load(file_patch.c_str(), &width, &height,&nrChannels, 0);
   texture.Generate(width, height, data);
   return texture;
 }

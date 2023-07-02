@@ -1,8 +1,8 @@
 #define IMGUI_DEFINE_MATH_OPERATORS
-#include "imgui.h"
-#include "imgui_internal.h"
+#include <imgui.h>
+#include <imgui_internal.h>
 
-#include "profiler.hpp"
+#include "debug/profiler.hpp"
 
 void ProfilerValueGetter(float *startTimestamp, float *endTimestamp,
                          ImU8 *level, const char **caption, const void *data,

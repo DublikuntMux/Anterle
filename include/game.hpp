@@ -4,8 +4,8 @@
 #include <string>
 #include <vector>
 
-#include "game_level.hpp"
-#include "game_object.hpp"
+#include "object/game_level.hpp"
+#include "object/game_object.hpp"
 
 enum GameState { GAME_ACTIVE, GAME_MENU, GAME_WIN };
 

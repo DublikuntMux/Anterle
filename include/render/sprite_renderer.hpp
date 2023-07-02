@@ -4,8 +4,8 @@
 
 #include <glm/glm.hpp>
 
-#include "shader.hpp"
-#include "texture.hpp"
+#include "resource/shader.hpp"
+#include "resource/texture.hpp"
 
 class SpriteRenderer {
 public:
@@ -18,6 +18,6 @@ public:
 
 private:
   Shader _shader;
-  unsigned int _quadVAO;
+  uint32_t _quadVAO;
   void initRenderData();
 };

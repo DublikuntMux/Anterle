@@ -3,8 +3,9 @@
 #include <cstdint>
 #include <map>
 
-#include "imgui.h"
-#include "plot_var.h"
+#include <imgui.h>
+
+#include "imgui/plot_var.hpp"
 
 
 struct PlotVarData

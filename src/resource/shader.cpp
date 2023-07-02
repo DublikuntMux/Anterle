@@ -5,8 +5,9 @@
 #include <glm/glm.hpp>
 #include <glm/gtc/type_ptr.hpp>
 
-#include "shader.hpp"
-#include "spdlog/spdlog.h"
+#include <spdlog/spdlog.h>
+
+#include "resource/shader.hpp"
 
 Shader &Shader::Use() {
   glUseProgram(this->ID);
@@ -15,17 +16,17 @@ Shader &Shader::Use() {
 
 void Shader::Compile(const char *vertexSource, const char *fragmentSource) {
   uint32_t vertex, fragment;
-  // vertex shader
+
   vertex = glCreateShader(GL_VERTEX_SHADER);
   glShaderSource(vertex, 1, &vertexSource, NULL);
   glCompileShader(vertex);
   checkCompileErrors(vertex, "VERTEX");
-  // fragment Shader
+
   fragment = glCreateShader(GL_FRAGMENT_SHADER);
   glShaderSource(fragment, 1, &fragmentSource, NULL);
   glCompileShader(fragment);
   checkCompileErrors(fragment, "FRAGMENT");
-  // shader Program
+
   this->ID = glCreateProgram();
   glAttachShader(this->ID, vertex);
   glAttachShader(this->ID, fragment);
@@ -90,24 +91,26 @@ void Shader::SetMatrix4(const char *name, const glm::mat4 &matrix,
                      glm::value_ptr(matrix));
 }
 
-void Shader::checkCompileErrors(unsigned int object, std::string type) {
-  int success;
-  char infoLog[1024];
-  if (type != "PROGRAM") {
-    glGetShaderiv(object, GL_COMPILE_STATUS, &success);
-    if (!success) {
-      glGetShaderInfoLog(object, 1024, NULL, infoLog);
-      spdlog::error("Shader compile-time error: Type: {0} \n {1} \n -- "
-                    "--------------------------------------------------- -- ",
-                    type, infoLog);
+void Shader::checkCompileErrors(uint32_t object, std::string type)
+{
+    int success;
+    char infoLog[1024];
+    if (type != "PROGRAM") {
+        glGetShaderiv(object, GL_COMPILE_STATUS, &success);
+        if (!success) {
+            glGetShaderInfoLog(object, 1024, NULL, infoLog);
+            spdlog::error("Shader compile-time error: Type: {0} \n {1} \n -- "
+                "--------------------------------------------------- -- ",
+                type, infoLog);
+        }
     }
-  } else {
-    glGetProgramiv(object, GL_LINK_STATUS, &success);
-    if (!success) {
-      glGetProgramInfoLog(object, 1024, NULL, infoLog);
-      spdlog::error("Shader link-time error: Type: {0} \n {1} \n -- "
-                    "--------------------------------------------------- -- ",
-                    type, infoLog);
+    else {
+        glGetProgramiv(object, GL_LINK_STATUS, &success);
+        if (!success) {
+            glGetProgramInfoLog(object, 1024, NULL, infoLog);
+            spdlog::error("Shader link-time error: Type: {0} \n {1} \n -- "
+                "--------------------------------------------------- -- ",
+                type, infoLog);
+        }
     }
-  }
 }

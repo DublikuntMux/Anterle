@@ -16,25 +16,33 @@ if (CMAKE_CXX_COMPILER_ID STREQUAL "Clang" OR CMAKE_COMPILER_IS_GNUCXX)
 endif()
 
 file(GLOB anterle_includes "include/*.hpp")
+file(GLOB anterle_includes_folder "include/*/*.hpp")
 file(GLOB anterle_src "src/*.cpp")
+file(GLOB anterle_src_folder "src/*/*.cpp")
 
-add_executable(Anterle ${anterle_includes} ${anterle_src})
+add_executable(Anterle ${anterle_includes} ${anterle_src} ${anterle_includes_folder} ${anterle_src_folder})
 target_include_directories(Anterle PUBLIC include/)
 
 add_subdirectory("deps")
 
 find_package(Freetype REQUIRED)
 
-target_link_libraries(Anterle 
+target_link_libraries(Anterle PRIVATE 
     glfw
     glad
     imgui
     glm
     alpaca
     spdlog
-    ${FREETYPE_LIBRARIES}
+    Freetype::Freetype
 )
 
 target_include_directories(Anterle PRIVATE
-    ${FREETYPE_INCLUDE_DIRS}
+    Freetype::Freetype
 )
+
+add_custom_command(
+        TARGET Anterle POST_BUILD
+        COMMAND ${CMAKE_COMMAND} -E copy_directory
+                ${CMAKE_SOURCE_DIR}/resources
+                ${CMAKE_CURRENT_BINARY_DIR}/resources)

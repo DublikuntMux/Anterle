@@ -6,8 +6,8 @@
 #include <glm/glm.hpp>
 
 #include "game_object.hpp"
-#include "shader.hpp"
-#include "texture.hpp"
+#include "resource/shader.hpp"
+#include "resource/texture.hpp"
 
 struct Particle {
   glm::vec2 Position, Velocity;

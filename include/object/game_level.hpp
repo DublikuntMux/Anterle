@@ -4,11 +4,12 @@
 #include <string>
 #include <vector>
 
-#include "game_object.hpp"
 
 class GameLevel {
 public:
-  std::vector<GameObject> Objects;
+  std::vector<std::string> Lines;
+  std::string Name;
+  std::string Description;
 
   GameLevel() {}
 

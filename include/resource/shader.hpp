@@ -8,6 +8,7 @@
 class Shader {
 public:
   uint32_t ID;
+
   Shader() {}
   Shader &Use();
 

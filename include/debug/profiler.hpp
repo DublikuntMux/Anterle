@@ -3,7 +3,7 @@
 #include <array>
 #include <chrono>
 
-#include "imgui.h"
+#include <imgui.h>
 
 class Profiler {
 public:
@@ -53,9 +53,9 @@ public:
   void End(Stage stage) {
     assert(_currentLevel > 0);
     auto &entry = entries[_currentEntry].stages[stage];
-    assert(!entry._finalized);
+    assert(!entry.finalized);
     _currentLevel--;
-    assert(entry._level == _currentLevel);
+    assert(entry.level == _currentLevel);
     entry.end = std::chrono::system_clock::now();
     entry.finalized = true;
   }

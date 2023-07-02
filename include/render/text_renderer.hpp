@@ -6,8 +6,8 @@
 
 #include <glm/glm.hpp>
 
-#include "shader.hpp"
-#include "texture.hpp"
+#include "resource/shader.hpp"
+#include "resource/texture.hpp"
 
 struct Character {
   uint32_t TextureID;

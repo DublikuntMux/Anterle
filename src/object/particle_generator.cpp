@@ -1,10 +1,10 @@
 #include <cstdint>
 #include <glad/gl.h>
 
-#include "game_object.hpp"
-#include "particle_generator.hpp"
-#include "shader.hpp"
-#include "texture.hpp"
+#include "object/game_object.hpp"
+#include "object/particle_generator.hpp"
+#include "resource/shader.hpp"
+#include "resource/texture.hpp"
 
 ParticleGenerator::ParticleGenerator(Shader shader, Texture2D texture,
                                      uint32_t amount)

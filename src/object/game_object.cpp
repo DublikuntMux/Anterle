@@ -1,4 +1,4 @@
-#include "game_object.hpp"
+#include "object/game_object.hpp"
 
 GameObject::GameObject()
     : Position(0.0f, 0.0f), Size(1.0f, 1.0f), Velocity(0.0f), Color(1.0f),
