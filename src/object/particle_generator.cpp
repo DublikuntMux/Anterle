@@ -6,14 +6,12 @@
 #include "resource/shader.hpp"
 #include "resource/texture.hpp"
 
-ParticleGenerator::ParticleGenerator(Shader shader, Texture2D texture,
-                                     uint32_t amount)
+ParticleGenerator::ParticleGenerator(Shader shader, Texture2D texture, uint32_t amount)
     : _amount(amount), _shader(shader), _texture(texture) {
   this->init();
 }
 
-void ParticleGenerator::Update(float dt, GameObject &object,
-                               uint32_t newParticles, glm::vec2 offset) {
+void ParticleGenerator::Update(float dt, GameObject &object, uint32_t newParticles, glm::vec2 offset) {
   for (uint32_t i = 0; i < newParticles; ++i) {
     int unusedParticle = this->firstUnusedParticle();
     this->respawnParticle(this->_particles[unusedParticle], object, offset);
@@ -46,17 +44,15 @@ void ParticleGenerator::Draw() {
 
 void ParticleGenerator::init() {
   uint32_t VBO;
-  float particle_quad[] = {
-      0.0f, 1.0f, 0.0f, 1.0f, 1.0f, 0.0f, 1.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f,
+  float particle_quad[] = {0.0f, 1.0f, 0.0f, 1.0f, 1.0f, 0.0f, 1.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f,
 
-      0.0f, 1.0f, 0.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 0.0f, 1.0f, 0.0f};
+                           0.0f, 1.0f, 0.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 0.0f, 1.0f, 0.0f};
   glGenVertexArrays(1, &this->_VAO);
   glGenBuffers(1, &VBO);
   glBindVertexArray(this->_VAO);
 
   glBindBuffer(GL_ARRAY_BUFFER, VBO);
-  glBufferData(GL_ARRAY_BUFFER, sizeof(particle_quad), particle_quad,
-               GL_STATIC_DRAW);
+  glBufferData(GL_ARRAY_BUFFER, sizeof(particle_quad), particle_quad, GL_STATIC_DRAW);
 
   glEnableVertexAttribArray(0);
   glVertexAttribPointer(0, 4, GL_FLOAT, GL_FALSE, 4 * sizeof(float), (void *)0);
@@ -86,8 +82,7 @@ uint32_t ParticleGenerator::firstUnusedParticle() {
   return 0;
 }
 
-void ParticleGenerator::respawnParticle(Particle &particle, GameObject &object,
-                                        glm::vec2 offset) {
+void ParticleGenerator::respawnParticle(Particle &particle, GameObject &object, glm::vec2 offset) {
   float random = ((rand() % 100) - 50) / 10.0f;
   float rColor = 0.5f + ((rand() % 100) / 100.0f);
   particle.Position = object.Position + random + offset;

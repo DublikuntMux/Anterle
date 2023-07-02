@@ -1,18 +1,18 @@
 #include <cstdint>
 #include <iostream>
 
-#include <imgui.h>
 #include "imgui/imgui_impl_glfw.hpp"
 #include "imgui/imgui_impl_opengl3.hpp"
 #include "imgui/plot_var.hpp"
+#include <imgui.h>
 
 #include <spdlog/spdlog.h>
 
 #include <glad/gl.h>
 #include <GLFW/glfw3.h>
 
-#include "game.hpp"
 #include "debug/profiler.hpp"
+#include "game.hpp"
 #include "resource/resource_manager.hpp"
 
 const uint32_t SCREEN_WIDTH = 800;
@@ -25,8 +25,7 @@ static void glfw_error_callback(int error, const char *description) {
   spdlog::warn("GLFW Error {0}: {1}", error, description);
 }
 
-void key_callback(GLFWwindow *window, int key, int scancode, int action,
-                  int mode) {
+void key_callback(GLFWwindow *window, int key, int scancode, int action, int mode) {
   if (key == GLFW_KEY_ESCAPE && action == GLFW_PRESS)
     glfwSetWindowShouldClose(window, true);
   if (key == GLFW_KEY_D && action == GLFW_PRESS) {
@@ -61,8 +60,7 @@ int main(int argc, char *argv[]) {
   glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
   glfwWindowHint(GLFW_RESIZABLE, false);
 
-  GLFWwindow *window = glfwCreateWindow(SCREEN_WIDTH, SCREEN_HEIGHT, "Antele",
-                                        nullptr, nullptr);
+  GLFWwindow *window = glfwCreateWindow(SCREEN_WIDTH, SCREEN_HEIGHT, "Antele", nullptr, nullptr);
   glfwMakeContextCurrent(window);
   if (window == nullptr)
     return 1;
@@ -125,8 +123,8 @@ int main(int argc, char *argv[]) {
       {
         ImGui::Begin("Debug window");
         auto &entry = profiler.entries[profiler.GetCurrentEntryIndex()];
-        PlotFlame("CPU", &ProfilerValueGetter, &entry, Profiler::_StageCount, 0,
-                  "Main Thread", FLT_MAX, FLT_MAX, ImVec2(400, 0));
+        PlotFlame("CPU", &ProfilerValueGetter, &entry, Profiler::_StageCount, 0, "Main Thread", FLT_MAX, FLT_MAX,
+                  ImVec2(400, 0));
         ImGui::PlotVar("Delta time", deltaTime);
         ImGui::PlotVar("FPS", io.Framerate);
         ImGui::End();
@@ -145,12 +143,11 @@ int main(int argc, char *argv[]) {
     profiler.Begin(Profiler::Stage::ImguiRender);
     ImGui::Render();
     ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
-    if (io.ConfigFlags & ImGuiConfigFlags_ViewportsEnable)
-    {
-        GLFWwindow* backup_current_context = glfwGetCurrentContext();
-        ImGui::UpdatePlatformWindows();
-        ImGui::RenderPlatformWindowsDefault();
-        glfwMakeContextCurrent(backup_current_context);
+    if (io.ConfigFlags & ImGuiConfigFlags_ViewportsEnable) {
+      GLFWwindow *backup_current_context = glfwGetCurrentContext();
+      ImGui::UpdatePlatformWindows();
+      ImGui::RenderPlatformWindowsDefault();
+      glfwMakeContextCurrent(backup_current_context);
     }
     profiler.End(Profiler::Stage::ImguiRender);
 

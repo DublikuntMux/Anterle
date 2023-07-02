@@ -21,8 +21,7 @@ class ParticleGenerator {
 public:
   ParticleGenerator(Shader shader, Texture2D texture, uint32_t amount);
 
-  void Update(float dt, GameObject &object, uint32_t newParticles,
-              glm::vec2 offset = glm::vec2(0.0f, 0.0f));
+  void Update(float dt, GameObject &object, uint32_t newParticles, glm::vec2 offset = glm::vec2(0.0f, 0.0f));
   void Draw();
 
 private:
@@ -34,6 +33,5 @@ private:
 
   void init();
   uint32_t firstUnusedParticle();
-  void respawnParticle(Particle &particle, GameObject &object,
-                       glm::vec2 offset = glm::vec2(0.0f, 0.0f));
+  void respawnParticle(Particle &particle, GameObject &object, glm::vec2 offset = glm::vec2(0.0f, 0.0f));
 };

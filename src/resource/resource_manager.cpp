@@ -3,8 +3,8 @@
 #include <iostream>
 #include <sstream>
 
-#include <spdlog/spdlog.h>
 #include <glad/gl.h>
+#include <spdlog/spdlog.h>
 
 #define STB_IMAGE_IMPLEMENTATION
 #define STBI_ONLY_PNG
@@ -27,15 +27,13 @@ Texture2D ResourceManager::LoadTexture(std::string name, bool alpha) {
   return Textures[name];
 }
 
-Texture2D ResourceManager::GetTexture(std::string name) {
-  return Textures[name];
-}
+Texture2D ResourceManager::GetTexture(std::string name) { return Textures[name]; }
 
 void ResourceManager::Clear() {
-    for (auto& iter : Shaders)
+  for (auto &iter : Shaders)
     glDeleteProgram(iter.second.ID);
 
-    for (auto& iter : Textures)
+  for (auto &iter : Textures)
     glDeleteTextures(1, &iter.second.ID);
 }
 
@@ -93,7 +91,7 @@ Texture2D ResourceManager::loadTextureFromFile(std::string file, bool alpha) {
     spdlog::error("Failed to load level: {0}", file_patch);
   }
 
-  unsigned char* data = stbi_load(file_patch.c_str(), &width, &height,&nrChannels, 0);
+  unsigned char *data = stbi_load(file_patch.c_str(), &width, &height, &nrChannels, 0);
   texture.Generate(width, height, data);
   return texture;
 }

@@ -9,15 +9,13 @@
 #include <ft2build.h>
 #include FT_FREETYPE_H
 
-#include "resource/resource_manager.hpp"
 #include "render/text_renderer.hpp"
+#include "resource/resource_manager.hpp"
 
 TextRenderer::TextRenderer(uint32_t width, uint32_t height) {
   this->TextShader = ResourceManager::LoadShader("text");
   this->TextShader.SetMatrix4("projection",
-                              glm::ortho(0.0f, static_cast<float>(width),
-                                         static_cast<float>(height), 0.0f),
-                              true);
+                              glm::ortho(0.0f, static_cast<float>(width), static_cast<float>(height), 0.0f), true);
   this->TextShader.SetInteger("text", 0);
 
   glGenVertexArrays(1, &this->_VAO);
@@ -56,20 +54,16 @@ void TextRenderer::Load(std::string font, uint32_t fontSize) {
     uint32_t texture;
     glGenTextures(1, &texture);
     glBindTexture(GL_TEXTURE_2D, texture);
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RED, face->glyph->bitmap.width,
-                 face->glyph->bitmap.rows, 0, GL_RED, GL_UNSIGNED_BYTE,
-                 face->glyph->bitmap.buffer);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RED, face->glyph->bitmap.width, face->glyph->bitmap.rows, 0, GL_RED,
+                 GL_UNSIGNED_BYTE, face->glyph->bitmap.buffer);
 
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 
-    Character character = {
-        texture,
-        glm::ivec2(face->glyph->bitmap.width, face->glyph->bitmap.rows),
-        glm::ivec2(face->glyph->bitmap_left, face->glyph->bitmap_top),
-        face->glyph->advance.x};
+    Character character = {texture, glm::ivec2(face->glyph->bitmap.width, face->glyph->bitmap.rows),
+                           glm::ivec2(face->glyph->bitmap_left, face->glyph->bitmap_top), face->glyph->advance.x};
     Characters.insert(std::pair<char, Character>(c, character));
   }
   glBindTexture(GL_TEXTURE_2D, 0);
@@ -78,8 +72,7 @@ void TextRenderer::Load(std::string font, uint32_t fontSize) {
   FT_Done_FreeType(ft);
 }
 
-void TextRenderer::RenderText(std::string text, float x, float y, float scale,
-                              glm::vec3 color) {
+void TextRenderer::RenderText(std::string text, float x, float y, float scale, glm::vec3 color) {
   this->TextShader.Use();
   this->TextShader.SetVector3f("textColor", color);
   glActiveTexture(GL_TEXTURE0);
@@ -96,11 +89,9 @@ void TextRenderer::RenderText(std::string text, float x, float y, float scale,
     float h = ch.Size.y * scale;
 
     float vertices[6][4] = {
-        {xpos, ypos + h, 0.0f, 1.0f}, {xpos + w, ypos, 1.0f, 0.0f},
-        {xpos, ypos, 0.0f, 0.0f},
+        {xpos, ypos + h, 0.0f, 1.0f}, {xpos + w, ypos, 1.0f, 0.0f},     {xpos, ypos, 0.0f, 0.0f},
 
-        {xpos, ypos + h, 0.0f, 1.0f}, {xpos + w, ypos + h, 1.0f, 1.0f},
-        {xpos + w, ypos, 1.0f, 0.0f}};
+        {xpos, ypos + h, 0.0f, 1.0f}, {xpos + w, ypos + h, 1.0f, 1.0f}, {xpos + w, ypos, 1.0f, 0.0f}};
 
     glBindTexture(GL_TEXTURE_2D, ch.TextureID);
 
