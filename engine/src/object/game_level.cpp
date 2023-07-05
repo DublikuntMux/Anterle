@@ -21,8 +21,8 @@ void GameLevel::Load(std::string name) {
     std::string line;
     while (std::getline(file, line)) {
       if (!(&line[0] == "#") || line != "" || line != " ") {
-        this->Name = FindByKey(delimName, line);
-        this->Description = FindByKey(delimDescription, line);
+        this->Name = FindByKey(delimName, &line);
+        this->Description = FindByKey(delimDescription, &line);
         {
           size_t end = line.find(delimSpeech);
           while (end != std::string::npos) {
@@ -45,14 +45,14 @@ void GameLevel::Load(std::string name) {
 
 bool GameLevel::IsCompleted() { return false; }
 
-std::string GameLevel::FindByKey(std::string key, const std::string &text) {
+std::string GameLevel::FindByKey(std::string key, const std::string *text) {
   std::string returnTexr;
 
-  size_t end = text.find(key);
+  size_t end = text->find(key);
   while (end != std::string::npos) {
     uint64_t start = end + key.length();
-    end = text.find(key, start);
-    returnTexr = text.substr(start, end);
+    end = text->find(key, start);
+    returnTexr = text->substr(start, end);
   }
   return returnTexr;
 }

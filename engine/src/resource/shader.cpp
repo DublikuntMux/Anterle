@@ -89,17 +89,13 @@ void Shader::checkCompileErrors(uint32_t object, std::string type) {
     glGetShaderiv(object, GL_COMPILE_STATUS, &success);
     if (!success) {
       glGetShaderInfoLog(object, 1024, NULL, infoLog);
-      spdlog::error("Shader compile-time error: Type: {0} \n {1} \n -- "
-                    "--------------------------------------------------- -- ",
-                    type, infoLog);
+      spdlog::error("Shader compile-time error: Type: {0} \n {1} \n", type, infoLog);
     }
   } else {
     glGetProgramiv(object, GL_LINK_STATUS, &success);
     if (!success) {
       glGetProgramInfoLog(object, 1024, NULL, infoLog);
-      spdlog::error("Shader link-time error: Type: {0} \n {1} \n -- "
-                    "--------------------------------------------------- -- ",
-                    type, infoLog);
+      spdlog::error("Shader link-time error: Type: {0} \n {1} \n", type, infoLog);
     }
   }
 }

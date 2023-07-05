@@ -47,8 +47,8 @@ void Game::Init() {
   ResourceManager::LoadTexture("particle", true);
 
   Renderer = new SpriteRenderer(ResourceManager::GetShader("sprite"));
-  Particles =
-      new ParticleGenerator(ResourceManager::GetShader("particle"), ResourceManager::GetTexture("particle"), 500);
+  Particles = new ParticleGenerator(ResourceManager::GetShader("particle"),
+      ResourceManager::GetTexture("particle"), 500);
   Text = new TextRenderer(this->Width, this->Height);
   Text->Load("KingthingsClarity", 24);
 

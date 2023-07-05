@@ -16,5 +16,5 @@ public:
   bool IsCompleted();
 
 private:
-  std::string FindByKey(std::string key, const std::string &text);
+  std::string FindByKey(std::string key, const std::string *text);
 };

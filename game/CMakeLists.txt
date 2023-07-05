@@ -20,4 +20,5 @@ add_custom_command(
         TARGET AnterleGame POST_BUILD
         COMMAND ${CMAKE_COMMAND} -E copy_directory
                 ${CMAKE_SOURCE_DIR}/Game/resources
-                ${CMAKE_CURRENT_BINARY_DIR}/resources)
+                ${CMAKE_CURRENT_BINARY_DIR}/resources
+)
