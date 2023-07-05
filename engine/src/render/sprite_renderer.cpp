@@ -4,14 +4,16 @@
 
 #include "render/sprite_renderer.hpp"
 
-SpriteRenderer::SpriteRenderer(Shader shader) {
+SpriteRenderer::SpriteRenderer(Shader shader)
+{
   this->_shader = shader;
   this->initRenderData();
 }
 
 SpriteRenderer::~SpriteRenderer() { glDeleteVertexArrays(1, &this->_quadVAO); }
 
-void SpriteRenderer::DrawSprite(Texture2D texture, glm::vec2 position, glm::vec2 size, float rotate, glm::vec3 color) {
+void SpriteRenderer::DrawSprite(Texture2D texture, glm::vec2 position, glm::vec2 size, float rotate, glm::vec3 color)
+{
   this->_shader.Use();
   glm::mat4 model = glm::mat4(1.0f);
   model = glm::translate(model, glm::vec3(position, 0.0f));
@@ -33,11 +35,34 @@ void SpriteRenderer::DrawSprite(Texture2D texture, glm::vec2 position, glm::vec2
   glBindVertexArray(0);
 }
 
-void SpriteRenderer::initRenderData() {
+void SpriteRenderer::initRenderData()
+{
   uint32_t VBO;
-  float vertices[] = {0.0f, 1.0f, 0.0f, 1.0f, 1.0f, 0.0f, 1.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f,
+  float vertices[] = { 0.0f,
+    1.0f,
+    0.0f,
+    1.0f,
+    1.0f,
+    0.0f,
+    1.0f,
+    0.0f,
+    0.0f,
+    0.0f,
+    0.0f,
+    0.0f,
 
-                     0.0f, 1.0f, 0.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 0.0f, 1.0f, 0.0f};
+    0.0f,
+    1.0f,
+    0.0f,
+    1.0f,
+    1.0f,
+    1.0f,
+    1.0f,
+    1.0f,
+    1.0f,
+    0.0f,
+    1.0f,
+    0.0f };
 
   glGenVertexArrays(1, &this->_quadVAO);
   glGenBuffers(1, &VBO);

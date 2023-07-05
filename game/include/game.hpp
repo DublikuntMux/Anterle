@@ -11,7 +11,8 @@ enum GameState { GAME_ACTIVE, GAME_MENU, GAME_WIN };
 
 enum Direction { UP, RIGHT, DOWN, LEFT };
 
-struct GameConfigs {
+struct GameConfigs
+{
   bool AutoSaveEnable = true;
   uint32_t AutoSavePeriod = 1 * 60 * 60;
   uint16_t CurentLevel = 0;
@@ -19,7 +20,8 @@ struct GameConfigs {
   std::string PlayerName = "Player";
 };
 
-class Game {
+class Game
+{
 public:
   GameState State;
   GameConfigs Configs;

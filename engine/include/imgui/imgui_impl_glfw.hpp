@@ -23,7 +23,7 @@
 // imgui.cpp. Read online: https://github.com/ocornut/imgui/tree/master/docs
 
 #pragma once
-#include <imgui.h> // IMGUI_IMPL_API
+#include <imgui.h>// IMGUI_IMPL_API
 
 struct GLFWwindow;
 struct GLFWmonitor;
@@ -48,9 +48,9 @@ IMGUI_IMPL_API void ImGui_ImplGlfw_RestoreCallbacks(GLFWwindow *window);
 IMGUI_IMPL_API void ImGui_ImplGlfw_SetCallbacksChainForAllWindows(bool chain_for_all_windows);
 
 // GLFW callbacks (individual callbacks to call yourself if you didn't install callbacks)
-IMGUI_IMPL_API void ImGui_ImplGlfw_WindowFocusCallback(GLFWwindow *window, int focused);      // Since 1.84
-IMGUI_IMPL_API void ImGui_ImplGlfw_CursorEnterCallback(GLFWwindow *window, int entered);      // Since 1.84
-IMGUI_IMPL_API void ImGui_ImplGlfw_CursorPosCallback(GLFWwindow *window, double x, double y); // Since 1.87
+IMGUI_IMPL_API void ImGui_ImplGlfw_WindowFocusCallback(GLFWwindow *window, int focused);// Since 1.84
+IMGUI_IMPL_API void ImGui_ImplGlfw_CursorEnterCallback(GLFWwindow *window, int entered);// Since 1.84
+IMGUI_IMPL_API void ImGui_ImplGlfw_CursorPosCallback(GLFWwindow *window, double x, double y);// Since 1.87
 IMGUI_IMPL_API void ImGui_ImplGlfw_MouseButtonCallback(GLFWwindow *window, int button, int action, int mods);
 IMGUI_IMPL_API void ImGui_ImplGlfw_ScrollCallback(GLFWwindow *window, double xoffset, double yoffset);
 IMGUI_IMPL_API void ImGui_ImplGlfw_KeyCallback(GLFWwindow *window, int key, int scancode, int action, int mods);

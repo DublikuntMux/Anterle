@@ -5,12 +5,14 @@
 #include "resource/texture.hpp"
 
 Texture2D::Texture2D()
-    : Width(0), Height(0), Internal_Format(GL_RGB), Image_Format(GL_RGB), Wrap_S(GL_REPEAT), Wrap_T(GL_REPEAT),
-      Filter_Min(GL_LINEAR), Filter_Max(GL_LINEAR) {
+  : Width(0), Height(0), Internal_Format(GL_RGB), Image_Format(GL_RGB), Wrap_S(GL_REPEAT), Wrap_T(GL_REPEAT),
+    Filter_Min(GL_LINEAR), Filter_Max(GL_LINEAR)
+{
   glGenTextures(1, &this->ID);
 }
 
-void Texture2D::Generate(uint32_t width, uint32_t height, uint8_t *data) {
+void Texture2D::Generate(uint32_t width, uint32_t height, uint8_t *data)
+{
   this->Width = width;
   this->Height = height;
 

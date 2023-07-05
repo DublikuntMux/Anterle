@@ -6,7 +6,8 @@
 #include "shader.hpp"
 #include "texture.hpp"
 
-class ResourceManager {
+class ResourceManager
+{
 public:
   static std::map<std::string, Shader> Shaders;
   static std::map<std::string, Texture2D> Textures;

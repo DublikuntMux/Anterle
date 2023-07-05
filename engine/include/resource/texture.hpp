@@ -2,7 +2,8 @@
 
 #include <cstdint>
 
-class Texture2D {
+class Texture2D
+{
 public:
   uint32_t ID;
   uint32_t Width, Height;

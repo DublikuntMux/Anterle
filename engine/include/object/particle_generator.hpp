@@ -9,7 +9,8 @@
 #include "resource/shader.hpp"
 #include "resource/texture.hpp"
 
-struct Particle {
+struct Particle
+{
   glm::vec2 Position, Velocity;
   glm::vec4 Color;
   float Life;
@@ -17,7 +18,8 @@ struct Particle {
   Particle() : Position(0.0f), Velocity(0.0f), Color(1.0f), Life(0.0f) {}
 };
 
-class ParticleGenerator {
+class ParticleGenerator
+{
 public:
   ParticleGenerator(Shader shader, Texture2D texture, uint32_t amount);
 

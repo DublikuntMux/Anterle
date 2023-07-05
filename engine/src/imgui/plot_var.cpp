@@ -7,7 +7,8 @@
 
 #include "imgui/plot_var.hpp"
 
-struct PlotVarData {
+struct PlotVarData
+{
   ImGuiID ID;
   ImVector<float> Data;
   int DataInsertIdx;
@@ -19,10 +20,10 @@ struct PlotVarData {
 typedef std::map<ImGuiID, PlotVarData> PlotVarsMap;
 static PlotVarsMap g_PlotVarsMap;
 
-void ImGui::PlotVar(const char *label, float value, float scale_min, float scale_max, int buffer_size) {
+void ImGui::PlotVar(const char *label, float value, float scale_min, float scale_max, int buffer_size)
+{
   assert(label);
-  if (buffer_size == 0)
-    buffer_size = 120;
+  if (buffer_size == 0) buffer_size = 120;
 
   ImGui::PushID(label);
   ImGuiID id = ImGui::GetID("");
@@ -39,11 +40,9 @@ void ImGui::PlotVar(const char *label, float value, float scale_min, float scale
   }
 
   // Insert (avoid unnecessary modulo operator)
-  if (pvd.DataInsertIdx == buffer_size)
-    pvd.DataInsertIdx = 0;
+  if (pvd.DataInsertIdx == buffer_size) pvd.DataInsertIdx = 0;
   int display_idx = pvd.DataInsertIdx;
-  if (value != FLT_MAX)
-    pvd.Data[pvd.DataInsertIdx++] = value;
+  if (value != FLT_MAX) pvd.Data[pvd.DataInsertIdx++] = value;
 
   // Draw
   int current_frame = ImGui::GetFrameCount();
@@ -57,7 +56,8 @@ void ImGui::PlotVar(const char *label, float value, float scale_min, float scale
   ImGui::PopID();
 }
 
-void ImGui::PlotVarFlushOldEntries() {
+void ImGui::PlotVarFlushOldEntries()
+{
   int current_frame = ImGui::GetFrameCount();
   for (PlotVarsMap::iterator it = g_PlotVarsMap.begin(); it != g_PlotVarsMap.end();) {
     PlotVarData &pvd = it->second;

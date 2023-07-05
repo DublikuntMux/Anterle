@@ -4,10 +4,10 @@
 #include "imgui/imgui_impl_glfw.hpp"
 #include "imgui/imgui_impl_opengl3.hpp"
 #include "imgui/plot_var.hpp"
-#include <imgui.h>
-#include <spdlog/spdlog.h>
 #include <glad/gl.h>
 #include <GLFW/glfw3.h>
+#include <imgui.h>
+#include <spdlog/spdlog.h>
 
 #include "debug/profiler.hpp"
 #include "game.hpp"
@@ -19,13 +19,14 @@ bool debug_mode = false;
 
 Game gameInstance(SCREEN_WIDTH, SCREEN_HEIGHT);
 
-static void glfw_error_callback(int error, const char *description) {
+static void glfw_error_callback(int error, const char *description)
+{
   spdlog::warn("GLFW Error {0}: {1}", error, description);
 }
 
-void key_callback(GLFWwindow *window, int key, int scancode, int action, int mode) {
-  if (key == GLFW_KEY_ESCAPE && action == GLFW_PRESS)
-    glfwSetWindowShouldClose(window, true);
+void key_callback(GLFWwindow *window, int key, int scancode, int action, int mode)
+{
+  if (key == GLFW_KEY_ESCAPE && action == GLFW_PRESS) glfwSetWindowShouldClose(window, true);
   if (key == GLFW_KEY_D && action == GLFW_PRESS) {
     if (debug_mode) {
       debug_mode = false;
@@ -46,12 +47,12 @@ void key_callback(GLFWwindow *window, int key, int scancode, int action, int mod
   }
 }
 
-int main(int argc, char *argv[]) {
+int main(int argc, char *argv[])
+{
   spdlog::set_pattern("[%H:%M:%S] [%^%l%$] %v");
 
   glfwSetErrorCallback(glfw_error_callback);
-  if (!glfwInit())
-    return 1;
+  if (!glfwInit()) return 1;
 
   glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
   glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 6);
@@ -60,8 +61,7 @@ int main(int argc, char *argv[]) {
 
   GLFWwindow *window = glfwCreateWindow(SCREEN_WIDTH, SCREEN_HEIGHT, "Antele", nullptr, nullptr);
   glfwMakeContextCurrent(window);
-  if (window == nullptr)
-    return 1;
+  if (window == nullptr) return 1;
 
   glfwSwapInterval(1);
   glfwSetKeyCallback(window, key_callback);
@@ -121,8 +121,15 @@ int main(int argc, char *argv[]) {
       {
         ImGui::Begin("Debug window");
         auto &entry = profiler.entries[profiler.GetCurrentEntryIndex()];
-        PlotFlame("CPU", &ProfilerValueGetter, &entry, Profiler::_StageCount, 0, "Main Thread", FLT_MAX, FLT_MAX,
-                  ImVec2(400, 0));
+        PlotFlame("CPU",
+          &ProfilerValueGetter,
+          &entry,
+          Profiler::_StageCount,
+          0,
+          "Main Thread",
+          FLT_MAX,
+          FLT_MAX,
+          ImVec2(400, 0));
         ImGui::PlotVar("Delta time", deltaTime);
         ImGui::PlotVar("FPS", io.Framerate);
         ImGui::End();

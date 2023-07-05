@@ -9,14 +9,16 @@
 #include "resource/shader.hpp"
 #include "resource/texture.hpp"
 
-struct Character {
+struct Character
+{
   uint32_t TextureID;
   glm::ivec2 Size;
   glm::ivec2 Bearing;
   int64_t Advance;
 };
 
-class TextRenderer {
+class TextRenderer
+{
 public:
   std::unordered_map<char, Character> Characters;
   Shader TextShader;

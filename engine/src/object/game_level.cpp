@@ -7,7 +7,8 @@
 
 #include "object/game_level.hpp"
 
-void GameLevel::Load(std::string name) {
+void GameLevel::Load(std::string name)
+{
   std::vector<std::pair<std::string, std::string>> speech;
 
   std::string delimSpeech = " | ";
@@ -45,7 +46,8 @@ void GameLevel::Load(std::string name) {
 
 bool GameLevel::IsCompleted() { return false; }
 
-std::string GameLevel::FindByKey(std::string key, const std::string *text) {
+std::string GameLevel::FindByKey(std::string key, const std::string *text)
+{
   std::string returnTexr;
 
   size_t end = text->find(key);

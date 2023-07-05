@@ -4,8 +4,13 @@
 
 #include "debug/profiler.hpp"
 
-void ProfilerValueGetter(float *startTimestamp, float *endTimestamp, ImU8 *level, const char **caption,
-                         const void *data, int idx) {
+void ProfilerValueGetter(float *startTimestamp,
+  float *endTimestamp,
+  ImU8 *level,
+  const char **caption,
+  const void *data,
+  int idx)
+{
   auto entry = reinterpret_cast<const Profiler::Entry *>(data);
   auto &stage = entry->stages[idx];
   if (startTimestamp) {
@@ -18,22 +23,22 @@ void ProfilerValueGetter(float *startTimestamp, float *endTimestamp, ImU8 *level
     std::chrono::duration<float, std::milli> fltEnd = stage.end - entry->frameStart;
     *endTimestamp = fltEnd.count();
   }
-  if (level) {
-    *level = stage.level;
-  }
-  if (caption) {
-    *caption = stageNames[idx];
-  }
+  if (level) { *level = stage.level; }
+  if (caption) { *caption = stageNames[idx]; }
 }
 
 void PlotFlame(const char *label,
-               void (*values_getter)(float *start, float *end, ImU8 *level, const char **caption, const void *data,
-                                     int idx),
-               const void *data, int values_count, int values_offset, const char *overlay_text, float scale_min,
-               float scale_max, ImVec2 graph_size) {
+  void (*values_getter)(float *start, float *end, ImU8 *level, const char **caption, const void *data, int idx),
+  const void *data,
+  int values_count,
+  int values_offset,
+  const char *overlay_text,
+  float scale_min,
+  float scale_max,
+  ImVec2 graph_size)
+{
   ImGuiWindow *window = ImGui::GetCurrentWindow();
-  if (window->SkipItems)
-    return;
+  if (window->SkipItems) return;
 
   ImGuiContext &g = *GImGui;
   const ImGuiStyle &style = g.Style;
@@ -47,18 +52,15 @@ void PlotFlame(const char *label,
 
   const auto blockHeight = ImGui::GetTextLineHeight() + (style.FramePadding.y * 2);
   const ImVec2 label_size = ImGui::CalcTextSize(label, NULL, true);
-  if (graph_size.x == 0.0f)
-    graph_size.x = ImGui::CalcItemWidth();
-  if (graph_size.y == 0.0f)
-    graph_size.y = label_size.y + (style.FramePadding.y * 3) + blockHeight * (maxDepth + 1);
+  if (graph_size.x == 0.0f) graph_size.x = ImGui::CalcItemWidth();
+  if (graph_size.y == 0.0f) graph_size.y = label_size.y + (style.FramePadding.y * 3) + blockHeight * (maxDepth + 1);
 
   const ImRect frame_bb(window->DC.CursorPos, window->DC.CursorPos + graph_size);
   const ImRect inner_bb(frame_bb.Min + style.FramePadding, frame_bb.Max - style.FramePadding);
-  const ImRect total_bb(frame_bb.Min,
-                        frame_bb.Max + ImVec2(label_size.x > 0.0f ? style.ItemInnerSpacing.x + label_size.x : 0.0f, 0));
+  const ImRect total_bb(
+    frame_bb.Min, frame_bb.Max + ImVec2(label_size.x > 0.0f ? style.ItemInnerSpacing.x + label_size.x : 0.0f, 0));
   ImGui::ItemSize(total_bb, style.FramePadding.y);
-  if (!ImGui::ItemAdd(total_bb, 0, &frame_bb))
-    return;
+  if (!ImGui::ItemAdd(total_bb, 0, &frame_bb)) return;
 
   if (scale_min == FLT_MAX || scale_max == FLT_MAX) {
     float v_min = FLT_MAX;
@@ -66,15 +68,11 @@ void PlotFlame(const char *label,
     for (int i = values_offset; i < values_count; i++) {
       float v_start, v_end;
       values_getter(&v_start, &v_end, nullptr, nullptr, data, i);
-      if (v_start == v_start)
-        v_min = ImMin(v_min, v_start);
-      if (v_end == v_end)
-        v_max = ImMax(v_max, v_end);
+      if (v_start == v_start) v_min = ImMin(v_min, v_start);
+      if (v_end == v_end) v_max = ImMax(v_max, v_end);
     }
-    if (scale_min == FLT_MAX)
-      scale_min = v_min;
-    if (scale_max == FLT_MAX)
-      scale_max = v_max;
+    if (scale_min == FLT_MAX) scale_min = v_min;
+    if (scale_max == FLT_MAX) scale_max = v_max;
   }
 
   ImGui::RenderFrame(frame_bb.Min, frame_bb.Max, ImGui::GetColorU32(ImGuiCol_FrameBg), true, style.FrameRounding);
@@ -94,9 +92,7 @@ void PlotFlame(const char *label,
       values_getter(&stageStart, &stageEnd, &depth, &caption, data, i);
 
       auto duration = scale_max - scale_min;
-      if (duration == 0) {
-        return;
-      }
+      if (duration == 0) { return; }
 
       auto start = stageStart - scale_min;
       auto end = stageEnd - scale_min;
@@ -129,14 +125,16 @@ void PlotFlame(const char *label,
     }
 
     if (overlay_text)
-      ImGui::RenderTextClipped(ImVec2(frame_bb.Min.x, frame_bb.Min.y + style.FramePadding.y), frame_bb.Max,
-                               overlay_text, NULL, NULL, ImVec2(0.5f, 0.0f));
+      ImGui::RenderTextClipped(ImVec2(frame_bb.Min.x, frame_bb.Min.y + style.FramePadding.y),
+        frame_bb.Max,
+        overlay_text,
+        NULL,
+        NULL,
+        ImVec2(0.5f, 0.0f));
 
     if (label_size.x > 0.0f)
       ImGui::RenderText(ImVec2(frame_bb.Max.x + style.ItemInnerSpacing.x, inner_bb.Min.y), label);
   }
 
-  if (!any_hovered && ImGui::IsItemHovered()) {
-    ImGui::SetTooltip("Total: %8.4g", scale_max - scale_min);
-  }
+  if (!any_hovered && ImGui::IsItemHovered()) { ImGui::SetTooltip("Total: %8.4g", scale_max - scale_min); }
 }

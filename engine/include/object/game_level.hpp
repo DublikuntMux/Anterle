@@ -4,7 +4,8 @@
 #include <string>
 #include <vector>
 
-class GameLevel {
+class GameLevel
+{
 public:
   std::vector<std::pair<std::string, std::string>> Speech;
   std::string Name;
