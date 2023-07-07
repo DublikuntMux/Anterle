@@ -27,11 +27,11 @@ public:
   void Draw();
 
 private:
-  std::vector<Particle> _particles;
-  uint32_t _amount;
-  Shader _shader;
-  Texture2D _texture;
-  uint32_t _VAO;
+  std::vector<Particle> m_particles;
+  uint32_t m_amount;
+  Shader m_shader;
+  Texture2D m_texture;
+  uint32_t m_VAO;
 
   void init();
   uint32_t firstUnusedParticle();

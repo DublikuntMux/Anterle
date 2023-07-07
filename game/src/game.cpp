@@ -1,6 +1,8 @@
 #include <algorithm>
 #include <iostream>
+#include <memory>
 #include <sstream>
+#include <string>
 
 #include "imgui/imgui_impl_glfw.hpp"
 #include "imgui/imgui_impl_opengl3.hpp"
@@ -16,20 +18,13 @@
 #include "render/text_renderer.hpp"
 #include "resource/resource_manager.hpp"
 
-SpriteRenderer *Renderer;
-ParticleGenerator *Particles;
-TextRenderer *Text;
+std::unique_ptr<SpriteRenderer> Renderer;
+std::unique_ptr<ParticleGenerator> Particles;
+std::unique_ptr<TextRenderer> Text;
 
 Game::Game(uint16_t width, uint16_t height)
   : State(GAME_MENU), Configs(GameConfigs()), Width(width), Height(height), Keys(), KeysProcessed()
 {}
-
-Game::~Game()
-{
-  delete Renderer;
-  delete Particles;
-  delete Text;
-}
 
 void Game::Init()
 {
@@ -37,7 +32,7 @@ void Game::Init()
   ResourceManager::LoadShader("particle");
 
   glm::mat4 projection =
-    glm::ortho(0.0f, static_cast<float>(this->Width), static_cast<float>(this->Height), 0.0f, -1.0f, 1.0f);
+    glm::ortho(0.0F, static_cast<float>(this->Width), static_cast<float>(this->Height), 0.0F, -1.0F, 1.0F);
 
   ResourceManager::GetShader("sprite").Use().SetInteger("sprite", 0);
   ResourceManager::GetShader("sprite").SetMatrix4("projection", projection);
@@ -49,10 +44,10 @@ void Game::Init()
   ResourceManager::LoadTexture("face", true);
   ResourceManager::LoadTexture("particle", true);
 
-  Renderer = new SpriteRenderer(ResourceManager::GetShader("sprite"));
-  Particles =
-    new ParticleGenerator(ResourceManager::GetShader("particle"), ResourceManager::GetTexture("particle"), 500);
-  Text = new TextRenderer(this->Width, this->Height);
+  Renderer = std::make_unique<SpriteRenderer>(ResourceManager::GetShader("sprite"));
+  Particles = std::make_unique<ParticleGenerator>(
+    ResourceManager::GetShader("particle"), ResourceManager::GetTexture("particle"), 500);
+  Text = std::make_unique<TextRenderer>(this->Width, this->Height);
   Text->Load("KingthingsClarity", 24);
 
   GameLevel one;
@@ -90,10 +85,11 @@ void Game::ProcessInput(float dt)
       this->KeysProcessed[GLFW_KEY_W] = true;
     }
     if (this->Keys[GLFW_KEY_S] && !this->KeysProcessed[GLFW_KEY_S]) {
-      if (this->Configs.CurentLevel > 0)
+      if (this->Configs.CurentLevel > 0) {
         --this->Configs.CurentLevel;
-      else
+      } else {
         this->Configs.CurentLevel = 3;
+      }
       this->KeysProcessed[GLFW_KEY_S] = true;
     }
   }
@@ -108,28 +104,29 @@ void Game::ProcessInput(float dt)
 void Game::Render()
 {
   if (this->State == GAME_MENU) {
-    Text->RenderText("Press ENTER to start", 250.0f, this->Height / 2.0f, 1.0f);
+    Text->RenderText("Press ENTER to start", 250.0F, this->Height / 2.0F, 1.0F);
   } else if (this->State == GAME_ACTIVE) {
     Renderer->DrawSprite(ResourceManager::GetTexture("face"),
-      glm::vec2(200.0f, 200.0f),
-      glm::vec2(300.0f, 400.0f),
-      45.0f,
-      glm::vec3(0.0f, 1.0f, 0.0f));
+      glm::vec2(200.0F, 200.0F),
+      glm::vec2(300.0F, 400.0F),
+      45.0F,
+      glm::vec3(0.0F, 1.0F, 0.0F));
   } else if (this->State == GAME_WIN) {
-    Text->RenderText("You WON!!!", 320.0f, this->Height / 2.0f - 20.0f, 1.0f, glm::vec3(0.0f, 1.0f, 0.0f));
+    Text->RenderText("You WON!!!", 320.0F, this->Height / 2.0F - 20.0F, 1.0F, glm::vec3(0.0F, 1.0F, 0.0F));
     Text->RenderText(
-      "Press ENTER to retry or ESC to quit", 130.0f, this->Height / 2.0f, 1.0f, glm::vec3(1.0f, 1.0f, 0.0f));
+      "Press ENTER to retry or ESC to quit", 130.0F, this->Height / 2.0F, 1.0F, glm::vec3(1.0F, 1.0F, 0.0F));
   }
 }
 
 void Game::ResetLevel()
 {
-  if (this->Configs.CurentLevel == 0)
+  if (this->Configs.CurentLevel == 0) {
     this->Levels[0].Load("one");
-  else if (this->Configs.CurentLevel == 1)
+  } else if (this->Configs.CurentLevel == 1) {
     this->Levels[1].Load("one");
-  else if (this->Configs.CurentLevel == 2)
+  } else if (this->Configs.CurentLevel == 2) {
     this->Levels[2].Load("one");
-  else if (this->Configs.CurentLevel == 3)
+  } else if (this->Configs.CurentLevel == 3) {
     this->Levels[3].Load("one");
+  }
 }

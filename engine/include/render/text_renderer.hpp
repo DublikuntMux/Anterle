@@ -26,8 +26,8 @@ public:
   TextRenderer(uint32_t width, uint32_t height);
 
   void Load(std::string font, uint32_t fontSize);
-  void RenderText(std::string text, float x, float y, float scale, glm::vec3 color = glm::vec3(1.0f));
+  void RenderText(std::string text, float x, float y, float scale, glm::vec3 color = glm::vec3(1.0F));
 
 private:
-  uint32_t _VAO, _VBO;
+  uint32_t m_VAO, m_VBO;
 };

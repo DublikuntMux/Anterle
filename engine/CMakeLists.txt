@@ -20,7 +20,7 @@ target_link_libraries(AnterleEngine PUBLIC
     imgui
     glm
     alpaca
-    spdlog
+    plog
     Freetype::Freetype
 )
 

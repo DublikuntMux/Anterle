@@ -11,11 +11,11 @@ public:
   std::string Name;
   std::string Description;
 
-  GameLevel() {}
+  GameLevel() = default;
 
   void Load(std::string name);
   bool IsCompleted();
 
 private:
-  std::string FindByKey(std::string key, const std::string *text);
+  static std::string FindByKey(std::string key, const std::string *text);
 };

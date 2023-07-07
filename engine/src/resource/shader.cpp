@@ -4,7 +4,7 @@
 #include <glad/gl.h>
 #include <glm/glm.hpp>
 #include <glm/gtc/type_ptr.hpp>
-#include <spdlog/spdlog.h>
+#include <plog/Log.h>
 
 #include "resource/shader.hpp"
 
@@ -14,28 +14,37 @@ Shader &Shader::Use()
   return *this;
 }
 
-void Shader::Compile(const char *vertexSource, const char *fragmentSource)
+void Shader::Compile(const char *vertexSource, const char *fragmentSource, const char *geometrySource)
 {
-  uint32_t vertex, fragment;
+  uint32_t sVertex, sFragment, gShader;
 
-  vertex = glCreateShader(GL_VERTEX_SHADER);
-  glShaderSource(vertex, 1, &vertexSource, NULL);
-  glCompileShader(vertex);
-  checkCompileErrors(vertex, "VERTEX");
+  sVertex = glCreateShader(GL_VERTEX_SHADER);
+  glShaderSource(sVertex, 1, &vertexSource, NULL);
+  glCompileShader(sVertex);
+  checkCompileErrors(sVertex, "VERTEX");
 
-  fragment = glCreateShader(GL_FRAGMENT_SHADER);
-  glShaderSource(fragment, 1, &fragmentSource, NULL);
-  glCompileShader(fragment);
-  checkCompileErrors(fragment, "FRAGMENT");
+  sFragment = glCreateShader(GL_FRAGMENT_SHADER);
+  glShaderSource(sFragment, 1, &fragmentSource, NULL);
+  glCompileShader(sFragment);
+  checkCompileErrors(sFragment, "FRAGMENT");
+
+  if (geometrySource != nullptr) {
+    gShader = glCreateShader(GL_GEOMETRY_SHADER);
+    glShaderSource(gShader, 1, &geometrySource, NULL);
+    glCompileShader(gShader);
+    checkCompileErrors(gShader, "GEOMETRY");
+  }
 
   this->ID = glCreateProgram();
-  glAttachShader(this->ID, vertex);
-  glAttachShader(this->ID, fragment);
+  glAttachShader(this->ID, sVertex);
+  glAttachShader(this->ID, sFragment);
+  if (geometrySource != nullptr) glAttachShader(this->ID, gShader);
   glLinkProgram(this->ID);
   checkCompileErrors(this->ID, "PROGRAM");
 
-  glDeleteShader(vertex);
-  glDeleteShader(fragment);
+  glDeleteShader(sVertex);
+  glDeleteShader(sFragment);
+  if (geometrySource != nullptr) glDeleteShader(gShader);
 }
 
 void Shader::SetFloat(const char *name, float value, bool useShader)
@@ -92,13 +101,13 @@ void Shader::checkCompileErrors(uint32_t object, std::string type)
     glGetShaderiv(object, GL_COMPILE_STATUS, &success);
     if (!success) {
       glGetShaderInfoLog(object, 1024, NULL, infoLog);
-      spdlog::error("Shader compile-time error: Type: {0} \n {1} \n", type, infoLog);
+      PLOG_ERROR << "Shader compile-time error: Type: " << type << "\n" << infoLog << "\n";
     }
   } else {
     glGetProgramiv(object, GL_LINK_STATUS, &success);
     if (!success) {
       glGetProgramInfoLog(object, 1024, NULL, infoLog);
-      spdlog::error("Shader link-time error: Type: {0} \n {1} \n", type, infoLog);
+      PLOG_ERROR << "Shader link-time error: Type: " << type << "\n" << infoLog << "\n";
     }
   }
 }

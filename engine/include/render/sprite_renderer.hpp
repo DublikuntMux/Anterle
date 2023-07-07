@@ -20,7 +20,7 @@ public:
     glm::vec3 color = glm::vec3(1.0f));
 
 private:
-  Shader _shader;
-  uint32_t _quadVAO;
+  Shader m_shader;
+  uint32_t m_quadVAO;
   void initRenderData();
 };

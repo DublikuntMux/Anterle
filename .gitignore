@@ -9,6 +9,7 @@ CMakeUserPresets.json
 CMakeSettings.json
 
 # IDE files
+.cache/
 .vs/
 .idea/
 .vscode/

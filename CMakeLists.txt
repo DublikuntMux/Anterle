@@ -34,6 +34,7 @@ if(ANTERLE_ENABLE_CACHE)
     enable_cache()
 endif()
 
+add_subdirectory("dmsl")
 add_subdirectory("deps")
 add_subdirectory("engine")
 add_subdirectory("game")

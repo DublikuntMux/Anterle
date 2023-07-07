@@ -4,7 +4,7 @@
 #include <sstream>
 
 #include <glad/gl.h>
-#include <spdlog/spdlog.h>
+#include <plog/Log.h>
 
 #define STB_IMAGE_IMPLEMENTATION
 #define STBI_ONLY_PNG
@@ -15,7 +15,7 @@
 std::map<std::string, Texture2D> ResourceManager::Textures;
 std::map<std::string, Shader> ResourceManager::Shaders;
 
-Shader ResourceManager::LoadShader(std::string name)
+Shader ResourceManager::LoadShader(std::string name, bool useGeometry)
 {
   Shaders[name] = loadShaderFromFile(name);
   return Shaders[name];
@@ -38,13 +38,15 @@ void ResourceManager::Clear()
   for (auto &iter : Textures) glDeleteTextures(1, &iter.second.ID);
 }
 
-Shader ResourceManager::loadShaderFromFile(std::string shaderName)
+Shader ResourceManager::loadShaderFromFile(std::string shaderName, bool useGeometry)
 {
   std::string vertexCode;
   std::string fragmentCode;
+  std::string geometryCode;
 
   std::ifstream vertexShaderFile;
   std::ifstream fragmentShaderFile;
+  std::ifstream geometryShaderFile;
 
   vertexShaderFile.exceptions(std::ifstream::failbit | std::ifstream::badbit);
   fragmentShaderFile.exceptions(std::ifstream::failbit | std::ifstream::badbit);
@@ -63,15 +65,27 @@ Shader ResourceManager::loadShaderFromFile(std::string shaderName)
     vertexCode = vShaderStream.str();
     fragmentCode = fShaderStream.str();
 
+    if (useGeometry) {
+      geometryShaderFile.open("./resources/shaders/" + shaderName + ".geom");
+
+      std::stringstream gShaderStream;
+
+      gShaderStream << geometryShaderFile.rdbuf();
+      geometryShaderFile.close();
+
+      geometryCode = gShaderStream.str();
+    }
+
   } catch (std::ifstream::failure &e) {
-    spdlog::error("Failed to load shader: {0}", shaderName);
+    PLOG_ERROR << "Failed to load shader: " << shaderName;
   }
 
   const char *vShaderCode = vertexCode.c_str();
   const char *fShaderCode = fragmentCode.c_str();
+  const char *gShaderCode = geometryCode.c_str();
 
   Shader shader;
-  shader.Compile(vShaderCode, fShaderCode);
+  shader.Compile(vShaderCode, fShaderCode, useGeometry != false ? gShaderCode : nullptr);
   return shader;
 }
 
@@ -91,7 +105,7 @@ Texture2D ResourceManager::loadTextureFromFile(std::string file, bool alpha)
   try {
     file_stream.open(file_patch);
   } catch (std::ifstream::failure &e) {
-    spdlog::error("Failed to load level: {0}", file_patch);
+    PLOG_ERROR << "Failed to load level: " << file_patch;
   }
 
   uint8_t *data = stbi_load(file_patch.c_str(), &width, &height, &nrChannels, 0);
