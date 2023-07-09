@@ -1,9 +1,9 @@
 #include <cstdint>
 #include <fstream>
 #include <string>
-#include <vector>
 
 #include <plog/Log.h>
+#include <vector>
 
 #include "object/game_level.hpp"
 
@@ -24,20 +24,14 @@ void GameLevel::Load(std::string name)
       if (!line.empty()) {
         if (line.length() != 1) {
           if (!(line.at(0) == *"#")) {
-            if (this->Name.empty()) { 
-                this->Name = FindByKey(delimName, &line); 
-            }
-            if (this->Description.empty()) { 
-                this->Description = FindByKey(delimDescription, &line); 
-            }
-            {
-              size_t end = line.find(delimSpeech);
-              while (end != std::string::npos) {
-                std::string name = line.substr(0U, end - 0U);
-                uint64_t start = end + delimSpeech.length();
-                end = line.find(delimSpeech, start);
-                speech.emplace_back(name, line.substr(start, end));
-              }
+            if (this->Name.empty()) { this->Name = FindByKey(delimName, &line); }
+            if (this->Description.empty()) { this->Description = FindByKey(delimDescription, &line); }
+            size_t end = line.find(delimSpeech);
+            while (end != std::string::npos) {
+              std::string name = line.substr(0U, end - 0U);
+              uint64_t start = end + delimSpeech.length();
+              end = line.find(delimSpeech, start);
+              speech.emplace_back(name, line.substr(start, end));
             }
           }
         }

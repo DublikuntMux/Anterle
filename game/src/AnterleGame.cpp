@@ -4,29 +4,30 @@
 #include <sstream>
 #include <string>
 
-#include "imgui/imgui_impl_glfw.hpp"
-#include "imgui/imgui_impl_opengl3.hpp"
 #include <GLFW/glfw3.h>
 #include <glm/ext.hpp>
-#include <imgui.h>
 
-#include "game.hpp"
+#include <imgui.h>
+#include <imgui/imgui_impl_glfw.hpp>
+#include <imgui/imgui_impl_opengl3.hpp>
+
 #include "object/game_level.hpp"
 #include "object/game_object.hpp"
 #include "object/particle_generator.hpp"
 #include "render/sprite_renderer.hpp"
 #include "render/text_renderer.hpp"
 #include "resource/resource_manager.hpp"
+#include "game.hpp"
+
+#include "AnterleGame.hpp"
 
 std::unique_ptr<SpriteRenderer> Renderer;
 std::unique_ptr<ParticleGenerator> Particles;
 std::unique_ptr<TextRenderer> Text;
 
-Game::Game(uint16_t width, uint16_t height)
-  : State(GAME_MENU), Configs(GameConfigs()), Width(width), Height(height), Keys(), KeysProcessed()
-{}
+AnterleGame::AnterleGame(uint16_t width, uint16_t height) : Game(width, height), Configs(GameConfigs()) {}
 
-void Game::Init()
+void AnterleGame::Init()
 {
   ResourceManager::LoadShader("sprite");
   ResourceManager::LoadShader("particle");
@@ -65,7 +66,7 @@ void Game::Init()
   this->Configs.CurentLevel = 0;
 }
 
-void Game::Update(float dt)
+void AnterleGame::Update(float dt)
 {
   if (this->State == GAME_ACTIVE && this->Levels[this->Configs.CurentLevel].IsCompleted()) {
     this->ResetLevel();
@@ -73,7 +74,7 @@ void Game::Update(float dt)
   }
 }
 
-void Game::ProcessInput(float dt)
+void AnterleGame::ProcessInput(float dt)
 {
   if (this->State == GAME_MENU) {
     if (this->Keys[GLFW_KEY_ENTER] && !this->KeysProcessed[GLFW_KEY_ENTER]) {
@@ -101,7 +102,7 @@ void Game::ProcessInput(float dt)
   }
 }
 
-void Game::Render()
+void AnterleGame::Render()
 {
   if (this->State == GAME_MENU) {
     Text->RenderText("Press ENTER to start", 250.0F, this->Height / 2.0F, 1.0F);
@@ -118,7 +119,7 @@ void Game::Render()
   }
 }
 
-void Game::ResetLevel()
+void AnterleGame::ResetLevel()
 {
   if (this->Configs.CurentLevel == 0) {
     this->Levels[0].Load("one");

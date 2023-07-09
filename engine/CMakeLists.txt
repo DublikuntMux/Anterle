@@ -4,12 +4,10 @@ project(AnterleEngine
         LANGUAGES CXX
 )
 
-file(GLOB engine_includes "include/*.hpp")
-file(GLOB engine_includes_folder "include/*/*.hpp")
-file(GLOB engine_src "src/*.cpp")
-file(GLOB engine_src_folder "src/*/*.cpp")
+file(GLOB_RECURSE engine_headers CONFIGURE_DEPENDS "./include/*.hpp")
+file(GLOB_RECURSE engine_sources CONFIGURE_DEPENDS "./src/*.cpp")
 
-add_library(AnterleEngine ${engine_includes} ${engine_src} ${engine_includes_folder} ${engine_src_folder})
+add_library(AnterleEngine ${engine_headers} ${engine_sources})
 target_include_directories(AnterleEngine PUBLIC include/)
 
 find_package(Freetype REQUIRED)

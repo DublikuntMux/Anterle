@@ -2,26 +2,29 @@
 #include <iostream>
 #include <memory>
 
+#include <imgui.h>
 #include "imgui/imgui_impl_glfw.hpp"
 #include "imgui/imgui_impl_opengl3.hpp"
 #include "imgui/plot_var.hpp"
+
 #include <glad/gl.h>
 #include <GLFW/glfw3.h>
-#include <imgui.h>
-#include <plog/Log.h>
-#include <plog/Initializers/RollingFileInitializer.h>
-#include <plog/Formatters/TxtFormatter.h>
+
 #include <plog/Appenders/ColorConsoleAppender.h>
+#include <plog/Formatters/TxtFormatter.h>
+#include <plog/Initializers/RollingFileInitializer.h>
+#include <plog/Log.h>
 
 #include "debug/profiler.hpp"
-#include "game.hpp"
 #include "resource/resource_manager.hpp"
 
-const uint32_t SCREEN_WIDTH = 800;
-const uint32_t SCREEN_HEIGHT = 600;
+#include "AnterleGame.hpp"
+
+const uint32_t SCREEN_WIDTH = 1280;
+const uint32_t SCREEN_HEIGHT = 720;
 bool debug_mode = false;
 
-std::unique_ptr<Game> gameInstance;
+std::unique_ptr<AnterleGame> gameInstance;
 
 static void glfw_error_callback(int error, const char *description)
 {
@@ -55,7 +58,7 @@ int main(int argc, char *argv[])
 {
   plog::init(plog::debug, "loger.log", 5 * 1024 * 1024, 5);
   plog::ColorConsoleAppender<plog::TxtFormatter> consoleAppender;
-  plog::get()->addAppender(&consoleAppender); 
+  plog::get()->addAppender(&consoleAppender);
 
   glfwSetErrorCallback(glfw_error_callback);
   if (!glfwInit()) return 1;
@@ -79,7 +82,7 @@ int main(int argc, char *argv[])
   glEnable(GL_BLEND);
   glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
-  gameInstance = std::make_unique<Game>(SCREEN_WIDTH, SCREEN_HEIGHT);
+  gameInstance = std::make_unique<AnterleGame>(SCREEN_WIDTH, SCREEN_HEIGHT);
 
   gameInstance->Init();
 
@@ -133,7 +136,7 @@ int main(int argc, char *argv[])
       {
         ImGui::Begin("Debug window");
         auto &entry = profiler.entries[profiler.GetCurrentEntryIndex()];
-        PlotFlame("CPU",
+        PlotFlame("GPU",
           &ProfilerValueGetter,
           &entry,
           Profiler::_StageCount,

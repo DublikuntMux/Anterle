@@ -1,5 +1,7 @@
 #include <cstdint>
 #include <iostream>
+#include <stdio.h>
+#include <string>
 
 #include <glad/gl.h>
 #include <glm/gtc/matrix_transform.hpp>

@@ -8,7 +8,7 @@
 
 #define STB_IMAGE_IMPLEMENTATION
 #define STBI_ONLY_PNG
-#include "stb_image.hpp"
+#include "stb/stb_image.hpp"
 
 #include "resource/resource_manager.hpp"
 

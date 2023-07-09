@@ -11,20 +11,10 @@ enum GameState { GAME_ACTIVE, GAME_MENU, GAME_WIN };
 
 enum Direction { UP, RIGHT, DOWN, LEFT };
 
-struct GameConfigs
-{
-  bool AutoSaveEnable = true;
-  uint32_t AutoSavePeriod = 1 * 60 * 60;
-  uint16_t CurentLevel = 0;
-  uint32_t CurentLine = 0;
-  std::string PlayerName = "Player";
-};
-
 class Game
 {
 public:
   GameState State;
-  GameConfigs Configs;
   uint16_t Width, Height;
 
   std::vector<GameLevel> Levels;

@@ -10,7 +10,7 @@
    #include ...
    #include ...
    #define STB_IMAGE_IMPLEMENTATION
-   #include "stb_image.h"
+   #include "stb_image.hpp"
 
    You can #define STBI_ASSERT(x) before the #include to avoid using assert.h.
    And #define STBI_MALLOC, STBI_REALLOC, and STBI_FREE to avoid using malloc,realloc,free
@@ -504,6 +504,7 @@ STBIDEF int stbi_is_hdr(char const *filename);
 STBIDEF int stbi_is_hdr_from_file(FILE *f);
 #endif// STBI_NO_STDIO
 
+
 // get a VERY brief reason for failure
 // on most compilers (and ALL modern mainstream compilers) this is threadsafe
 STBIDEF const char *stbi_failure_reason(void);
@@ -523,6 +524,7 @@ STBIDEF int stbi_info_from_file(FILE *f, int *x, int *y, int *comp);
 STBIDEF int stbi_is_16_bit(char const *filename);
 STBIDEF int stbi_is_16_bit_from_file(FILE *f);
 #endif
+
 
 // for image formats that explicitly notate that they have premultiplied alpha,
 // we just return the colors as stored in the file. set this flag to force
@@ -556,6 +558,7 @@ STBIDEF int stbi_zlib_decode_buffer(char *obuffer, int olen, const char *ibuffer
 
 STBIDEF char *stbi_zlib_decode_noheader_malloc(const char *buffer, int len, int *outlen);
 STBIDEF int stbi_zlib_decode_noheader_buffer(char *obuffer, int olen, const char *ibuffer, int ilen);
+
 
 #ifdef __cplusplus
 }
@@ -604,6 +607,7 @@ STBIDEF int stbi_zlib_decode_noheader_buffer(char *obuffer, int olen, const char
 #define STBI_NO_ZLIB
 #endif
 
+
 #include <limits.h>
 #include <stdarg.h>
 #include <stddef.h>// ptrdiff_t on osx
@@ -628,6 +632,7 @@ STBIDEF int stbi_zlib_decode_noheader_buffer(char *obuffer, int olen, const char
 #else
 #define STBI_EXTERN extern
 #endif
+
 
 #ifndef _MSC_VER
 #ifdef __cplusplus
@@ -837,6 +842,7 @@ typedef struct
   stbi_uc *img_buffer, *img_buffer_end;
   stbi_uc *img_buffer_original, *img_buffer_original_end;
 } stbi__context;
+
 
 static void stbi__refill_buffer(stbi__context *s);
 
@@ -1359,6 +1365,7 @@ static FILE *stbi__fopen(char const *filename, char const *mode)
   return f;
 }
 
+
 STBIDEF stbi_uc *stbi_load(char const *filename, int *x, int *y, int *comp, int req_comp)
 {
   FILE *f = stbi__fopen(filename, "rb");
@@ -1404,6 +1411,7 @@ STBIDEF stbi_us *stbi_load_16(char const *filename, int *x, int *y, int *comp, i
   fclose(f);
   return result;
 }
+
 
 #endif//! STBI_NO_STDIO
 
@@ -1586,6 +1594,7 @@ static float stbi__h2l_gamma_i = 1.0f / 2.2f, stbi__h2l_scale_i = 1.0f;
 
 STBIDEF void stbi_hdr_to_ldr_gamma(float gamma) { stbi__h2l_gamma_i = 1 / gamma; }
 STBIDEF void stbi_hdr_to_ldr_scale(float scale) { stbi__h2l_scale_i = 1 / scale; }
+
 
 //////////////////////////////////////////////////////////////////////////////
 //
@@ -4640,15 +4649,15 @@ static int stbi__parse_huffman_block(stbi__zbuf *a)
         return 1;
       }
       if (z >= 286)
-        return stbi__err("bad huffman code",
-          "Corrupt PNG");// per DEFLATE, length codes 286 and 287 must not appear in compressed data
+        return stbi__err(
+          "bad huffman code", "Corrupt PNG");// per DEFLATE, length codes 286 and 287 must not appear in compressed data
       z -= 257;
       len = stbi__zlength_base[z];
       if (stbi__zlength_extra[z]) len += stbi__zreceive(a, stbi__zlength_extra[z]);
       z = stbi__zhuffman_decode(a, &a->z_distance);
       if (z < 0 || z >= 30)
-        return stbi__err("bad huffman code",
-          "Corrupt PNG");// per DEFLATE, distance codes 30 and 31 must not appear in compressed data
+        return stbi__err(
+          "bad huffman code", "Corrupt PNG");// per DEFLATE, distance codes 30 and 31 must not appear in compressed data
       dist = stbi__zdist_base[z];
       if (stbi__zdist_extra[z]) dist += stbi__zreceive(a, stbi__zdist_extra[z]);
       if (zout - a->zout_start < dist) return stbi__err("bad dist", "Corrupt PNG");
@@ -5225,6 +5234,7 @@ typedef struct
   stbi_uc *idata, *expanded, *out;
   int depth;
 } stbi__png;
+
 
 enum {
   STBI__F_none = 0,
@@ -6032,6 +6042,7 @@ static int stbi__bmp_test(stbi__context *s)
   return r;
 }
 
+
 // returns 0..31 for the highest set bit
 static int stbi__high_bit(unsigned int z)
 {
@@ -6165,8 +6176,8 @@ static void *stbi__bmp_parse_header(stbi__context *s, stbi__bmp_data *info)
     int compress = stbi__get32le(s);
     if (compress == 1 || compress == 2) return stbi__errpuc("BMP RLE", "BMP type not supported: RLE");
     if (compress >= 4)
-      return stbi__errpuc("BMP JPEG/PNG",
-        "BMP type not supported: unsupported compression");// this includes PNG/JPEG modes
+      return stbi__errpuc(
+        "BMP JPEG/PNG", "BMP type not supported: unsupported compression");// this includes PNG/JPEG modes
     if (compress == 3 && info->bpp != 16 && info->bpp != 32)
       return stbi__errpuc("bad BMP", "bad BMP");// bitfields requires 16 or 32 bits/pixel
     stbi__get32le(s);// discard sizeof
@@ -6219,6 +6230,7 @@ static void *stbi__bmp_parse_header(stbi__context *s, stbi__bmp_data *info)
   }
   return (void *)1;
 }
+
 
 static void *stbi__bmp_load(stbi__context *s, int *x, int *y, int *comp, int req_comp, stbi__result_info *ri)
 {
@@ -8570,6 +8582,7 @@ STBIDEF int stbi_is_16_bit_from_callbacks(stbi_io_callbacks const *c, void *user
       0.50  (2006-11-19)
               first released version
 */
+
 
 /*
 ------------------------------------------------------------------------------

@@ -4,12 +4,10 @@ project(AnterleGame
         LANGUAGES CXX
 )
 
-file(GLOB game_includes "include/*.hpp")
-file(GLOB game_includes_folder "include/*/*.hpp")
-file(GLOB game_src "src/*.cpp")
-file(GLOB game_src_folder "src/*/*.cpp")
+file(GLOB_RECURSE game_headers CONFIGURE_DEPENDS "./include/*.hpp")
+file(GLOB_RECURSE game_sources CONFIGURE_DEPENDS "./src/*.cpp")
 
-add_executable(AnterleGame ${game_includes} ${game_src} ${game_includes_folder} ${game_src_folder})
+add_executable(AnterleGame ${game_headers} ${game_sources})
 target_include_directories(AnterleGame PUBLIC include/)
 
 target_link_libraries(AnterleGame PRIVATE AnterleEngine)
