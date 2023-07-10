@@ -11,13 +11,7 @@
 #include <imgui/imgui_impl_glfw.hpp>
 #include <imgui/imgui_impl_opengl3.hpp>
 
-#include "object/game_level.hpp"
-#include "object/game_object.hpp"
-#include "object/particle_generator.hpp"
-#include "render/sprite_renderer.hpp"
-#include "render/text_renderer.hpp"
-#include "resource/resource_manager.hpp"
-#include "game.hpp"
+#include <anterle_engine.hpp>
 
 #include "AnterleGame.hpp"
 

@@ -84,5 +84,5 @@ target_link_libraries(AnterleEngine PUBLIC
 
 target_include_directories(AnterleEngine PUBLIC 
     ${stb_SOURCE_DIR}
-    ${freetype_SOURCE_DIR}/include
+    ${freetype_SOURCE_DIR}/src
 )

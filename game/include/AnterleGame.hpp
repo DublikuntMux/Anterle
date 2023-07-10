@@ -1,6 +1,6 @@
 #pragma once
 
-#include "game.hpp"
+#include <anterle_engine.hpp>
 
 struct GameConfigs
 {

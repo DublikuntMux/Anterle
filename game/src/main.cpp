@@ -5,7 +5,6 @@
 #include <imgui.h>
 #include "imgui/imgui_impl_glfw.hpp"
 #include "imgui/imgui_impl_opengl3.hpp"
-#include "imgui/plot_var.hpp"
 
 #include <glad/gl.h>
 #include <GLFW/glfw3.h>
@@ -15,8 +14,7 @@
 #include <plog/Initializers/RollingFileInitializer.h>
 #include <plog/Log.h>
 
-#include "debug/profiler.hpp"
-#include "resource/resource_manager.hpp"
+#include <anterle_engine.hpp>
 
 #include "AnterleGame.hpp"
 
