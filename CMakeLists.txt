@@ -40,8 +40,6 @@ if(ANTERLE_ENABLE_CACHE)
     enable_cache()
 endif()
 
-set(BUILD_SHARED_LIBS ON)
-
 add_subdirectory("deps")
 add_subdirectory("engine")
 add_subdirectory("tool")
