@@ -8,9 +8,6 @@
 #include "object/game_object.hpp"
 #include "object/particle_generator.hpp"
 
-#include "render/text/atlas.hpp"
-#include "render/text/font.hpp"
-#include "render/text/text_shaper.hpp"
 #include "render/sprite_renderer.hpp"
 #include "render/text_renderer.hpp"
 

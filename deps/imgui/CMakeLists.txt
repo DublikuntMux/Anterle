@@ -4,6 +4,6 @@ project(Imgui LANGUAGES CXX)
 file(GLOB imgui_includes "include/*.h")
 file(GLOB imgui_src "src/*.cpp")
 
-add_library(imgui ${imgui_src} ${imgui_includes})
+add_library(imgui SHARED ${imgui_src} ${imgui_includes})
 
 target_include_directories(imgui PUBLIC include/)

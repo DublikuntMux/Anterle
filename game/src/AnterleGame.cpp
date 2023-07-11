@@ -43,7 +43,7 @@ void AnterleGame::Init()
   Particles = std::make_unique<ParticleGenerator>(
     ResourceManager::GetShader("particle"), ResourceManager::GetTexture("particle"), 500);
   Text = std::make_unique<TextRenderer>(this->Width, this->Height);
-  Text->Load("KingthingsClarity", 24);
+  Text->Load("Ronysiswadi", 24);
 
   GameLevel one;
   one.Load("one");
@@ -100,7 +100,7 @@ void AnterleGame::Render()
 {
   if (this->State == GAME_MENU) {
     Text->RenderText("Press ENTER to start", 250.0F, this->Height / 2.0F, 1.0F);
-    
+
   } else if (this->State == GAME_ACTIVE) {
     Renderer->DrawSprite(ResourceManager::GetTexture("face"),
       glm::vec2(200.0F, 200.0F),

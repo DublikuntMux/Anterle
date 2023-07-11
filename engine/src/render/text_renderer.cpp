@@ -1,5 +1,6 @@
 #include <cstdint>
 #include <iostream>
+#include <stdint.h>
 #include <stdio.h>
 #include <string>
 
@@ -43,10 +44,13 @@ void TextRenderer::Load(std::string font, uint32_t fontSize)
   FT_Face face = nullptr;
   if (FT_New_Face(ft, file_font.c_str(), 0, &face) != 0) { PLOG_ERROR << "Failed to load font: " << file_font; }
 
+  FT_Select_Charmap(face, ft_encoding_unicode);
   FT_Set_Pixel_Sizes(face, 0, fontSize);
   glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
 
-  for (GLubyte character = 0; character < 128; character++) {
+  FT_UInt index;
+  FT_ULong character = FT_Get_First_Char(face, &index);
+  while (true) {
     if (FT_Load_Char(face, character, FT_LOAD_RENDER) != 0) {
       PLOG_ERROR << "Failed to load Glyph.";
       continue;
@@ -74,7 +78,10 @@ void TextRenderer::Load(std::string font, uint32_t fontSize)
       glm::ivec2(face->glyph->bitmap.width, face->glyph->bitmap.rows),
       glm::ivec2(face->glyph->bitmap_left, face->glyph->bitmap_top),
       face->glyph->advance.x };
-    Characters.insert(std::pair<char, Character>(character, character_form));
+    Characters.insert(std::pair<uint8_t, Character>(character, character_form));
+
+    character = FT_Get_Next_Char(face, character, &index);
+    if (!index) break;
   }
   glBindTexture(GL_TEXTURE_2D, 0);
 

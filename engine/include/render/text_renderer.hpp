@@ -20,7 +20,7 @@ struct Character
 class TextRenderer
 {
 public:
-  std::unordered_map<char, Character> Characters;
+  std::unordered_map<uint8_t, Character> Characters;
   Shader TextShader;
 
   TextRenderer(uint32_t width, uint32_t height);

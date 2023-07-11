@@ -8,7 +8,7 @@ project(AnterleEngine
 file(GLOB_RECURSE engine_headers CONFIGURE_DEPENDS "./include/*.hpp")
 file(GLOB_RECURSE engine_sources CONFIGURE_DEPENDS "./src/*.cpp")
 
-add_library(AnterleEngine STATIC ${engine_headers} ${engine_sources})
+add_library(AnterleEngine SHARED ${engine_headers} ${engine_sources})
 target_include_directories(AnterleEngine PUBLIC include/)
 
 include(FetchContent)
@@ -27,11 +27,6 @@ FetchContent_Declare(
     glfw
     GIT_REPOSITORY https://github.com/glfw/glfw.git
     GIT_TAG 3.3.8
-)
-FetchContent_Declare(
-    harfbuzz
-    GIT_REPOSITORY https://github.com/harfbuzz/harfbuzz.git
-    GIT_TAG 8.0.0
 )
 FetchContent_Declare(
     freetype
@@ -56,17 +51,15 @@ set(GLFW_INSTALL OFF CACHE BOOL "" FORCE)
 set(GLFW_USE_HYBRID_HPG ON CACHE BOOL "" FORCE)
 # set(GLFW_BUILD_WAYLAND ON CACHE BOOL "" FORCE)
 
-set(HB_BUILD_SUBSET OFF CACHE BOOL "" FORCE)
-
 set(FT_DISABLE_BROTLI ON CACHE BOOL "" FORCE)
 set(FT_DISABLE_BZIP2 ON CACHE BOOL "" FORCE)
 set(FT_DISABLE_PNG ON CACHE BOOL "" FORCE)
 set(FT_DISABLE_ZLIB ON CACHE BOOL "" FORCE)
+set(FT_DISABLE_HARTBUZZ ON CACHE BOOL "" FORCE)
 
 FetchContent_MakeAvailable(stb)
 FetchContent_MakeAvailable(glm)
 FetchContent_MakeAvailable(glfw)
-FetchContent_MakeAvailable(harfbuzz)
 FetchContent_MakeAvailable(freetype)
 FetchContent_MakeAvailable(alpaca)
 FetchContent_MakeAvailable(plog)
@@ -78,11 +71,10 @@ target_link_libraries(AnterleEngine PUBLIC
     imgui
     alpaca
     plog
-    harfbuzz
     freetype
 )
 
 target_include_directories(AnterleEngine PUBLIC 
     ${stb_SOURCE_DIR}
-    ${freetype_SOURCE_DIR}/src
+    ${freetype_SOURCE_DIR}/include
 )

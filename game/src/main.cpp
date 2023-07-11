@@ -2,9 +2,9 @@
 #include <iostream>
 #include <memory>
 
-#include <imgui.h>
 #include "imgui/imgui_impl_glfw.hpp"
 #include "imgui/imgui_impl_opengl3.hpp"
+#include <imgui.h>
 
 #include <glad/gl.h>
 #include <GLFW/glfw3.h>
