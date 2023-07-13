@@ -38,11 +38,6 @@ FetchContent_Declare(
     GIT_REPOSITORY https://github.com/p-ranav/alpaca.git
     GIT_TAG v0.2.1
 )
-FetchContent_Declare(
-    plog
-    GIT_REPOSITORY https://github.com/SergiusTheBest/plog.git
-    GIT_TAG 1.1.9
-)
 
 set(GLFW_BUILD_EXAMPLES OFF CACHE BOOL "" FORCE)
 set(GLFW_BUILD_TESTS OFF CACHE BOOL "" FORCE)
@@ -62,7 +57,6 @@ FetchContent_MakeAvailable(glm)
 FetchContent_MakeAvailable(glfw)
 FetchContent_MakeAvailable(freetype)
 FetchContent_MakeAvailable(alpaca)
-FetchContent_MakeAvailable(plog)
 
 target_link_libraries(AnterleEngine PUBLIC 
     glad
@@ -70,7 +64,6 @@ target_link_libraries(AnterleEngine PUBLIC
     glfw
     imgui
     alpaca
-    plog
     freetype
 )
 

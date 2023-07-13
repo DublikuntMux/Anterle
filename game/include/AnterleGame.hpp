@@ -19,8 +19,8 @@ public:
   AnterleGame(uint16_t width, uint16_t height);
 
   void Init();
-  void ProcessInput(float dt);
   void Update(float dt);
+  void ProcessInput(float dt);
   void Render();
   void ResetLevel();
 };

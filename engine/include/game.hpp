@@ -9,8 +9,6 @@
 
 enum GameState { GAME_ACTIVE, GAME_MENU, GAME_WIN };
 
-enum Direction { UP, RIGHT, DOWN, LEFT };
-
 class Game
 {
 public:
@@ -24,9 +22,9 @@ public:
 
   Game(uint16_t width, uint16_t height);
 
-  void Init();
-  void ProcessInput(float dt);
-  void Update(float dt);
-  void Render();
-  void ResetLevel();
+  virtual void Init();
+  virtual void Update(float dt);
+  virtual void ProcessInput(float dt);
+  virtual void Render();
+  virtual void ResetLevel();
 };

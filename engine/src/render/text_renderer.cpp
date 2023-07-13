@@ -6,7 +6,6 @@
 
 #include <glad/gl.h>
 #include <glm/gtc/matrix_transform.hpp>
-#include <plog/Log.h>
 
 #include <ft2build.h>
 #include FT_FREETYPE_H
@@ -39,10 +38,12 @@ void TextRenderer::Load(std::string font, uint32_t fontSize)
   std::string file_font = "resources/fonts/" + font + ".ttf";
 
   FT_Library ft = nullptr;
-  if (FT_Init_FreeType(&ft) != 0) { PLOG_ERROR << "Could not init FreeType Library."; }
+  if (FT_Init_FreeType(&ft) != 0) { printf("[Anterle Engine] Could not init FreeType Library."); }
 
   FT_Face face = nullptr;
-  if (FT_New_Face(ft, file_font.c_str(), 0, &face) != 0) { PLOG_ERROR << "Failed to load font: " << file_font; }
+  if (FT_New_Face(ft, file_font.c_str(), 0, &face) != 0) {
+    printf("[Anterle Engine] Failed to load font: %s", file_font.c_str());
+  }
 
   FT_Select_Charmap(face, ft_encoding_unicode);
   FT_Set_Pixel_Sizes(face, 0, fontSize);
@@ -52,7 +53,7 @@ void TextRenderer::Load(std::string font, uint32_t fontSize)
   FT_ULong character = FT_Get_First_Char(face, &index);
   while (true) {
     if (FT_Load_Char(face, character, FT_LOAD_RENDER) != 0) {
-      PLOG_ERROR << "Failed to load Glyph.";
+      printf("[Anterle Engine] Failed to load Glyph.");
       continue;
     }
 

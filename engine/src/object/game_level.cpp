@@ -1,8 +1,6 @@
 #include <cstdint>
 #include <fstream>
 #include <string>
-
-#include <plog/Log.h>
 #include <vector>
 
 #include "object/game_level.hpp"
@@ -38,7 +36,7 @@ void GameLevel::Load(std::string name)
       }
     }
   } else {
-    PLOG_ERROR << "Failed to load level: " << file_name;
+    printf("[Anterle Engine] Failed to load level: %s", file_name.c_str());
   }
 
   this->Speech = speech;
