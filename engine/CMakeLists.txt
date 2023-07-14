@@ -8,7 +8,7 @@ project(AnterleEngine
 file(GLOB_RECURSE engine_headers CONFIGURE_DEPENDS "./include/*.hpp")
 file(GLOB_RECURSE engine_sources CONFIGURE_DEPENDS "./src/*.cpp")
 
-add_library(AnterleEngine ${engine_headers} ${engine_sources})
+add_library(AnterleEngine ${engine_headers} ${engine_sources} )
 target_include_directories(AnterleEngine PUBLIC include/)
 
 include(FetchContent)
@@ -16,7 +16,7 @@ include(FetchContent)
 FetchContent_Declare(
     stb
     GIT_REPOSITORY https://github.com/nothings/stb.git
-    GIT_TAG 5736b15f7ea0ffb08dd38af21067c314d6a3aae9
+    GIT_TAG  master
 )
 FetchContent_Declare(
     glm
@@ -39,6 +39,12 @@ FetchContent_Declare(
     GIT_TAG v0.2.1
 )
 
+FetchContent_Declare(
+    loguru
+	GIT_REPOSITORY https://github.com/emilk/loguru.git
+	GIT_TAG master
+)
+
 set(GLFW_BUILD_EXAMPLES OFF CACHE BOOL "" FORCE)
 set(GLFW_BUILD_TESTS OFF CACHE BOOL "" FORCE)
 set(GLFW_BUILD_DOCS OFF CACHE BOOL "" FORCE)
@@ -52,11 +58,14 @@ set(FT_DISABLE_PNG ON CACHE BOOL "" FORCE)
 set(FT_DISABLE_ZLIB ON CACHE BOOL "" FORCE)
 set(FT_DISABLE_HARTBUZZ ON CACHE BOOL "" FORCE)
 
+set(LOGURU_WITH_STREAMS ON CACHE BOOL "" FORCE)
+
 FetchContent_MakeAvailable(stb)
 FetchContent_MakeAvailable(glm)
 FetchContent_MakeAvailable(glfw)
 FetchContent_MakeAvailable(freetype)
 FetchContent_MakeAvailable(alpaca)
+FetchContent_MakeAvailable(loguru)
 
 target_link_libraries(AnterleEngine PUBLIC 
     glad
@@ -65,6 +74,7 @@ target_link_libraries(AnterleEngine PUBLIC
     imgui
     alpaca
     freetype
+    loguru::loguru
 )
 
 target_include_directories(AnterleEngine PUBLIC 

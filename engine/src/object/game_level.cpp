@@ -3,6 +3,8 @@
 #include <string>
 #include <vector>
 
+#include <loguru.hpp>
+
 #include "object/game_level.hpp"
 
 void GameLevel::Load(std::string name)
@@ -36,7 +38,7 @@ void GameLevel::Load(std::string name)
       }
     }
   } else {
-    printf("[Anterle Engine] Failed to load level: %s\n", file_name.c_str());
+    ABORT_F("Failed to load level: %s", file_name.c_str());
   }
 
   this->Speech = speech;

@@ -4,6 +4,7 @@
 #include <glad/gl.h>
 #include <glm/glm.hpp>
 #include <glm/gtc/type_ptr.hpp>
+#include <loguru.hpp>
 
 #include "resource/shader.hpp"
 
@@ -100,13 +101,13 @@ void Shader::checkCompileErrors(uint32_t object, std::string type)
     glGetShaderiv(object, GL_COMPILE_STATUS, &success);
     if (!success) {
       glGetShaderInfoLog(object, 1024, NULL, infoLog);
-      printf("[Anterle Engine] Shader compile-time error: Type: %s\n%s\n", type.c_str(), infoLog);
+      LOG_F(ERROR, "Shader compile-time error: Type: %s\n%s", type.c_str(), infoLog);
     }
   } else {
     glGetProgramiv(object, GL_LINK_STATUS, &success);
     if (!success) {
       glGetProgramInfoLog(object, 1024, NULL, infoLog);
-      printf("[Anterle Engine] Shader link-time error: Type: %s\n%s\n", type.c_str(), infoLog);
+      LOG_F(ERROR, "Shader link-time error: Type: %s\n%s", type.c_str(), infoLog);
     }
   }
 }

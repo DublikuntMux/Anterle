@@ -1,16 +1,17 @@
 #include <glad/gl.h>
 #include <GLFW/glfw3.h>
 
+#include <imgui.h>
 #include <imgui_impl_glfw.h>
 #include <imgui_impl_opengl3.h>
-#include <imgui.h>
-#include "imgui/plot_var.hpp"
+#include <loguru.hpp>
 
 #include "debug/profiler.hpp"
+#include "game.hpp"
+#include "imgui/plot_var.hpp"
 #include "object/ui/button.hpp"
 #include "resource/resource_manager.hpp"
 #include "window.hpp"
-#include "game.hpp"
 
 void SetupImGuiStyle()
 {
@@ -104,7 +105,7 @@ void SetupImGuiStyle()
 
 void Window::glfw_error_callback(int error, const char *description)
 {
-  printf("[Anterle Engine] GLFW Error: %d : %s\n", error, description);
+  LOG_F(ERROR, "GLFW Error: %d : %s", error, description);
 }
 
 void Window::key_callback(GLFWwindow *window, int key, int scancode, int action, int mode)
@@ -113,10 +114,10 @@ void Window::key_callback(GLFWwindow *window, int key, int scancode, int action,
   if (key == GLFW_KEY_D && action == GLFW_PRESS) {
     if (debug_mode) {
       debug_mode = false;
-      printf("[Anterle Engine] Disable debuge mode.\n");
+      LOG_F(INFO, "Disable debuge mode.");
     } else {
       debug_mode = true;
-      printf("[Anterle Engine] Enable debuge mode.\n");
+      LOG_F(INFO, "Enable debuge mode.");
     }
   }
 
@@ -130,20 +131,20 @@ void Window::key_callback(GLFWwindow *window, int key, int scancode, int action,
   }
 }
 
-void Window::mouse_callback(GLFWwindow* window, int button, int action, int modifier)
+void Window::mouse_callback(GLFWwindow *window, int button, int action, int modifier)
 {
-    double xpos, ypos;
-    glfwGetCursorPos(window, &xpos, &ypos);
-    if (action == GLFW_PRESS && button == GLFW_MOUSE_BUTTON_1) {
-        this->CheckButtons(xpos, ypos);
-    }
+  double xpos, ypos;
+  glfwGetCursorPos(window, &xpos, &ypos);
+  if (action == GLFW_PRESS && button == GLFW_MOUSE_BUTTON_1) { this->CheckButtons(xpos, ypos); }
 }
 
 Window::Window(uint32_t screen_width, uint32_t screen_hight, const char *name, Game *instance)
   : ScreenWidth(screen_width), ScreenHight(screen_hight), GameInstance(instance)
 {
+  loguru::add_file("logging.log", loguru::Truncate, loguru::Verbosity_INFO);
+
   glfwSetErrorCallback(&Window::glfw_error_callback);
-  if (!glfwInit()) { printf("[Anterle Engine] Failed to initialize GLFW.\n"); }
+  if (!glfwInit()) { ABORT_F("Failed to initialize GLFW."); }
 
   glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
   glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 6);
@@ -153,7 +154,7 @@ Window::Window(uint32_t screen_width, uint32_t screen_hight, const char *name, G
   this->window = glfwCreateWindow(screen_width, screen_hight, name, nullptr, nullptr);
 
   glfwMakeContextCurrent(this->window);
-  if (this->window == nullptr) { printf("[Anterle Engine] Failed to initialize window.\n"); }
+  if (this->window == nullptr) { ABORT_F("Failed to initialize window."); }
 }
 
 Window::~Window()
@@ -267,9 +268,7 @@ void Window::Start()
   }
 }
 
-void Window::CheckButtons(uint64_t x, uint64_t y)
+void Window::CheckButtons(uint32_t x, uint32_t y)
 {
-  for(Button button: buttons){
-    button.CheckClick(x, y);
-  }
+  for (Button button : buttons) { button.CheckClick(x, y); }
 }

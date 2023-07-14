@@ -2,19 +2,20 @@
 
 #include <stdint.h>
 
-class Button {
+class Button
+{
 public:
-    typedef void (*ClickCallback)();
+  typedef void (*ClickCallback)();
 
-    Button(uint64_t top, uint64_t left, uint64_t width, uint64_t height, ClickCallback onClick);
-    ~Button();
+  Button(uint32_t top, uint32_t left, uint32_t width, uint32_t height, ClickCallback onClick);
+  ~Button();
 
-    void CheckClick(uint64_t x, uint64_t y);
-    
+  void CheckClick(uint32_t x, uint32_t y);
+
 private:
-    uint64_t m_width;
-    uint64_t m_height;
-    uint64_t m_top;
-    uint64_t m_left;
-    ClickCallback m_onClick;
+  uint32_t m_width;
+  uint32_t m_height;
+  uint32_t m_top;
+  uint32_t m_left;
+  ClickCallback m_onClick;
 };

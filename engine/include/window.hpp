@@ -25,10 +25,11 @@ public:
 
   virtual void Init();
   virtual void Start();
-  void CheckButtons(uint64_t x, uint64_t y);
 
 private:
+  void CheckButtons(uint32_t x, uint32_t y);
+
   static void glfw_error_callback(int error, const char *description);
-  void mouse_callback(GLFWwindow* window, int button, int action, int modifier);
+  void mouse_callback(GLFWwindow *window, int button, int action, int modifier);
   void key_callback(GLFWwindow *window, int key, int scancode, int action, int mode);
 };
