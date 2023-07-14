@@ -76,7 +76,7 @@ Shader ResourceManager::loadShaderFromFile(std::string shaderName, bool useGeome
     }
 
   } catch (std::ifstream::failure &e) {
-    printf("[Anterle Engine] Failed to load shader: %s", shaderName.c_str());
+    printf("[Anterle Engine] Failed to load shader: %s\n", shaderName.c_str());
   }
 
   const char *vShaderCode = vertexCode.c_str();
@@ -104,7 +104,7 @@ Texture2D ResourceManager::loadTextureFromFile(std::string file, bool alpha)
   try {
     file_stream.open(file_patch);
   } catch (std::ifstream::failure &e) {
-    printf("[Anterle Engine] Failed to load level: %s", file_patch.c_str());
+    printf("[Anterle Engine] Failed to load level: %s\n", file_patch.c_str());
   }
 
   uint8_t *data = stbi_load(file_patch.c_str(), &width, &height, &nrChannels, 0);

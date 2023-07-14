@@ -38,11 +38,11 @@ void TextRenderer::Load(std::string font, uint32_t fontSize)
   std::string file_font = "resources/fonts/" + font + ".ttf";
 
   FT_Library ft = nullptr;
-  if (FT_Init_FreeType(&ft) != 0) { printf("[Anterle Engine] Could not init FreeType Library."); }
+  if (FT_Init_FreeType(&ft) != 0) { printf("[Anterle Engine] Could not init FreeType Library.\n"); }
 
   FT_Face face = nullptr;
   if (FT_New_Face(ft, file_font.c_str(), 0, &face) != 0) {
-    printf("[Anterle Engine] Failed to load font: %s", file_font.c_str());
+    printf("[Anterle Engine] Failed to load font: %s\n", file_font.c_str());
   }
 
   FT_Select_Charmap(face, ft_encoding_unicode);
@@ -53,7 +53,7 @@ void TextRenderer::Load(std::string font, uint32_t fontSize)
   FT_ULong character = FT_Get_First_Char(face, &index);
   while (true) {
     if (FT_Load_Char(face, character, FT_LOAD_RENDER) != 0) {
-      printf("[Anterle Engine] Failed to load Glyph.");
+      printf("[Anterle Engine] Failed to load Glyph.\n");
       continue;
     }
 

@@ -7,10 +7,6 @@
 #include <GLFW/glfw3.h>
 #include <glm/ext.hpp>
 
-#include <imgui.h>
-#include <imgui/imgui_impl_glfw.hpp>
-#include <imgui/imgui_impl_opengl3.hpp>
-
 #include <anterle_engine.hpp>
 
 #include "AnterleGame.hpp"
@@ -43,7 +39,7 @@ void AnterleGame::Init()
   Particles = std::make_unique<ParticleGenerator>(
     ResourceManager::GetShader("particle"), ResourceManager::GetTexture("particle"), 500);
   Text = std::make_unique<TextRenderer>(this->Width, this->Height);
-  Text->Load("Ronysiswadi", 24);
+  Text->Load("tahoma", 24);
 
   GameLevel one;
   one.Load("one");
@@ -62,17 +58,17 @@ void AnterleGame::Init()
 
 void AnterleGame::Update(float dt)
 {
-  if (this->State == GAME_ACTIVE && this->Levels[this->Configs.CurentLevel].IsCompleted()) {
+  if (this->State == GameState::GAME_ACTIVE && this->Levels[this->Configs.CurentLevel].IsCompleted()) {
     this->ResetLevel();
-    this->State = GAME_WIN;
+    this->State = GameState::GAME_WIN;
   }
 }
 
 void AnterleGame::ProcessInput(float dt)
 {
-  if (this->State == GAME_MENU) {
+  if (this->State == GameState::GAME_MENU) {
     if (this->Keys[GLFW_KEY_ENTER] && !this->KeysProcessed[GLFW_KEY_ENTER]) {
-      this->State = GAME_ACTIVE;
+      this->State = GameState::GAME_ACTIVE;
       this->KeysProcessed[GLFW_KEY_ENTER] = true;
     }
     if (this->Keys[GLFW_KEY_W] && !this->KeysProcessed[GLFW_KEY_W]) {
@@ -88,27 +84,27 @@ void AnterleGame::ProcessInput(float dt)
       this->KeysProcessed[GLFW_KEY_S] = true;
     }
   }
-  if (this->State == GAME_WIN) {
+  if (this->State == GameState::GAME_WIN) {
     if (this->Keys[GLFW_KEY_ENTER]) {
       this->KeysProcessed[GLFW_KEY_ENTER] = true;
-      this->State = GAME_MENU;
+      this->State = GameState::GAME_MENU;
     }
   }
 }
 
 void AnterleGame::Render()
 {
-  if (this->State == GAME_MENU) {
+  if (this->State == GameState::GAME_MENU) {
     Text->RenderText("Press ENTER to start", 250.0F, this->Height / 2.0F, 1.0F);
 
-  } else if (this->State == GAME_ACTIVE) {
+  } else if (this->State == GameState::GAME_ACTIVE) {
     Renderer->DrawSprite(ResourceManager::GetTexture("face"),
       glm::vec2(200.0F, 200.0F),
       glm::vec2(300.0F, 400.0F),
       45.0F,
       glm::vec3(0.0F, 1.0F, 0.0F));
 
-  } else if (this->State == GAME_WIN) {
+  } else if (this->State == GameState::GAME_WIN) {
     Text->RenderText("You WON!!!", 320.0F, this->Height / 2.0F - 20.0F, 1.0F, glm::vec3(0.0F, 1.0F, 0.0F));
     Text->RenderText(
       "Press ENTER to retry or ESC to quit", 130.0F, this->Height / 2.0F, 1.0F, glm::vec3(1.0F, 1.0F, 0.0F));

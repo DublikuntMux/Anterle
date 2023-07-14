@@ -36,7 +36,7 @@ void GameLevel::Load(std::string name)
       }
     }
   } else {
-    printf("[Anterle Engine] Failed to load level: %s", file_name.c_str());
+    printf("[Anterle Engine] Failed to load level: %s\n", file_name.c_str());
   }
 
   this->Speech = speech;
