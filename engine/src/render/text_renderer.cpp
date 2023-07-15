@@ -48,7 +48,7 @@ void TextRenderer::Load(std::string font, uint32_t fontSize)
   glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
 
   FT_UInt index;
-  FT_ULong character = FT_Get_First_Char(face, &index);
+  wchar_t character = FT_Get_First_Char(face, &index);
   while (true) {
     if (FT_Load_Char(face, character, FT_LOAD_RENDER) != 0) {
       LOG_F(ERROR, "Failed to load Glyph.");
@@ -77,7 +77,7 @@ void TextRenderer::Load(std::string font, uint32_t fontSize)
       glm::ivec2(face->glyph->bitmap.width, face->glyph->bitmap.rows),
       glm::ivec2(face->glyph->bitmap_left, face->glyph->bitmap_top),
       face->glyph->advance.x };
-    Characters.insert(std::pair<uint8_t, Character>(character, character_form));
+    Characters.insert(std::pair<wchar_t, Character>(character, character_form));
 
     character = FT_Get_Next_Char(face, character, &index);
     if (!index) break;
@@ -88,14 +88,14 @@ void TextRenderer::Load(std::string font, uint32_t fontSize)
   FT_Done_FreeType(ft);
 }
 
-void TextRenderer::RenderText(std::string text, float x, float y, float scale, glm::vec3 color)
+void TextRenderer::RenderText(const std::wstring &text, float x, float y, float scale, glm::vec3 color)
 {
   this->TextShader.Use();
   this->TextShader.SetVector3f("textColor", color);
   glActiveTexture(GL_TEXTURE0);
   glBindVertexArray(this->m_VAO);
 
-  std::string::const_iterator character_iter;
+  std::wstring::const_iterator character_iter;
   for (character_iter = text.begin(); character_iter != text.end(); character_iter++) {
     Character character = Characters[*character_iter];
 

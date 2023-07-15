@@ -16,6 +16,7 @@ std::unique_ptr<ParticleGenerator> Particles;
 std::unique_ptr<TextRenderer> Text;
 
 AnterleGame::AnterleGame(uint16_t width, uint16_t height) : Game(width, height), Configs(GameConfigs()) {}
+AnterleGame::AnterleGame(uint16_t width, uint16_t height, const GameConfigs &Configs) : Game(width, height), Configs(Configs) {}
 
 void AnterleGame::Init()
 {
@@ -95,7 +96,7 @@ void AnterleGame::ProcessInput(float dt)
 void AnterleGame::Render()
 {
   if (this->State == GameState::GAME_MENU) {
-    Text->RenderText("Press ENTER to start", 250.0F, this->Height / 2.0F, 1.0F);
+    Text->RenderText(L"Press ENTER to start", 250.0F, this->Height / 2.0F, 1.0F);
 
   } else if (this->State == GameState::GAME_ACTIVE) {
     Renderer->DrawSprite(ResourceManager::GetTexture("face"),
@@ -105,9 +106,8 @@ void AnterleGame::Render()
       glm::vec3(0.0F, 1.0F, 0.0F));
 
   } else if (this->State == GameState::GAME_WIN) {
-    Text->RenderText("You WON!!!", 320.0F, this->Height / 2.0F - 20.0F, 1.0F, glm::vec3(0.0F, 1.0F, 0.0F));
-    Text->RenderText(
-      "Press ENTER to retry or ESC to quit", 130.0F, this->Height / 2.0F, 1.0F, glm::vec3(1.0F, 1.0F, 0.0F));
+    Text->RenderText(L"You WON!!!", 320.0F, this->Height / 2.0F - 20.0F, 1.0F, glm::vec3(0.0F, 1.0F, 0.0F));
+    Text->RenderText(L"Press ENTER to retry or ESC to quit", 130.0F, this->Height / 2.0F, 1.0F, glm::vec3(1.0F, 1.0F, 0.0F));
   }
 }
 
