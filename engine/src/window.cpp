@@ -12,6 +12,7 @@
 #include "object/ui/button.hpp"
 #include "resource/resource_manager.hpp"
 #include "window.hpp"
+#include "object/ui/notify.hpp"
 
 void SetupImGuiStyle()
 {
@@ -114,10 +115,10 @@ void Window::key_callback(GLFWwindow *window, int key, int scancode, int action,
   if (key == GLFW_KEY_D && action == GLFW_PRESS) {
     if (debug_mode) {
       debug_mode = false;
-      LOG_F(INFO, "Disable debuge mode.");
+      ImGui::InsertNotification({ ImGuiToastType::Info, 3000, "Disable debuge mode." });
     } else {
       debug_mode = true;
-      LOG_F(INFO, "Enable debuge mode.");
+      ImGui::InsertNotification({ ImGuiToastType::Info, 3000, "Enable debuge mode." });
     }
   }
 
@@ -247,6 +248,13 @@ void Window::Start()
         ImGui::End();
       }
     }
+
+    ImGui::PushStyleVar(ImGuiStyleVar_WindowRounding, 5.f);
+    ImGui::PushStyleColor(
+      ImGuiCol_WindowBg, ImVec4(43.f / 255.f, 43.f / 255.f, 43.f / 255.f, 100.f / 255.f));
+    ImGui::RenderNotifications();
+    ImGui::PopStyleVar(1);
+    ImGui::PopStyleColor(1);
     profiler.End(Profiler::Stage::ImguiNewFrame);
 
     profiler.Begin(Profiler::Stage::OpenGL);

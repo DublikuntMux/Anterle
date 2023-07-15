@@ -6,20 +6,33 @@
 
 #include <GLFW/glfw3.h>
 #include <glm/ext.hpp>
+#include <imgui.h>
 
 #include <anterle_engine.hpp>
 
 #include "AnterleGame.hpp"
+#include "tahoma.hpp"
+
 
 std::unique_ptr<SpriteRenderer> Renderer;
 std::unique_ptr<ParticleGenerator> Particles;
 std::unique_ptr<TextRenderer> Text;
 
 AnterleGame::AnterleGame(uint16_t width, uint16_t height) : Game(width, height), Configs(GameConfigs()) {}
-AnterleGame::AnterleGame(uint16_t width, uint16_t height, const GameConfigs &Configs) : Game(width, height), Configs(Configs) {}
+AnterleGame::AnterleGame(uint16_t width, uint16_t height, const GameConfigs &Configs)
+  : Game(width, height), Configs(Configs)
+{}
 
 void AnterleGame::Init()
 {
+  ImGuiIO &io = ImGui::GetIO();
+  (void)io;
+  ImFontConfig font_cfg;
+  font_cfg.FontDataOwnedByAtlas = false;
+  io.Fonts->AddFontFromMemoryTTF((void *)tahoma, sizeof(tahoma), 17.f, &font_cfg);
+
+  ImGui::MergeIconsWithLatestFont(16.f, false);
+
   ResourceManager::LoadShader("sprite");
   ResourceManager::LoadShader("particle");
 
@@ -107,7 +120,8 @@ void AnterleGame::Render()
 
   } else if (this->State == GameState::GAME_WIN) {
     Text->RenderText(L"You WON!!!", 320.0F, this->Height / 2.0F - 20.0F, 1.0F, glm::vec3(0.0F, 1.0F, 0.0F));
-    Text->RenderText(L"Press ENTER to retry or ESC to quit", 130.0F, this->Height / 2.0F, 1.0F, glm::vec3(1.0F, 1.0F, 0.0F));
+    Text->RenderText(
+      L"Press ENTER to retry or ESC to quit", 130.0F, this->Height / 2.0F, 1.0F, glm::vec3(1.0F, 1.0F, 0.0F));
   }
 }
 

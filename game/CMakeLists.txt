@@ -17,6 +17,13 @@ target_include_directories(AnterleGame PRIVATE AnterleEngine)
 add_custom_command(
         TARGET AnterleGame POST_BUILD
         COMMAND ${CMAKE_COMMAND} -E copy_directory
-                ${CMAKE_SOURCE_DIR}/Game/resources
+                ${CMAKE_SOURCE_DIR}/engine/resources
+                ${CMAKE_CURRENT_BINARY_DIR}/resources
+)
+
+add_custom_command(
+        TARGET AnterleGame POST_BUILD
+        COMMAND ${CMAKE_COMMAND} -E copy_directory
+                ${CMAKE_SOURCE_DIR}/game/resources
                 ${CMAKE_CURRENT_BINARY_DIR}/resources
 )

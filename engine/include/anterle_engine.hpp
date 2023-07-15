@@ -1,5 +1,7 @@
 #pragma once
 
+#include "object/ui/button.hpp"
+#include "object/ui/notify.hpp"
 #include "object/game_level.hpp"
 #include "object/game_object.hpp"
 #include "object/particle_generator.hpp"
