@@ -1,6 +1,5 @@
 #include <algorithm>
 #include <iostream>
-#include <memory>
 #include <sstream>
 #include <string>
 
@@ -11,17 +10,18 @@
 #include <anterle_engine.hpp>
 
 #include "AnterleGame.hpp"
-#include "tahoma.hpp"
 
-
-std::unique_ptr<SpriteRenderer> Renderer;
-std::unique_ptr<ParticleGenerator> Particles;
-std::unique_ptr<TextRenderer> Text;
-
-AnterleGame::AnterleGame(uint16_t width, uint16_t height) : Game(width, height), Configs(GameConfigs()) {}
-AnterleGame::AnterleGame(uint16_t width, uint16_t height, const GameConfigs &Configs)
-  : Game(width, height), Configs(Configs)
+AnterleGame::AnterleGame(uint16_t width, uint16_t height) : Game(width, height), Configs(new GameConfigs()) {}
+AnterleGame::AnterleGame(uint16_t width, uint16_t height, GameConfigs *Configs) : Game(width, height), Configs(Configs)
 {}
+
+AnterleGame::~AnterleGame()
+{
+  delete Renderer;
+  delete Particles;
+  delete Text;
+  delete Audio;
+}
 
 void AnterleGame::Init()
 {
@@ -29,7 +29,7 @@ void AnterleGame::Init()
   (void)io;
   ImFontConfig font_cfg;
   font_cfg.FontDataOwnedByAtlas = false;
-  io.Fonts->AddFontFromMemoryTTF((void *)tahoma, sizeof(tahoma), 17.f, &font_cfg);
+  io.Fonts->AddFontFromFileTTF("resources/fonts/tahoma.ttf", 17.f, &font_cfg);
 
   ImGui::MergeIconsWithLatestFont(16.f, false);
 
@@ -49,10 +49,10 @@ void AnterleGame::Init()
   ResourceManager::LoadTexture("face", true);
   ResourceManager::LoadTexture("particle", true);
 
-  Renderer = std::make_unique<SpriteRenderer>(ResourceManager::GetShader("sprite"));
-  Particles = std::make_unique<ParticleGenerator>(
-    ResourceManager::GetShader("particle"), ResourceManager::GetTexture("particle"), 500);
-  Text = std::make_unique<TextRenderer>(this->Width, this->Height);
+  Renderer = new SpriteRenderer(ResourceManager::GetShader("sprite"));
+  Particles =
+    new ParticleGenerator(ResourceManager::GetShader("particle"), ResourceManager::GetTexture("particle"), 500);
+  Text = new TextRenderer(this->Width, this->Height);
   Text->Load("tahoma", 24);
 
   GameLevel one;
@@ -67,12 +67,12 @@ void AnterleGame::Init()
   this->Levels.push_back(two);
   this->Levels.push_back(three);
   this->Levels.push_back(four);
-  this->Configs.CurentLevel = 0;
+  this->Configs->CurentLevel = 0;
 }
 
 void AnterleGame::Update(float dt)
 {
-  if (this->State == GameState::GAME_ACTIVE && this->Levels[this->Configs.CurentLevel].IsCompleted()) {
+  if (this->State == GameState::GAME_ACTIVE && this->Levels[this->Configs->CurentLevel].IsCompleted()) {
     this->ResetLevel();
     this->State = GameState::GAME_WIN;
   }
@@ -86,14 +86,14 @@ void AnterleGame::ProcessInput(float dt)
       this->KeysProcessed[GLFW_KEY_ENTER] = true;
     }
     if (this->Keys[GLFW_KEY_W] && !this->KeysProcessed[GLFW_KEY_W]) {
-      this->Configs.CurentLevel = (this->Configs.CurentLevel + 1) % 4;
+      this->Configs->CurentLevel = (this->Configs->CurentLevel + 1) % 4;
       this->KeysProcessed[GLFW_KEY_W] = true;
     }
     if (this->Keys[GLFW_KEY_S] && !this->KeysProcessed[GLFW_KEY_S]) {
-      if (this->Configs.CurentLevel > 0) {
-        --this->Configs.CurentLevel;
+      if (this->Configs->CurentLevel > 0) {
+        --this->Configs->CurentLevel;
       } else {
-        this->Configs.CurentLevel = 3;
+        this->Configs->CurentLevel = 3;
       }
       this->KeysProcessed[GLFW_KEY_S] = true;
     }
@@ -127,13 +127,13 @@ void AnterleGame::Render()
 
 void AnterleGame::ResetLevel()
 {
-  if (this->Configs.CurentLevel == 0) {
+  if (this->Configs->CurentLevel == 0) {
     this->Levels[0].Load("one");
-  } else if (this->Configs.CurentLevel == 1) {
+  } else if (this->Configs->CurentLevel == 1) {
     this->Levels[1].Load("one");
-  } else if (this->Configs.CurentLevel == 2) {
+  } else if (this->Configs->CurentLevel == 2) {
     this->Levels[2].Load("one");
-  } else if (this->Configs.CurentLevel == 3) {
+  } else if (this->Configs->CurentLevel == 3) {
     this->Levels[3].Load("one");
   }
 }

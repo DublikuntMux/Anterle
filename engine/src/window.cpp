@@ -10,9 +10,9 @@
 #include "game.hpp"
 #include "imgui/plot_var.hpp"
 #include "object/ui/button.hpp"
+#include "object/ui/notify.hpp"
 #include "resource/resource_manager.hpp"
 #include "window.hpp"
-#include "object/ui/notify.hpp"
 
 void SetupImGuiStyle()
 {
@@ -250,8 +250,7 @@ void Window::Start()
     }
 
     ImGui::PushStyleVar(ImGuiStyleVar_WindowRounding, 5.f);
-    ImGui::PushStyleColor(
-      ImGuiCol_WindowBg, ImVec4(43.f / 255.f, 43.f / 255.f, 43.f / 255.f, 100.f / 255.f));
+    ImGui::PushStyleColor(ImGuiCol_WindowBg, ImVec4(43.f / 255.f, 43.f / 255.f, 43.f / 255.f, 100.f / 255.f));
     ImGui::RenderNotifications();
     ImGui::PopStyleVar(1);
     ImGui::PopStyleColor(1);

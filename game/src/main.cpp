@@ -1,3 +1,5 @@
+#include <iostream>
+
 #include <anterle_engine.hpp>
 
 #include "AnterleGame.hpp"
@@ -14,5 +16,5 @@ int main()
   window.Init();
   window.Start();
 
-  return 0;
+  std::cin.get();
 }

@@ -2,6 +2,7 @@ cmake_minimum_required(VERSION 3.25.0)
 
 project(AnterleEngine
         VERSION 1.0.3
+        DESCRIPTION "Visual novel game engine"
         LANGUAGES CXX
 )
 
@@ -10,6 +11,9 @@ file(GLOB_RECURSE engine_sources CONFIGURE_DEPENDS "./src/*.cpp")
 
 add_library(AnterleEngine ${engine_headers} ${engine_sources}  "src/object/ui/notify.cpp")
 target_include_directories(AnterleEngine PUBLIC include/)
+
+set_target_properties(AnterleEngine PROPERTIES VERSION ${PROJECT_VERSION})
+set_target_properties(AnterleEngine PROPERTIES SOVERSION 1)
 
 include(FetchContent)
 
@@ -56,7 +60,7 @@ set(FT_DISABLE_BROTLI ON CACHE BOOL "" FORCE)
 set(FT_DISABLE_BZIP2 ON CACHE BOOL "" FORCE)
 set(FT_DISABLE_PNG ON CACHE BOOL "" FORCE)
 set(FT_DISABLE_ZLIB ON CACHE BOOL "" FORCE)
-set(FT_DISABLE_HARTBUZZ ON CACHE BOOL "" FORCE)
+set(FT_DISABLE_HARFBUZZ ON CACHE BOOL "" FORCE)
 
 set(LOGURU_WITH_STREAMS ON CACHE BOOL "" FORCE)
 
@@ -69,11 +73,12 @@ FetchContent_MakeAvailable(loguru)
 
 target_link_libraries(AnterleEngine PUBLIC 
     glad
-    glm
+    glm::glm
     glfw
     imgui
     alpaca
     freetype
+    miniaudio
     loguru::loguru
 )
 

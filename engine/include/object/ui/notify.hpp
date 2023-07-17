@@ -69,12 +69,6 @@ public:
   const ImGuiToastPhase &get_phase();
   const float get_fade_percent();
 
-  bool operator==(const ImGuiToast &other) const
-  {
-    return type == other.type && title == other.title && content == other.content && dismiss_time == other.dismiss_time
-           && creation_time == other.creation_time;
-  }
-
 private:
   ImGuiToastType type = ImGuiToastType::None;
   char title[NOTIFY_MAX_MSG_LENGTH];

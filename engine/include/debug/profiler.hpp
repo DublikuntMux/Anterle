@@ -28,20 +28,6 @@ public:
     std::chrono::system_clock::time_point start;
     std::chrono::system_clock::time_point end;
     bool finalized = false;
-
-    Scope() = default;
-
-    Scope(const ImU8 &level,
-      const std::chrono::system_clock::time_point &start,
-      const std::chrono::system_clock::time_point &end,
-      bool finalized)
-      : level(level), start(start), end(end), finalized(finalized)
-    {}
-
-    bool operator==(const Scope &other) const
-    {
-      return level == other.level && start == other.start && end == other.end && finalized == other.finalized;
-    }
   };
 
   struct Entry
@@ -49,29 +35,10 @@ public:
     std::chrono::system_clock::time_point frameStart;
     std::chrono::system_clock::time_point frameEnd;
     std::array<Scope, _StageCount> stages;
-
-    Entry() = default;
-
-    Entry(const std::chrono::system_clock::time_point &frameStart,
-      const std::chrono::system_clock::time_point &frameEnd,
-      const std::array<Scope, _StageCount> &stages)
-      : frameStart(frameStart), frameEnd(frameEnd), stages(stages)
-    {}
-
-    bool operator==(const Entry &other) const
-    {
-      return frameStart == other.frameStart && frameEnd == other.frameEnd && stages == other.stages;
-    }
   };
 
   static const ImU8 bufferSize = 100;
   std::array<Entry, bufferSize> entries;
-
-  Profiler() = default;
-
-  Profiler(const std::array<Entry, bufferSize> &entries, const ImU8 &_currentEntry, const ImU8 &_currentLevel)
-    : entries(entries), _currentEntry(_currentEntry), _currentLevel(_currentLevel)
-  {}
 
   void Frame()
   {
@@ -102,11 +69,6 @@ public:
   }
 
   ImU8 GetCurrentEntryIndex() const { return (_currentEntry + bufferSize - 1) % bufferSize; }
-
-  bool operator==(const Profiler &other) const
-  {
-    return entries == other.entries && _currentEntry == other._currentEntry && _currentLevel == other._currentLevel;
-  }
 
 private:
   ImU8 _currentEntry = bufferSize - 1;
