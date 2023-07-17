@@ -111,7 +111,7 @@ void Window::glfw_error_callback(int error, const char *description)
 
 void Window::key_callback(GLFWwindow *window, int key, int scancode, int action, int mode)
 {
-  if (key == GLFW_KEY_ESCAPE && action == GLFW_PRESS) { glfwSetWindowShouldClose(window, 1); }
+  if (key == GLFW_KEY_ESCAPE && action == GLFW_PRESS) { glfwSetWindowShouldClose(window, GL_TRUE); }
   if (key == GLFW_KEY_D && action == GLFW_PRESS) {
     if (debug_mode) {
       debug_mode = false;
@@ -150,12 +150,13 @@ Window::Window(uint32_t screen_width, uint32_t screen_hight, const char *name, G
   glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
   glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 6);
   glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
-  glfwWindowHint(GLFW_RESIZABLE, false);
+  glfwWindowHint(GLFW_RESIZABLE, GL_FALSE);
 
   this->window = glfwCreateWindow(screen_width, screen_hight, name, nullptr, nullptr);
-
   glfwMakeContextCurrent(this->window);
   if (this->window == nullptr) { ABORT_F("Failed to initialize window."); }
+
+  gladLoadGL(glfwGetProcAddress);
 }
 
 Window::~Window()
