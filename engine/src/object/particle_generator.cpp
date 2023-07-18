@@ -1,6 +1,6 @@
 #include <cstdint>
 
-#include <glad/gl.h>
+#include <glad/gles2.h>
 
 #include "object/game_object.hpp"
 #include "object/particle_generator.hpp"

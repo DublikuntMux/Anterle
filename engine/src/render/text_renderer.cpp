@@ -5,7 +5,7 @@
 #include <string>
 
 #include <ft2build.h>
-#include <glad/gl.h>
+#include <glad/gles2.h>
 #include <glm/gtc/matrix_transform.hpp>
 #include <loguru.hpp>
 #include FT_FREETYPE_H

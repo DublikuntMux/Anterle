@@ -1,7 +1,7 @@
 #include <fstream>
 #include <vector>
 
-#include <glad/gl.h>
+#include <glad/gles2.h>
 #include <loguru.hpp>
 
 #include "utility/screen.hpp"

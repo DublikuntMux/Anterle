@@ -13,7 +13,7 @@ public:
   Shader() {}
   Shader &Use();
 
-  void Compile(const char *vertexSource, const char *fragmentSource, const char *geometrySource = nullptr);
+  void Compile(const char *vertexSource, const char *fragmentSource);
 
   void SetFloat(const char *name, float value, bool useShader = false);
   void SetInteger(const char *name, int value, bool useShader = false);

@@ -1,6 +1,6 @@
 #include <iostream>
 
-#include <glad/gl.h>
+#include <glad/gles2.h>
 
 #include "resource/texture.hpp"
 

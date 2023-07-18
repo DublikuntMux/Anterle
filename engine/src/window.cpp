@@ -1,9 +1,12 @@
-#include <glad/gl.h>
+#include <glad/gles2.h>
+#define GLFW_INCLUDE_NONE
 #include <GLFW/glfw3.h>
 
+#define IMGUI_IMPL_OPENGL_ES3
 #include <imgui.h>
 #include <imgui_impl_glfw.h>
 #include <imgui_impl_opengl3.h>
+
 #include <loguru.hpp>
 
 #include "debug/profiler.hpp"
@@ -147,16 +150,16 @@ Window::Window(uint32_t screen_width, uint32_t screen_hight, const char *name, G
   glfwSetErrorCallback(&Window::glfw_error_callback);
   if (!glfwInit()) { ABORT_F("Failed to initialize GLFW."); }
 
-  glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
-  glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 6);
-  glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
+  glfwWindowHint(GLFW_CLIENT_API, GLFW_OPENGL_ES_API);
+  glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
+  glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 0);
   glfwWindowHint(GLFW_RESIZABLE, GL_FALSE);
 
   this->window = glfwCreateWindow(screen_width, screen_hight, name, nullptr, nullptr);
   glfwMakeContextCurrent(this->window);
   if (this->window == nullptr) { ABORT_F("Failed to initialize window."); }
 
-  gladLoadGL(glfwGetProcAddress);
+  gladLoadGLES2(glfwGetProcAddress);
 }
 
 Window::~Window()
@@ -195,7 +198,7 @@ void Window::Init()
   SetupImGuiStyle();
 
   ImGui_ImplGlfw_InitForOpenGL(window, true);
-  ImGui_ImplOpenGL3_Init("#version 460");
+  ImGui_ImplOpenGL3_Init("#version 300 es");
 
   this->GameInstance->Init();
 }

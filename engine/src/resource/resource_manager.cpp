@@ -3,7 +3,7 @@
 #include <iostream>
 #include <sstream>
 
-#include <glad/gl.h>
+#include <glad/gles2.h>
 #include <loguru.hpp>
 
 #define STB_IMAGE_IMPLEMENTATION
@@ -14,7 +14,7 @@
 std::map<std::string, Texture2D> ResourceManager::Textures;
 std::map<std::string, Shader> ResourceManager::Shaders;
 
-Shader ResourceManager::LoadShader(std::string name, bool useGeometry)
+Shader ResourceManager::LoadShader(std::string name)
 {
   Shaders[name] = loadShaderFromFile(name);
   return Shaders[name];
@@ -37,15 +37,13 @@ void ResourceManager::Clear()
   for (auto &iter : Textures) glDeleteTextures(1, &iter.second.ID);
 }
 
-Shader ResourceManager::loadShaderFromFile(std::string shaderName, bool useGeometry)
+Shader ResourceManager::loadShaderFromFile(std::string shaderName)
 {
   std::string vertexCode;
   std::string fragmentCode;
-  std::string geometryCode;
 
   std::ifstream vertexShaderFile;
   std::ifstream fragmentShaderFile;
-  std::ifstream geometryShaderFile;
 
   vertexShaderFile.exceptions(std::ifstream::failbit | std::ifstream::badbit);
   fragmentShaderFile.exceptions(std::ifstream::failbit | std::ifstream::badbit);
@@ -64,27 +62,15 @@ Shader ResourceManager::loadShaderFromFile(std::string shaderName, bool useGeome
     vertexCode = vShaderStream.str();
     fragmentCode = fShaderStream.str();
 
-    if (useGeometry) {
-      geometryShaderFile.open("./resources/shaders/" + shaderName + ".geom");
-
-      std::stringstream gShaderStream;
-
-      gShaderStream << geometryShaderFile.rdbuf();
-      geometryShaderFile.close();
-
-      geometryCode = gShaderStream.str();
-    }
-
   } catch (std::ifstream::failure &e) {
     ABORT_F("Failed to load shader: %s", shaderName.c_str());
   }
 
   const char *vShaderCode = vertexCode.c_str();
   const char *fShaderCode = fragmentCode.c_str();
-  const char *gShaderCode = geometryCode.c_str();
 
   Shader shader;
-  shader.Compile(vShaderCode, fShaderCode, useGeometry != false ? gShaderCode : nullptr);
+  shader.Compile(vShaderCode, fShaderCode);
   return shader;
 }
 
