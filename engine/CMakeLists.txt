@@ -9,7 +9,7 @@ project(AnterleEngine
 file(GLOB_RECURSE engine_headers CONFIGURE_DEPENDS "./include/*.hpp")
 file(GLOB_RECURSE engine_sources CONFIGURE_DEPENDS "./src/*.cpp")
 
-add_library(AnterleEngine ${engine_headers} ${engine_sources}  "src/object/ui/notify.cpp")
+add_library(AnterleEngine ${engine_headers} ${engine_sources})
 target_include_directories(AnterleEngine PUBLIC include/)
 
 set_target_properties(AnterleEngine PROPERTIES VERSION ${PROJECT_VERSION})

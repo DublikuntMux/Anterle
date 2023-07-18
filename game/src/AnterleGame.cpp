@@ -50,10 +50,10 @@ void AnterleGame::Init()
   ResourceManager::LoadTexture("particle", true);
 
   Renderer = new SpriteRenderer(ResourceManager::GetShader("sprite"));
-  Particles =
-    new ParticleGenerator(ResourceManager::GetShader("particle"), ResourceManager::GetTexture("particle"), 500);
+  Particles = new ParticleGenerator(ResourceManager::GetShader("particle"), ResourceManager::GetTexture("particle"), 500);
   Text = new TextRenderer(this->Width, this->Height);
   Text->Load("tahoma", 24);
+  Audio = new AudioServer();
 
   GameLevel one;
   one.Load("one");
@@ -103,6 +103,12 @@ void AnterleGame::ProcessInput(float dt)
       this->KeysProcessed[GLFW_KEY_ENTER] = true;
       this->State = GameState::GAME_MENU;
     }
+  }
+  if (this->Keys[GLFW_KEY_F11] && !this->KeysProcessed[GLFW_KEY_F11]) 
+  { 
+      saveScreenshotToFile("./screenshot.tga", this->Width, this->Height);
+      ImGui::InsertNotification({ ImGuiToastType::Info, 3000, "Screenshot created" });
+      this->KeysProcessed[GLFW_KEY_F11] = true;
   }
 }
 

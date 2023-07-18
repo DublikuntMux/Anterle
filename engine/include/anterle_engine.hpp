@@ -15,5 +15,7 @@
 #include "resource/shader.hpp"
 #include "resource/texture.hpp"
 
+#include "utility/screen.hpp"
+
 #include "game.hpp"
 #include "window.hpp"
