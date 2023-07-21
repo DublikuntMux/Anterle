@@ -8,6 +8,7 @@
 #include "game.hpp"
 #include "object/ui/button.hpp"
 
+namespace Anterle {
 class Window
 {
 public:
@@ -33,3 +34,4 @@ private:
   void mouse_callback(GLFWwindow *window, int button, int action, int modifier);
   void key_callback(GLFWwindow *window, int key, int scancode, int action, int mode);
 };
+}// namespace Anterle

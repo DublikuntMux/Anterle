@@ -5,6 +5,7 @@
 #include "render/sprite_renderer.hpp"
 #include "resource/texture.hpp"
 
+namespace Anterle {
 class GameObject
 {
 public:
@@ -24,3 +25,4 @@ public:
 
   virtual void Draw(SpriteRenderer &renderer);
 };
+}// namespace Anterle

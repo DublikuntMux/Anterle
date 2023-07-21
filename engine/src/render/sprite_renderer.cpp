@@ -4,6 +4,7 @@
 
 #include "render/sprite_renderer.hpp"
 
+namespace Anterle {
 SpriteRenderer::SpriteRenderer(Shader shader)
 {
   this->m_shader = shader;
@@ -76,3 +77,4 @@ void SpriteRenderer::initRenderData()
   glBindBuffer(GL_ARRAY_BUFFER, 0);
   glBindVertexArray(0);
 }
+}// namespace Anterle

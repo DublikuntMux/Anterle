@@ -8,6 +8,7 @@
 
 #include "resource/shader.hpp"
 
+namespace Anterle {
 Shader &Shader::Use()
 {
   glUseProgram(this->ID);
@@ -102,3 +103,4 @@ void Shader::checkCompileErrors(uint32_t object, std::string type)
     }
   }
 }
+}// namespace Anterle

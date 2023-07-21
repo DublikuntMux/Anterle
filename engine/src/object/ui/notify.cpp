@@ -4,6 +4,7 @@
 
 #include "object/ui/notify.hpp"
 
+namespace Anterle {
 void ImGuiToast::set_title(const char *format, ...) { NOTIFY_FORMAT(this->set_title, format); }
 void ImGuiToast::set_content(const char *format, ...) { NOTIFY_FORMAT(this->set_content, format); }
 void ImGuiToast::set_type(const ImGuiToastType &type) { this->type = type; };
@@ -105,11 +106,12 @@ void ImGuiToast::set_content(const char *format, va_list args)
 {
   vsnprintf(this->content, sizeof(this->content), format, args);
 }
+}// namespace Anterle
 
 namespace ImGui {
-std::vector<ImGuiToast> notifications;
+std::vector<Anterle::ImGuiToast> notifications;
 
-void InsertNotification(const ImGuiToast &toast) { notifications.push_back(toast); }
+void InsertNotification(const Anterle::ImGuiToast &toast) { notifications.push_back(toast); }
 
 void RemoveNotification(int index) { notifications.erase(notifications.begin() + index); }
 
@@ -122,7 +124,7 @@ void RenderNotifications()
   for (auto i = 0; i < notifications.size(); i++) {
     auto *current_toast = &notifications[i];
 
-    if (current_toast->get_phase() == ImGuiToastPhase::Expired) {
+    if (current_toast->get_phase() == Anterle::ImGuiToastPhase::Expired) {
       RemoveNotification(i);
       continue;
     }

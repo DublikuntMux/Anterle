@@ -11,9 +11,10 @@
 
 #include "resource/resource_manager.hpp"
 
-std::map<std::string, Texture2D> ResourceManager::Textures;
-std::map<std::string, Shader> ResourceManager::Shaders;
+std::map<std::string, Anterle::Texture2D> Anterle::ResourceManager::Textures;
+std::map<std::string, Anterle::Shader> Anterle::ResourceManager::Shaders;
 
+namespace Anterle {
 Shader ResourceManager::LoadShader(std::string name)
 {
   Shaders[name] = loadShaderFromFile(name);
@@ -97,3 +98,4 @@ Texture2D ResourceManager::loadTextureFromFile(std::string file, bool alpha)
   texture.Generate(width, height, data);
   return texture;
 }
+}// namespace Anterle

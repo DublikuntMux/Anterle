@@ -7,6 +7,7 @@
 #include "resource/shader.hpp"
 #include "resource/texture.hpp"
 
+namespace Anterle {
 ParticleGenerator::ParticleGenerator(Shader shader, Texture2D texture, uint32_t amount)
   : m_amount(amount), m_shader(shader), m_texture(texture)
 {
@@ -118,3 +119,4 @@ void ParticleGenerator::respawnParticle(Particle particle, GameObject object, gl
   particle.Life = 1.0f;
   particle.Velocity = object.Velocity * 0.1f;
 }
+}// namespace Anterle

@@ -6,6 +6,7 @@
 
 #include "audio/auidio_server.hpp"
 
+namespace Anterle {
 AudioServer::AudioServer()
 {
   ma_engine_config config;
@@ -29,3 +30,4 @@ void AudioServer::PlaySound(std::string file_path, bool loop)
 }
 
 void AudioServer::SetVolume(float volume) { ma_engine_set_volume(&m_engine, volume); }
+}// namespace Anterle

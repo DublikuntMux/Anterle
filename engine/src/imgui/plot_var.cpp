@@ -28,23 +28,19 @@ void ImGui::PlotVar(const char *label, float value, float scale_min, float scale
   ImGui::PushID(label);
   ImGuiID id = ImGui::GetID("");
 
-  // Lookup O(log N)
   PlotVarData &pvd = g_PlotVarsMap[id];
 
-  // Setup
   if (pvd.Data.capacity() != buffer_size) {
     pvd.Data.resize(buffer_size);
     memset(&pvd.Data[0], 0, sizeof(float) * buffer_size);
     pvd.DataInsertIdx = 0;
     pvd.LastFrame = 0;
   }
-
-  // Insert (avoid unnecessary modulo operator)
+  
   if (pvd.DataInsertIdx == buffer_size) pvd.DataInsertIdx = 0;
   int display_idx = pvd.DataInsertIdx;
   if (value != FLT_MAX) pvd.Data[pvd.DataInsertIdx++] = value;
-
-  // Draw
+  
   int current_frame = ImGui::GetFrameCount();
   if (pvd.LastFrame != current_frame) {
     ImGui::PlotLines("##plot", &pvd.Data[0], buffer_size, pvd.DataInsertIdx, NULL, scale_min, scale_max, ImVec2(0, 40));

@@ -13,6 +13,7 @@
 #include "render/text_renderer.hpp"
 #include "resource/resource_manager.hpp"
 
+namespace Anterle {
 TextRenderer::TextRenderer(uint32_t width, uint32_t height)
 {
   this->TextShader = ResourceManager::LoadShader("text");
@@ -125,3 +126,4 @@ void TextRenderer::RenderText(const std::wstring &text, float x, float y, float 
   glBindVertexArray(0);
   glBindTexture(GL_TEXTURE_2D, 0);
 }
+}// namespace Anterle

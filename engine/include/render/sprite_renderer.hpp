@@ -7,6 +7,7 @@
 #include "resource/shader.hpp"
 #include "resource/texture.hpp"
 
+namespace Anterle {
 class SpriteRenderer
 {
 public:
@@ -24,3 +25,4 @@ private:
   uint32_t m_quadVAO;
   void initRenderData();
 };
+}// namespace Antrele

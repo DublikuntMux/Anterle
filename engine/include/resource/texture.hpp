@@ -2,6 +2,7 @@
 
 #include <cstdint>
 
+namespace Anterle {
 class Texture2D
 {
 public:
@@ -19,3 +20,4 @@ public:
   void Generate(uint32_t width, uint32_t height, uint8_t *data);
   void Bind() const;
 };
+}// namespace Anterle

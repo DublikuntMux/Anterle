@@ -17,6 +17,7 @@
 #include "resource/resource_manager.hpp"
 #include "window.hpp"
 
+namespace Anterle {
 void SetupImGuiStyle()
 {
   ImGuiStyle &style = ImGui::GetStyle();
@@ -283,3 +284,4 @@ void Window::CheckButtons(uint32_t x, uint32_t y)
 {
   for (Button button : buttons) { button.CheckClick(x, y); }
 }
+}// namespace Anterle

@@ -1,5 +1,6 @@
 #include "object/game_object.hpp"
 
+namespace Anterle {
 GameObject::GameObject()
   : Position(0.0f, 0.0f), Size(1.0f, 1.0f), Velocity(0.0f), Color(1.0f), Rotation(0.0f), IsSolid(false),
     Destroyed(false), Sprite()
@@ -14,3 +15,4 @@ void GameObject::Draw(SpriteRenderer &renderer)
 {
   renderer.DrawSprite(this->Sprite, this->Position, this->Size, this->Rotation, this->Color);
 }
+}// namespace Anterle

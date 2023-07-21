@@ -7,6 +7,7 @@
 
 #include "object/game_level.hpp"
 
+namespace Anterle {
 void GameLevel::Load(std::string name)
 {
   std::vector<std::pair<std::string, std::string>> speech;
@@ -58,3 +59,4 @@ std::string GameLevel::FindByKey(const std::string key, const std::string *text)
   }
   return returnTexr;
 }
+}// namespace Anterle

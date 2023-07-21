@@ -5,6 +5,7 @@
 
 #include <imgui.h>
 
+namespace Anterle {
 class Profiler
 {
 public:
@@ -102,3 +103,5 @@ void PlotFlame(const char *label,
   float scale_min = FLT_MAX,
   float scale_max = FLT_MAX,
   ImVec2 graph_size = ImVec2(0, 0));
+
+}// namespace Anterle

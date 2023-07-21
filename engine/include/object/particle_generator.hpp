@@ -9,6 +9,7 @@
 #include "resource/shader.hpp"
 #include "resource/texture.hpp"
 
+namespace Anterle {
 struct Particle
 {
   glm::vec2 Position, Velocity;
@@ -37,3 +38,4 @@ private:
   uint32_t firstUnusedParticle();
   void respawnParticle(Particle particle, GameObject object, glm::vec2 offset = glm::vec2(0.0f, 0.0f));
 };
+}// namespace Anterle

@@ -4,6 +4,7 @@
 #include <string>
 #include <vector>
 
+namespace Anterle {
 class GameLevel
 {
 public:
@@ -19,3 +20,4 @@ public:
 private:
   static std::string FindByKey(std::string key, const std::string *text);
 };
+}// namespace Anterle

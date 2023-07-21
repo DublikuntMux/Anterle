@@ -4,6 +4,7 @@
 
 #include "debug/profiler.hpp"
 
+namespace Anterle {
 void ProfilerValueGetter(float *startTimestamp,
   float *endTimestamp,
   ImU8 *level,
@@ -138,3 +139,4 @@ void PlotFlame(const char *label,
 
   if (!any_hovered && ImGui::IsItemHovered()) { ImGui::SetTooltip("Total: %8.4g", scale_max - scale_min); }
 }
+}// namespace Anterle

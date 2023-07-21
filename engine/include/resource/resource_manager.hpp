@@ -6,6 +6,7 @@
 #include "shader.hpp"
 #include "texture.hpp"
 
+namespace Anterle {
 class ResourceManager
 {
 public:
@@ -25,3 +26,4 @@ private:
   static Shader loadShaderFromFile(std::string shaderName);
   static Texture2D loadTextureFromFile(std::string file, bool alpha);
 };
+}// namespace Anterle

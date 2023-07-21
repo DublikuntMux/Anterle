@@ -11,8 +11,8 @@ struct GameConfigs
   std::string PlayerName = "Player";
 };
 
-class AnterleGame : public Game
-{
+class AnterleGame : public Anterle::Game
+  {
 public:
   GameConfigs *Configs;
   
@@ -28,8 +28,8 @@ public:
   void ResetLevel();
 
 private:
-  SpriteRenderer *Renderer;
-  ParticleGenerator *Particles;
-  TextRenderer *Text;
-  AudioServer *Audio;
-};
+  Anterle::SpriteRenderer *Renderer;
+  Anterle::ParticleGenerator *Particles;
+  Anterle::TextRenderer *Text;
+  Anterle::AudioServer *Audio;
+  };

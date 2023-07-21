@@ -28,6 +28,7 @@
     va_end(args);                      \
   }
 
+namespace Anterle {
 enum class ImGuiToastType { None, Success, Warning, Error, Info, COUNT };
 enum class ImGuiToastPhase { FadeIn, Wait, FadeOut, Expired, COUNT };
 enum class ImGuiToastPos { TopLeft, TopCenter, TopRight, BottomLeft, BottomCenter, BottomRight, Center, COUNT };
@@ -79,9 +80,10 @@ private:
   void set_title(const char *format, va_list args);
   void set_content(const char *format, va_list args);
 };
+}// namespace Anterle
 
 namespace ImGui {
-void InsertNotification(const ImGuiToast &toast);
+void InsertNotification(const Anterle::ImGuiToast &toast);
 void RemoveNotification(int index);
 void RenderNotifications();
 void MergeIconsWithLatestFont(float font_size, bool FontDataOwnedByAtlas = false);

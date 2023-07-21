@@ -33,35 +33,36 @@ void AnterleGame::Init()
 
   ImGui::MergeIconsWithLatestFont(16.f, false);
 
-  ResourceManager::LoadShader("sprite");
-  ResourceManager::LoadShader("particle");
+  Anterle::ResourceManager::LoadShader("sprite");
+  Anterle::ResourceManager::LoadShader("particle");
 
   glm::mat4 projection =
     glm::ortho(0.0F, static_cast<float>(this->Width), static_cast<float>(this->Height), 0.0F, -1.0F, 1.0F);
 
-  ResourceManager::GetShader("sprite").Use().SetInteger("sprite", 0);
-  ResourceManager::GetShader("sprite").SetMatrix4("projection", projection);
+  Anterle::ResourceManager::GetShader("sprite").Use().SetInteger("sprite", 0);
+  Anterle::ResourceManager::GetShader("sprite").SetMatrix4("projection", projection);
 
-  ResourceManager::GetShader("particle").Use().SetInteger("sprite", 0);
-  ResourceManager::GetShader("particle").SetMatrix4("projection", projection);
+  Anterle::ResourceManager::GetShader("particle").Use().SetInteger("sprite", 0);
+  Anterle::ResourceManager::GetShader("particle").SetMatrix4("projection", projection);
 
-  ResourceManager::LoadTexture("background", false);
-  ResourceManager::LoadTexture("face", true);
-  ResourceManager::LoadTexture("particle", true);
+  Anterle::ResourceManager::LoadTexture("background", false);
+  Anterle::ResourceManager::LoadTexture("face", true);
+  Anterle::ResourceManager::LoadTexture("particle", true);
 
-  Renderer = new SpriteRenderer(ResourceManager::GetShader("sprite"));
-  Particles = new ParticleGenerator(ResourceManager::GetShader("particle"), ResourceManager::GetTexture("particle"), 500);
-  Text = new TextRenderer(this->Width, this->Height);
+  Renderer = new Anterle::SpriteRenderer(Anterle::ResourceManager::GetShader("sprite"));
+  Particles = new Anterle::ParticleGenerator(
+    Anterle::ResourceManager::GetShader("particle"), Anterle::ResourceManager::GetTexture("particle"), 500);
+  Text = new Anterle::TextRenderer(this->Width, this->Height);
   Text->Load("tahoma", 24);
-  Audio = new AudioServer();
+  Audio = new Anterle::AudioServer();
 
-  GameLevel one;
+  Anterle::GameLevel one;
   one.Load("one");
-  GameLevel two;
+  Anterle::GameLevel two;
   two.Load("one");
-  GameLevel three;
+  Anterle::GameLevel three;
   three.Load("one");
-  GameLevel four;
+  Anterle::GameLevel four;
   four.Load("one");
   this->Levels.push_back(one);
   this->Levels.push_back(two);
@@ -72,17 +73,17 @@ void AnterleGame::Init()
 
 void AnterleGame::Update(float dt)
 {
-  if (this->State == GameState::GAME_ACTIVE && this->Levels[this->Configs->CurentLevel].IsCompleted()) {
+  if (this->State == Anterle::GameState::GAME_ACTIVE && this->Levels[this->Configs->CurentLevel].IsCompleted()) {
     this->ResetLevel();
-    this->State = GameState::GAME_WIN;
+    this->State = Anterle::GameState::GAME_WIN;
   }
 }
 
 void AnterleGame::ProcessInput(float dt)
 {
-  if (this->State == GameState::GAME_MENU) {
+  if (this->State == Anterle::GameState::GAME_MENU) {
     if (this->Keys[GLFW_KEY_ENTER] && !this->KeysProcessed[GLFW_KEY_ENTER]) {
-      this->State = GameState::GAME_ACTIVE;
+      this->State = Anterle::GameState::GAME_ACTIVE;
       this->KeysProcessed[GLFW_KEY_ENTER] = true;
     }
     if (this->Keys[GLFW_KEY_W] && !this->KeysProcessed[GLFW_KEY_W]) {
@@ -98,33 +99,33 @@ void AnterleGame::ProcessInput(float dt)
       this->KeysProcessed[GLFW_KEY_S] = true;
     }
   }
-  if (this->State == GameState::GAME_WIN) {
+  if (this->State == Anterle::GameState::GAME_WIN) {
     if (this->Keys[GLFW_KEY_ENTER]) {
       this->KeysProcessed[GLFW_KEY_ENTER] = true;
-      this->State = GameState::GAME_MENU;
+      this->State = Anterle::GameState::GAME_MENU;
     }
   }
   if (this->Keys[GLFW_KEY_F11] && !this->KeysProcessed[GLFW_KEY_F11]) 
   { 
-      saveScreenshotToFile("./screenshot.tga", this->Width, this->Height);
-      ImGui::InsertNotification({ ImGuiToastType::Info, 3000, "Screenshot created" });
+      Anterle::saveScreenshotToFile("./screenshot.tga", this->Width, this->Height);
+    ImGui::InsertNotification({ Anterle::ImGuiToastType::Info, 3000, "Screenshot created" });
       this->KeysProcessed[GLFW_KEY_F11] = true;
   }
 }
 
 void AnterleGame::Render()
 {
-  if (this->State == GameState::GAME_MENU) {
+  if (this->State == Anterle::GameState::GAME_MENU) {
     Text->RenderText(L"Press ENTER to start", 250.0F, this->Height / 2.0F, 1.0F);
 
-  } else if (this->State == GameState::GAME_ACTIVE) {
-    Renderer->DrawSprite(ResourceManager::GetTexture("face"),
+  } else if (this->State == Anterle::GameState::GAME_ACTIVE) {
+    Renderer->DrawSprite(Anterle::ResourceManager::GetTexture("face"),
       glm::vec2(200.0F, 200.0F),
       glm::vec2(300.0F, 400.0F),
       45.0F,
       glm::vec3(0.0F, 1.0F, 0.0F));
 
-  } else if (this->State == GameState::GAME_WIN) {
+  } else if (this->State == Anterle::GameState::GAME_WIN) {
     Text->RenderText(L"You WON!!!", 320.0F, this->Height / 2.0F - 20.0F, 1.0F, glm::vec3(0.0F, 1.0F, 0.0F));
     Text->RenderText(
       L"Press ENTER to retry or ESC to quit", 130.0F, this->Height / 2.0F, 1.0F, glm::vec3(1.0F, 1.0F, 0.0F));

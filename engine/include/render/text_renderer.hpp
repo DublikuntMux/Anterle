@@ -9,6 +9,7 @@
 #include "resource/shader.hpp"
 #include "resource/texture.hpp"
 
+namespace Anterle {
 struct Character
 {
   uint32_t TextureID;
@@ -31,3 +32,4 @@ public:
 private:
   uint32_t m_VAO, m_VBO;
 };
+}// namespace Anterle

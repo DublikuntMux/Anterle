@@ -5,6 +5,7 @@
 
 #include <miniaudio.h>
 
+namespace Anterle {
 class AudioServer
 {
 public:
@@ -17,3 +18,4 @@ public:
 private:
   ma_engine m_engine;
 };
+}// namespace Anterle

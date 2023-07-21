@@ -7,6 +7,7 @@
 #include "object/game_level.hpp"
 #include "object/game_object.hpp"
 
+namespace Anterle {
 enum class GameState { GAME_ACTIVE, GAME_MENU, GAME_WIN };
 
 class Game
@@ -28,3 +29,4 @@ public:
   virtual void Render();
   virtual void ResetLevel();
 };
+}// namespace Anterle

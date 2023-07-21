@@ -5,6 +5,7 @@
 
 #include <glm/glm.hpp>
 
+namespace Anterle {
 class Shader
 {
 public:
@@ -28,3 +29,4 @@ public:
 private:
   void checkCompileErrors(uint32_t object, std::string type);
 };
+}// namespace Anterle

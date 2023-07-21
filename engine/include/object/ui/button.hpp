@@ -2,6 +2,7 @@
 
 #include <stdint.h>
 
+namespace Anterle {
 class Button
 {
 public:
@@ -19,3 +20,4 @@ private:
   uint32_t m_left;
   ClickCallback m_onClick;
 };
+}// namespace Anterle
