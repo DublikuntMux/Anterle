@@ -14,7 +14,7 @@ FetchContent_Declare(
 FetchContent_Declare(
     freetype
     GIT_REPOSITORY https://github.com/freetype/freetype.git
-    GIT_TAG VER-2-13-0
+    GIT_TAG VER-2-13-2
 )
 
 set(GLFW_BUILD_EXAMPLES OFF CACHE BOOL "" FORCE)

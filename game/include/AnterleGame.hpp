@@ -12,10 +12,10 @@ struct GameConfigs
 };
 
 class AnterleGame : public Anterle::Game
-  {
+{
 public:
   GameConfigs *Configs;
-  
+
   AnterleGame(uint16_t width, uint16_t height);
   AnterleGame(uint16_t width, uint16_t height, GameConfigs *Configs);
 
@@ -31,5 +31,5 @@ private:
   Anterle::SpriteRenderer *Renderer;
   Anterle::ParticleGenerator *Particles;
   Anterle::TextRenderer *Text;
-  Anterle::AudioServer *Audio;
-  };
+  Anterle::AudioSystem *Audio;
+};

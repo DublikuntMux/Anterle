@@ -1,12 +1,8 @@
 #pragma once
 
-#include <mutex>
-#include <string>
-#include <vector>
+#include <chrono>
 
 #include <imgui.h>
-
-#include "IconsFontAwesome6.hpp"
 
 #define NOTIFY_MAX_MSG_LENGTH 4096
 #define NOTIFY_PADDING_X 20.f
@@ -66,16 +62,16 @@ public:
   const ImVec4 &get_color();
   const char *get_icon();
   char *get_content();
-  uint64_t get_elapsed_time();
+  int64_t get_elapsed_time();
   const ImGuiToastPhase &get_phase();
-  const float get_fade_percent();
+  float get_fade_percent();
 
 private:
   ImGuiToastType type = ImGuiToastType::None;
   char title[NOTIFY_MAX_MSG_LENGTH];
   char content[NOTIFY_MAX_MSG_LENGTH];
   int dismiss_time = NOTIFY_DEFAULT_DISMISS;
-  uint64_t creation_time = 0;
+  int64_t creation_time = 0;
 
   void set_title(const char *format, va_list args);
   void set_content(const char *format, va_list args);

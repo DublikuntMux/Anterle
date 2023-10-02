@@ -1,5 +1,4 @@
 #include <fstream>
-#include <vector>
 
 #include <glad/gles2.h>
 #include <loguru.hpp>
@@ -9,7 +8,7 @@
 namespace Anterle {
 void saveScreenshotToFile(std::string filename, int windowWidth, int windowHeight)
 {
-  const int numberOfPixels = windowWidth * windowHeight * 3;
+  int numberOfPixels = windowWidth * windowHeight * 3;
   unsigned char *pixels = new unsigned char[numberOfPixels];
 
   glPixelStorei(GL_PACK_ALIGNMENT, 1);

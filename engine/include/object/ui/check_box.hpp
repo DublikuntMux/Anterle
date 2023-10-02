@@ -5,10 +5,10 @@
 #include "object/ui/clickable.hpp"
 
 namespace Anterle {
-class Button : Clickable
+class CheckBox : Clickable
 {
 public:
-  Button(uint32_t top, uint32_t left, uint32_t width, uint32_t height, ClickCallback onClick);
+  CheckBox(uint32_t top, uint32_t left, uint32_t width, uint32_t height, ClickCallback onClick);
 
   void Render() override;
 };

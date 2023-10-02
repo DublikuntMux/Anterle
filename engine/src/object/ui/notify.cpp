@@ -1,13 +1,12 @@
-#include <mutex>
-
 #include <imgui.h>
 
+#include "object/ui/IconsFontAwesome6.hpp"
 #include "object/ui/notify.hpp"
 
 namespace Anterle {
 void ImGuiToast::set_title(const char *format, ...) { NOTIFY_FORMAT(this->set_title, format); }
 void ImGuiToast::set_content(const char *format, ...) { NOTIFY_FORMAT(this->set_content, format); }
-void ImGuiToast::set_type(const ImGuiToastType &type) { this->type = type; };
+void ImGuiToast::set_type(const ImGuiToastType &tost_type) { this->type = tost_type; };
 
 char *ImGuiToast::get_title() { return this->title; };
 const char *ImGuiToast::get_default_title()
@@ -61,7 +60,7 @@ const char *ImGuiToast::get_icon()
   }
 }
 char *ImGuiToast::get_content() { return this->content; };
-uint64_t ImGuiToast::get_elapsed_time()
+int64_t ImGuiToast::get_elapsed_time()
 {
   return std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch())
            .count()
@@ -81,17 +80,15 @@ const ImGuiToastPhase &ImGuiToast::get_phase()
     return ImGuiToastPhase::FadeIn;
   }
 }
-const float ImGuiToast::get_fade_percent()
+float ImGuiToast::get_fade_percent()
 {
   const auto phase = get_phase();
-  const auto elapsed = get_elapsed_time();
+  const float elapsed = static_cast<float>(get_elapsed_time());
 
   if (phase == ImGuiToastPhase::FadeIn) {
-    return ((float)elapsed / (float)NOTIFY_FADE_IN_OUT_TIME) * NOTIFY_OPACITY;
+    return (elapsed / NOTIFY_FADE_IN_OUT_TIME) * NOTIFY_OPACITY;
   } else if (phase == ImGuiToastPhase::FadeOut) {
-    return (1.f
-             - (((float)elapsed - (float)NOTIFY_FADE_IN_OUT_TIME - (float)this->dismiss_time)
-                / (float)NOTIFY_FADE_IN_OUT_TIME))
+    return (1.f - ((elapsed - NOTIFY_FADE_IN_OUT_TIME - this->dismiss_time) / NOTIFY_FADE_IN_OUT_TIME))
            * NOTIFY_OPACITY;
   }
 
@@ -121,7 +118,7 @@ void RenderNotifications()
 
   float height = 0.f;
 
-  for (auto i = 0; i < notifications.size(); i++) {
+  for (int i = 0; i < notifications.size(); i++) {
     auto *current_toast = &notifications[i];
 
     if (current_toast->get_phase() == Anterle::ImGuiToastPhase::Expired) {
@@ -153,19 +150,19 @@ void RenderNotifications()
       bool was_title_rendered = false;
 
       if (!NOTIFY_NULL_OR_EMPTY(icon)) {
-        TextColored(text_color, icon);
+        TextColored(text_color, "%s", icon);
         was_title_rendered = true;
       }
 
       if (!NOTIFY_NULL_OR_EMPTY(title)) {
         if (!NOTIFY_NULL_OR_EMPTY(icon)) SameLine();
 
-        Text(title);
+        Text("%s", title);
         was_title_rendered = true;
       } else if (!NOTIFY_NULL_OR_EMPTY(default_title)) {
         if (!NOTIFY_NULL_OR_EMPTY(icon)) SameLine();
 
-        Text(default_title);
+        Text("%s", default_title);
         was_title_rendered = true;
       }
 
@@ -173,7 +170,7 @@ void RenderNotifications()
 
       if (!NOTIFY_NULL_OR_EMPTY(content)) {
         if (was_title_rendered) { Separator(); }
-        Text(content);
+        Text("%s", content);
       }
       PopTextWrapPos();
     }

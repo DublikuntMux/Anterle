@@ -1,9 +1,9 @@
 #include <cstdint>
-#include <iostream>
 
-#include <glad/gles2.h>
 #include <glm/glm.hpp>
 #include <glm/gtc/type_ptr.hpp>
+
+#include <glad/gles2.h>
 #include <loguru.hpp>
 
 #include "resource/shader.hpp"

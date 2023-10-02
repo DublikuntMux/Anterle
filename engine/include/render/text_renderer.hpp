@@ -7,7 +7,6 @@
 #include <glm/glm.hpp>
 
 #include "resource/shader.hpp"
-#include "resource/texture.hpp"
 
 namespace Anterle {
 struct Character

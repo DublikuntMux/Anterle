@@ -6,7 +6,7 @@
 #include <GLFW/glfw3.h>
 
 #include "game.hpp"
-#include "object/ui/button.hpp"
+#include "object/ui/clickable.hpp"
 
 namespace Anterle {
 class Window
@@ -15,7 +15,7 @@ public:
   Game *GameInstance;
   GLFWwindow *window;
 
-  std::vector<Button> buttons;
+  std::vector<Clickable> clickables;
   bool debug_mode = false;
 
   uint32_t ScreenWidth;
@@ -28,7 +28,7 @@ public:
   virtual void Start();
 
 private:
-  void CheckButtons(uint32_t x, uint32_t y);
+  void CheckClickables(uint32_t x, uint32_t y);
 
   static void glfw_error_callback(int error, const char *description);
   void mouse_callback(GLFWwindow *window, int button, int action, int modifier);

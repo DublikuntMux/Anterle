@@ -1,3 +1,4 @@
+#include <cstddef>
 #include <cstdint>
 
 #include <glad/gles2.h>
@@ -17,7 +18,7 @@ ParticleGenerator::ParticleGenerator(Shader shader, Texture2D texture, uint32_t 
 void ParticleGenerator::Update(float dt, GameObject object, uint32_t newParticles, glm::vec2 offset)
 {
   for (uint32_t i = 0; i < newParticles; ++i) {
-    int unusedParticle = this->firstUnusedParticle();
+    size_t unusedParticle = this->firstUnusedParticle();
     this->respawnParticle(this->m_particles[unusedParticle], object, offset);
   }
   for (uint32_t i = 0; i < this->m_amount; ++i) {
@@ -83,7 +84,7 @@ void ParticleGenerator::init()
   glBufferData(GL_ARRAY_BUFFER, sizeof(particle_quad), particle_quad, GL_STATIC_DRAW);
 
   glEnableVertexAttribArray(0);
-  glVertexAttribPointer(0, 4, GL_FLOAT, GL_FALSE, 4 * sizeof(float), (void *)0);
+  glVertexAttribPointer(0, 4, GL_FLOAT, GL_FALSE, 4 * sizeof(float), nullptr);
   glBindVertexArray(0);
 
   for (uint32_t i = 0; i < this->m_amount; ++i) this->m_particles.push_back(Particle());

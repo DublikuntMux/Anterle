@@ -12,7 +12,6 @@
 #include "debug/profiler.hpp"
 #include "game.hpp"
 #include "imgui/plot_var.hpp"
-#include "object/ui/button.hpp"
 #include "object/ui/notify.hpp"
 #include "resource/resource_manager.hpp"
 #include "window.hpp"
@@ -140,7 +139,7 @@ void Window::mouse_callback(GLFWwindow *window, int button, int action, int modi
 {
   double xpos, ypos;
   glfwGetCursorPos(window, &xpos, &ypos);
-  if (action == GLFW_PRESS && button == GLFW_MOUSE_BUTTON_1) { this->CheckButtons(xpos, ypos); }
+  if (action == GLFW_PRESS && button == GLFW_MOUSE_BUTTON_1) { this->CheckClickables(xpos, ypos); }
 }
 
 Window::Window(uint32_t screen_width, uint32_t screen_hight, const char *name, Game *instance)
@@ -280,8 +279,8 @@ void Window::Start()
   }
 }
 
-void Window::CheckButtons(uint32_t x, uint32_t y)
+void Window::CheckClickables(uint32_t x, uint32_t y)
 {
-  for (Button button : buttons) { button.CheckClick(x, y); }
+  for (Clickable clickable : clickables) { clickable.CheckClick(x, y); }
 }
 }// namespace Anterle

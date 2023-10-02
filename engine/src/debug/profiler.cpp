@@ -1,3 +1,4 @@
+#include <cstddef>
 #include <imgui.h>
 #include <imgui_internal.h>
 
@@ -9,7 +10,7 @@ void ProfilerValueGetter(float *startTimestamp,
   ImU8 *level,
   const char **caption,
   const void *data,
-  int idx)
+  size_t idx)
 {
   auto entry = reinterpret_cast<const Profiler::Entry *>(data);
   auto &stage = entry->stages[idx];
@@ -97,8 +98,8 @@ void PlotFlame(const char *label,
       auto start = stageStart - scale_min;
       auto end = stageEnd - scale_min;
 
-      auto startX = static_cast<float>(start / (double)duration);
-      auto endX = static_cast<float>(end / (double)duration);
+      auto startX = static_cast<float>(start / duration);
+      auto endX = static_cast<float>(end / duration);
 
       float width = inner_bb.Max.x - inner_bb.Min.x;
       float height = blockHeight * (maxDepth - depth + 1) - style.FramePadding.y;

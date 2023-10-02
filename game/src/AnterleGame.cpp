@@ -54,7 +54,7 @@ void AnterleGame::Init()
     Anterle::ResourceManager::GetShader("particle"), Anterle::ResourceManager::GetTexture("particle"), 500);
   Text = new Anterle::TextRenderer(this->Width, this->Height);
   Text->Load("tahoma", 24);
-  Audio = new Anterle::AudioServer();
+  Audio = new Anterle::AudioSystem();
 
   Anterle::GameLevel one;
   one.Load("one");
@@ -105,11 +105,10 @@ void AnterleGame::ProcessInput(float dt)
       this->State = Anterle::GameState::GAME_MENU;
     }
   }
-  if (this->Keys[GLFW_KEY_F11] && !this->KeysProcessed[GLFW_KEY_F11]) 
-  { 
-      Anterle::saveScreenshotToFile("./screenshot.tga", this->Width, this->Height);
+  if (this->Keys[GLFW_KEY_F11] && !this->KeysProcessed[GLFW_KEY_F11]) {
+    Anterle::saveScreenshotToFile("./screenshot.tga", this->Width, this->Height);
     ImGui::InsertNotification({ Anterle::ImGuiToastType::Info, 3000, "Screenshot created" });
-      this->KeysProcessed[GLFW_KEY_F11] = true;
+    this->KeysProcessed[GLFW_KEY_F11] = true;
   }
 }
 

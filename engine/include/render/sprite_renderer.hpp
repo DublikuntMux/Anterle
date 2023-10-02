@@ -25,4 +25,4 @@ private:
   uint32_t m_quadVAO;
   void initRenderData();
 };
-}// namespace Antrele
+}// namespace Anterle

@@ -1,14 +1,13 @@
 #include <cstdint>
-#include <iostream>
 #include <stdint.h>
-#include <stdio.h>
 #include <string>
 
 #include <ft2build.h>
+#include FT_FREETYPE_H
+
 #include <glad/gles2.h>
 #include <glm/gtc/matrix_transform.hpp>
 #include <loguru.hpp>
-#include FT_FREETYPE_H
 
 #include "render/text_renderer.hpp"
 #include "resource/resource_manager.hpp"

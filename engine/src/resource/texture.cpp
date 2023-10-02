@@ -1,5 +1,3 @@
-#include <iostream>
-
 #include <glad/gles2.h>
 
 #include "resource/texture.hpp"
@@ -12,7 +10,7 @@ Texture2D::Texture2D()
   glGenTextures(1, &this->ID);
 }
 
-void Texture2D::Generate(uint32_t width, uint32_t height, uint8_t *data)
+void Texture2D::Generate(int width, int height, uint8_t *data)
 {
   this->Width = width;
   this->Height = height;

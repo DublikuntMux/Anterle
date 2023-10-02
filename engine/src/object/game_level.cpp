@@ -8,7 +8,7 @@
 #include "object/game_level.hpp"
 
 namespace Anterle {
-void GameLevel::Load(std::string name)
+void GameLevel::Load(std::string level_name)
 {
   std::vector<std::pair<std::string, std::string>> speech;
 
@@ -16,7 +16,7 @@ void GameLevel::Load(std::string name)
   std::string delimName = "Name: ";
   std::string delimDescription = "Description: ";
 
-  std::string file_name = "resources/levels/" + name + ".lvl";
+  std::string file_name = "resources/levels/" + level_name + ".lvl";
 
   std::ifstream file(file_name);
   if (file.is_open()) {

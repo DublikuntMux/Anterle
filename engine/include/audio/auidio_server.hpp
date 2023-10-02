@@ -1,21 +1,55 @@
 #pragma once
 
+#include <stdexcept>
 #include <string>
 #include <unordered_map>
 
 #include <miniaudio.h>
 
 namespace Anterle {
-class AudioServer
+struct Channel
+{
+  ma_decoder decoder;
+  bool isPlaying;
+  bool isLooping;
+  bool isPaused;
+  float volume;
+};
+
+class AudioSystemException : public std::runtime_error
 {
 public:
-  AudioServer();
-  ~AudioServer();
+  AudioSystemException(const std::string &message) : std::runtime_error(message) {}
+};
 
-  void PlaySound(std::string file_path, bool loop = false);
-  void SetVolume(float volume);
+class AudioSystem
+{
+public:
+  AudioSystem();
+  ~AudioSystem();
+
+  void createChannel(const std::string &channelName, const char *filePath);
+
+  void setSound(const std::string &channelName, const char *filePath);
+  void removeChannel(const std::string &channelName);
+  void update();
+
+  void play(const std::string &channelName);
+  void stop(const std::string &channelName);
+  void pause(const std::string &channelName);
+  void resume(const std::string &channelName);
+  void loop(const std::string &channelName, bool enable);
+  void setVolume(const std::string &channelName, float volume);
+
+  float getChannelVolume(const std::string &channelName) const;
+  bool isChannelLooped(const std::string &channelName) const;
+  bool isChannelPaused(const std::string &channelName) const;
 
 private:
-  ma_engine m_engine;
+  ma_context context;
+  ma_device device;
+  std::unordered_map<std::string, Channel> channels;
+  static const int bufferSize = 4096;
+  float buffer[bufferSize];
 };
 }// namespace Anterle

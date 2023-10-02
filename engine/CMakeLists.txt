@@ -38,15 +38,15 @@ FetchContent_Declare(
     GIT_TAG VER-2-13-2
 )
 FetchContent_Declare(
-    alpaca
-    GIT_REPOSITORY https://github.com/p-ranav/alpaca.git
-    GIT_TAG v0.2.1
-)
-
-FetchContent_Declare(
     loguru
 	GIT_REPOSITORY https://github.com/emilk/loguru.git
 	GIT_TAG master
+)
+
+FetchContent_Declare(
+    DMAssetManager
+    GIT_REPOSITORY https://github.com/DublikuntMux/DMAssetManager.git
+    GIT_TAG main
 )
 
 set(GLFW_BUILD_EXAMPLES OFF CACHE BOOL "" FORCE)
@@ -63,23 +63,24 @@ set(FT_DISABLE_ZLIB ON CACHE BOOL "" FORCE)
 set(FT_DISABLE_HARFBUZZ ON CACHE BOOL "" FORCE)
 
 set(LOGURU_WITH_STREAMS ON CACHE BOOL "" FORCE)
+set(DMASSET_ENABLE_DECODER OFF CACHE BOOL "" FORCE)
 
 FetchContent_MakeAvailable(stb)
 FetchContent_MakeAvailable(glm)
 FetchContent_MakeAvailable(glfw)
 FetchContent_MakeAvailable(freetype)
-FetchContent_MakeAvailable(alpaca)
 FetchContent_MakeAvailable(loguru)
+FetchContent_MakeAvailable(DMAssetManager)
 
 target_link_libraries(AnterleEngine PUBLIC 
     glad
     glm::glm
     glfw
     imgui
-    alpaca
     freetype
     miniaudio
     loguru::loguru
+    DMAssetManager
 )
 
 target_include_directories(AnterleEngine PUBLIC 
