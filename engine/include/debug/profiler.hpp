@@ -93,9 +93,9 @@ void ProfilerValueGetter(float *startTimestamp,
   ImU8 *level,
   const char **caption,
   const void *data,
-  int idx);
+  size_t idx);
 void PlotFlame(const char *label,
-  void (*values_getter)(float *start, float *end, ImU8 *level, const char **caption, const void *data, int idx),
+  void (*values_getter)(float *start, float *end, ImU8 *level, const char **caption, const void *data, size_t idx),
   const void *data,
   int values_count,
   int values_offset = 0,

@@ -22,7 +22,7 @@ public:
   uint32_t ScreenHight;
 
   Window(uint32_t screen_width, uint32_t screen_hight, const char *name, Game *instance);
-  virtual ~Window();
+  ~Window();
 
   virtual void Init();
   virtual void Start();
