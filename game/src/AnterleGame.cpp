@@ -1,6 +1,3 @@
-#include <algorithm>
-#include <iostream>
-#include <sstream>
 #include <string>
 
 #include <GLFW/glfw3.h>
@@ -14,14 +11,6 @@
 AnterleGame::AnterleGame(uint16_t width, uint16_t height) : Game(width, height), Configs(new GameConfigs()) {}
 AnterleGame::AnterleGame(uint16_t width, uint16_t height, GameConfigs *Configs) : Game(width, height), Configs(Configs)
 {}
-
-AnterleGame::~AnterleGame()
-{
-  delete Renderer;
-  delete Particles;
-  delete Text;
-  delete Audio;
-}
 
 void AnterleGame::Init()
 {

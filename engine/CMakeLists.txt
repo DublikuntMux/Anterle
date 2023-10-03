@@ -42,7 +42,6 @@ FetchContent_Declare(
 	GIT_REPOSITORY https://github.com/emilk/loguru.git
 	GIT_TAG master
 )
-
 FetchContent_Declare(
     DMAssetManager
     GIT_REPOSITORY https://github.com/DublikuntMux/DMAssetManager.git

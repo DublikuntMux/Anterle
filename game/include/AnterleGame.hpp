@@ -19,17 +19,9 @@ public:
   AnterleGame(uint16_t width, uint16_t height);
   AnterleGame(uint16_t width, uint16_t height, GameConfigs *Configs);
 
-  ~AnterleGame();
-
   void Init();
   void Update(float dt);
   void ProcessInput(float dt);
   void Render();
   void ResetLevel();
-
-private:
-  Anterle::SpriteRenderer *Renderer;
-  Anterle::ParticleGenerator *Particles;
-  Anterle::TextRenderer *Text;
-  Anterle::AudioSystem *Audio;
 };

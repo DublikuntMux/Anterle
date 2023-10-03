@@ -205,15 +205,15 @@ void Window::Init()
 
 void Window::Start()
 {
-  float deltaTime = 0.0F;
-  float lastFrame = 0.0F;
+  double deltaTime = 0.0;
+  double lastFrame = 0.0;
   Profiler profiler;
 
   while (!glfwWindowShouldClose(window)) {
     profiler.Frame();
 
     profiler.Begin(Profiler::Stage::PollEvents);
-    float currentFrame = glfwGetTime();
+    double currentFrame = glfwGetTime();
     deltaTime = currentFrame - lastFrame;
     lastFrame = currentFrame;
     glfwPollEvents();
