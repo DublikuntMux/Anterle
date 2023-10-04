@@ -3,8 +3,8 @@
 #include <memory>
 
 #include "audio/audio_system.hpp"
-#include "backend/base.hpp"
 #include "object/scene.hpp"
+#include "renderer/backend.hpp"
 
 class Game
 {
@@ -19,6 +19,6 @@ public:
   Scene curent_scene;
 
 private:
-  std::unique_ptr<BaseBackend> backend;
+  std::unique_ptr<VulkanBackend> backend;
   Anterle::AudioSystem audio_system;
 };

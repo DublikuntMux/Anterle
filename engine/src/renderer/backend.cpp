@@ -1,4 +1,6 @@
 #include <cstdint>
+#include <cstdio>
+
 #define GLFW_INCLUDE_NONE
 #define GLFW_INCLUDE_VULKAN
 #include <GLFW/glfw3.h>
@@ -6,16 +8,21 @@
 
 #include "imgui_impl_glfw.h"
 
-#include "backend/base.hpp"
-#include "backend/vulkan.hpp"
 #include "helper/error.hpp"
 #include "helper/imgui.hpp"
+#include "renderer/backend.hpp"
+
 
 VulkanBackend::VulkanBackend(int width, int height, const char *window_name)
-  : BaseBackend(width, height, window_name), g_Allocator(nullptr), g_Instance(VK_NULL_HANDLE),
-    g_PhysicalDevice(VK_NULL_HANDLE), g_Device(VK_NULL_HANDLE), g_QueueFamily(-1UL), g_Queue(VK_NULL_HANDLE),
-    g_PipelineCache(VK_NULL_HANDLE), g_DescriptorPool(VK_NULL_HANDLE), g_MinImageCount(2), g_SwapChainRebuild(false)
+  : clear_color(0.45f, 0.55f, 0.60f, 1.00f), g_Allocator(nullptr), g_Instance(VK_NULL_HANDLE),
+    g_PhysicalDevice(VK_NULL_HANDLE), g_Device(VK_NULL_HANDLE), g_QueueFamily(-1UL), g_PipelineCache(VK_NULL_HANDLE),
+    g_DescriptorPool(VK_NULL_HANDLE), g_MinImageCount(2), g_SwapChainRebuild(false)
 {
+  glfwSetErrorCallback(glfw_error_callback);
+  if (!glfwInit()) { printf("GLFW: GLFW start failed\n"); }
+
+  glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
+  window = glfwCreateWindow(width, height, window_name, nullptr, nullptr);
   if (!glfwVulkanSupported()) { printf("GLFW: Vulkan Not Supported\n"); }
 
   std::vector<const char *> extensions;
@@ -64,6 +71,7 @@ VulkanBackend::VulkanBackend(int width, int height, const char *window_name)
 
     err = vkResetCommandPool(g_Device, command_pool, 0);
     check_vk_result(err);
+
     VkCommandBufferBeginInfo begin_info = {};
     begin_info.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
     begin_info.flags |= VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT;
@@ -78,6 +86,7 @@ VulkanBackend::VulkanBackend(int width, int height, const char *window_name)
     end_info.pCommandBuffers = &command_buffer;
     err = vkEndCommandBuffer(command_buffer);
     check_vk_result(err);
+
     err = vkQueueSubmit(g_Queue, 1, &end_info, VK_NULL_HANDLE);
     check_vk_result(err);
 
@@ -100,6 +109,9 @@ VulkanBackend::~VulkanBackend()
   vkDestroyDescriptorPool(g_Device, g_DescriptorPool, g_Allocator);
   vkDestroyDevice(g_Device, g_Allocator);
   vkDestroyInstance(g_Instance, g_Allocator);
+
+  glfwDestroyWindow(window);
+  glfwTerminate();
 }
 
 void VulkanBackend::PreRender()
@@ -144,6 +156,8 @@ void VulkanBackend::PostRender()
   }
 }
 
+GLFWwindow *VulkanBackend::GetGLFWWindow() { return window; }
+
 bool VulkanBackend::IsExtensionAvailable(const std::vector<VkExtensionProperties> &properties, const char *extension)
 {
   for (const VkExtensionProperties &p : properties)
@@ -156,7 +170,6 @@ VkPhysicalDevice VulkanBackend::SelectPhysicalDevice()
   uint32_t gpu_count;
   VkResult err = vkEnumeratePhysicalDevices(g_Instance, &gpu_count, nullptr);
   check_vk_result(err);
-  IM_ASSERT(gpu_count > 0);
 
   std::vector<VkPhysicalDevice> gpus;
   gpus.resize(gpu_count);
@@ -178,8 +191,17 @@ void VulkanBackend::SetupVulkan(std::vector<const char *> instance_extensions)
   VkResult err;
 
   {
+    VkApplicationInfo appInfo{};
+    appInfo.sType = VK_STRUCTURE_TYPE_APPLICATION_INFO;
+    appInfo.pApplicationName = "Antrele";
+    appInfo.applicationVersion = VK_MAKE_VERSION(1, 0, 3);
+    appInfo.pEngineName = "Antrele engine";
+    appInfo.engineVersion = VK_MAKE_VERSION(1, 0, 3);
+    appInfo.apiVersion = VK_API_VERSION_1_3;
+
     VkInstanceCreateInfo create_info = {};
     create_info.sType = VK_STRUCTURE_TYPE_INSTANCE_CREATE_INFO;
+    create_info.pApplicationInfo = &appInfo;
 
     uint32_t properties_count;
     std::vector<VkExtensionProperties> properties;
@@ -190,18 +212,19 @@ void VulkanBackend::SetupVulkan(std::vector<const char *> instance_extensions)
 
     if (IsExtensionAvailable(properties, VK_KHR_GET_PHYSICAL_DEVICE_PROPERTIES_2_EXTENSION_NAME))
       instance_extensions.push_back(VK_KHR_GET_PHYSICAL_DEVICE_PROPERTIES_2_EXTENSION_NAME);
+
 #ifdef VK_KHR_PORTABILITY_ENUMERATION_EXTENSION_NAME
     if (IsExtensionAvailable(properties, VK_KHR_PORTABILITY_ENUMERATION_EXTENSION_NAME)) {
       instance_extensions.push_back(VK_KHR_PORTABILITY_ENUMERATION_EXTENSION_NAME);
       create_info.flags |= VK_INSTANCE_CREATE_ENUMERATE_PORTABILITY_BIT_KHR;
     }
 #endif
+
     create_info.enabledExtensionCount = static_cast<uint32_t>(instance_extensions.size());
     create_info.ppEnabledExtensionNames = instance_extensions.data();
     err = vkCreateInstance(&create_info, g_Allocator, &g_Instance);
     check_vk_result(err);
   }
-
 
   g_PhysicalDevice = SelectPhysicalDevice();
 
@@ -216,7 +239,6 @@ void VulkanBackend::SetupVulkan(std::vector<const char *> instance_extensions)
         break;
       }
     free(queues);
-    IM_ASSERT(g_QueueFamily != (uint32_t)-1);
   }
 
   {
@@ -228,6 +250,7 @@ void VulkanBackend::SetupVulkan(std::vector<const char *> instance_extensions)
     vkEnumerateDeviceExtensionProperties(g_PhysicalDevice, nullptr, &properties_count, nullptr);
     properties.resize(properties_count);
     vkEnumerateDeviceExtensionProperties(g_PhysicalDevice, nullptr, &properties_count, properties.data());
+
 #ifdef VK_KHR_PORTABILITY_SUBSET_EXTENSION_NAME
     if (IsExtensionAvailable(properties, VK_KHR_PORTABILITY_SUBSET_EXTENSION_NAME))
       device_extensions.push_back(VK_KHR_PORTABILITY_SUBSET_EXTENSION_NAME);
@@ -293,10 +316,10 @@ void VulkanBackend::SetupVulkanWindow(ImGui_ImplVulkanH_Window *wd, VkSurfaceKHR
 #else
   VkPresentModeKHR present_modes[] = { VK_PRESENT_MODE_FIFO_KHR };
 #endif
+
   wd->PresentMode = ImGui_ImplVulkanH_SelectPresentMode(
     g_PhysicalDevice, wd->Surface, &present_modes[0], sizeof(present_modes) / sizeof(*(present_modes)));
 
-  IM_ASSERT(g_MinImageCount >= 2);
   ImGui_ImplVulkanH_CreateOrResizeWindow(
     g_Instance, g_PhysicalDevice, g_Device, wd, g_QueueFamily, g_Allocator, width, height, g_MinImageCount);
 }
@@ -318,7 +341,7 @@ void VulkanBackend::FrameRender(ImGui_ImplVulkanH_Window *wd, ImDrawData *draw_d
   ImGui_ImplVulkanH_Frame *fd = &wd->Frames[wd->FrameIndex];
   {
     err = vkWaitForFences(
-      g_Device, 1, &fd->Fence, VK_TRUE, UINT64_MAX);// wait indefinitely instead of periodically checking
+      g_Device, 1, &fd->Fence, VK_TRUE, UINT64_MAX);
     check_vk_result(err);
 
     err = vkResetFences(g_Device, 1, &fd->Fence);
@@ -327,9 +350,11 @@ void VulkanBackend::FrameRender(ImGui_ImplVulkanH_Window *wd, ImDrawData *draw_d
   {
     err = vkResetCommandPool(g_Device, fd->CommandPool, 0);
     check_vk_result(err);
+
     VkCommandBufferBeginInfo info = {};
     info.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
     info.flags |= VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT;
+
     err = vkBeginCommandBuffer(fd->CommandBuffer, &info);
     check_vk_result(err);
   }
@@ -362,6 +387,7 @@ void VulkanBackend::FrameRender(ImGui_ImplVulkanH_Window *wd, ImDrawData *draw_d
 
     err = vkEndCommandBuffer(fd->CommandBuffer);
     check_vk_result(err);
+
     err = vkQueueSubmit(g_Queue, 1, &info, fd->Fence);
     check_vk_result(err);
   }
@@ -385,4 +411,22 @@ void VulkanBackend::FramePresent(ImGui_ImplVulkanH_Window *wd)
   }
   check_vk_result(err);
   wd->SemaphoreIndex = (wd->SemaphoreIndex + 1) % wd->ImageCount;
+}
+
+VkSampleCountFlagBits VulkanBackend::GetMsaaSampleCount(MsaaLevel msaaLevel)
+{
+  switch (msaaLevel) {
+  case MsaaLevel::None:
+    return VK_SAMPLE_COUNT_1_BIT;
+  case MsaaLevel::X2:
+    return VK_SAMPLE_COUNT_2_BIT;
+  case MsaaLevel::X4:
+    return VK_SAMPLE_COUNT_4_BIT;
+  case MsaaLevel::X8:
+    return VK_SAMPLE_COUNT_8_BIT;
+  case MsaaLevel::X16:
+    return VK_SAMPLE_COUNT_16_BIT;
+  default:
+    return VK_SAMPLE_COUNT_1_BIT;
+  }
 }
