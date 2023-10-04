@@ -1,20 +1,20 @@
 #pragma once
 
-#include "GLFW/glfw3.h"
-#include "glm/glm.hpp"
+#include <GLFW/glfw3.h>
+#include <glm/glm.hpp>
 
 class BaseBackend
 {
 public:
-  BaseBackend(const char *window_name);
+  BaseBackend(int width, int height, const char *window_name);
   virtual ~BaseBackend();
 
-  GLFWwindow* GetGLFWWindow();
+  GLFWwindow *GetGLFWWindow();
 
   virtual void PreRender();
   virtual void PostRender();
 
 protected:
-  GLFWwindow* window;
+  GLFWwindow *window;
   glm::vec4 clear_color;
 };

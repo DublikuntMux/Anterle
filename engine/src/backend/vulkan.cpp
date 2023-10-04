@@ -1,17 +1,19 @@
+#include <cstdint>
 #define GLFW_INCLUDE_NONE
 #define GLFW_INCLUDE_VULKAN
 #include <GLFW/glfw3.h>
 #include <vulkan/vulkan.h>
 
-#include "helper/imgui.hpp"
 #include "imgui_impl_glfw.h"
+
 #include "backend/base.hpp"
 #include "backend/vulkan.hpp"
 #include "helper/error.hpp"
+#include "helper/imgui.hpp"
 
-VulkanBackend::VulkanBackend(const char *window_name)
-  : BaseBackend(window_name), g_Allocator(nullptr), g_Instance(VK_NULL_HANDLE), g_PhysicalDevice(VK_NULL_HANDLE),
-    g_Device(VK_NULL_HANDLE), g_QueueFamily(-1UL), g_Queue(VK_NULL_HANDLE), g_DebugReport(VK_NULL_HANDLE),
+VulkanBackend::VulkanBackend(int width, int height, const char *window_name)
+  : BaseBackend(width, height, window_name), g_Allocator(nullptr), g_Instance(VK_NULL_HANDLE),
+    g_PhysicalDevice(VK_NULL_HANDLE), g_Device(VK_NULL_HANDLE), g_QueueFamily(-1UL), g_Queue(VK_NULL_HANDLE),
     g_PipelineCache(VK_NULL_HANDLE), g_DescriptorPool(VK_NULL_HANDLE), g_MinImageCount(2), g_SwapChainRebuild(false)
 {
   if (!glfwVulkanSupported()) { printf("GLFW: Vulkan Not Supported\n"); }
@@ -103,6 +105,7 @@ VulkanBackend::~VulkanBackend()
 void VulkanBackend::PreRender()
 {
   glfwPollEvents();
+
   if (g_SwapChainRebuild) {
     int width, height;
     glfwGetFramebufferSize(window, &width, &height);
@@ -193,8 +196,7 @@ void VulkanBackend::SetupVulkan(std::vector<const char *> instance_extensions)
       create_info.flags |= VK_INSTANCE_CREATE_ENUMERATE_PORTABILITY_BIT_KHR;
     }
 #endif
-
-    create_info.enabledExtensionCount = instance_extensions.size();
+    create_info.enabledExtensionCount = static_cast<uint32_t>(instance_extensions.size());
     create_info.ppEnabledExtensionNames = instance_extensions.data();
     err = vkCreateInstance(&create_info, g_Allocator, &g_Instance);
     check_vk_result(err);
@@ -241,7 +243,7 @@ void VulkanBackend::SetupVulkan(std::vector<const char *> instance_extensions)
     create_info.sType = VK_STRUCTURE_TYPE_DEVICE_CREATE_INFO;
     create_info.queueCreateInfoCount = sizeof(queue_info) / sizeof(queue_info[0]);
     create_info.pQueueCreateInfos = queue_info;
-    create_info.enabledExtensionCount = device_extensions.size();
+    create_info.enabledExtensionCount = static_cast<uint32_t>(device_extensions.size());
     create_info.ppEnabledExtensionNames = device_extensions.data();
     err = vkCreateDevice(g_PhysicalDevice, &create_info, g_Allocator, &g_Device);
     check_vk_result(err);

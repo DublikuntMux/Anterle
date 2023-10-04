@@ -12,10 +12,10 @@
 
 #include "backend/base.hpp"
 
-class VulkanBackend: public BaseBackend
+class VulkanBackend : public BaseBackend
 {
 public:
-  VulkanBackend(const char* window_name);
+  VulkanBackend(int width, int height, const char *window_name);
   ~VulkanBackend();
 
   void PreRender();
@@ -39,7 +39,6 @@ private:
   VkDevice g_Device;
   uint32_t g_QueueFamily;
   VkQueue g_Queue;
-  VkDebugReportCallbackEXT g_DebugReport;
   VkPipelineCache g_PipelineCache;
   VkDescriptorPool g_DescriptorPool;
   ImGui_ImplVulkanH_Window g_MainWindowData;

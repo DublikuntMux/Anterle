@@ -1,5 +1,5 @@
 #include "AnterleGame.hpp"
 #include "game.hpp"
 
-AnterleGame::AnterleGame(): Game("Antrele") {}
-AnterleGame::AnterleGame(GameConfigs *Configs): Game("Antrele"), Configs(Configs) {}
+AnterleGame::AnterleGame() : Game(1280, 720, "Antrele") {}
+AnterleGame::AnterleGame(GameConfigs *Configs) : Game(1280, 720, "Antrele"), Configs(Configs) {}

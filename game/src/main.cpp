@@ -1,12 +1,10 @@
 #include "AnterleGame.hpp"
 
-const uint32_t SCREEN_WIDTH = 1280;
-const uint32_t SCREEN_HEIGHT = 720;
-
 int main()
 {
   AnterleGame game;
+  game.debug_mode = true;
   game.Start();
 
-  return 0;
+  return EXIT_SUCCESS;
 }

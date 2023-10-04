@@ -36,16 +36,6 @@ FetchContent_Declare(
     GIT_TAG 0.9.9.8
 )
 FetchContent_Declare(
-    vulkanhpp
-	GIT_REPOSITORY https://github.com/KhronosGroup/Vulkan-Hpp.git
-    GIT_TAG main
-)
-FetchContent_Declare(
-    vma
-	GIT_REPOSITORY https://github.com/GPUOpen-LibrariesAndSDKs/VulkanMemoryAllocator.git
-    GIT_TAG master
-)
-FetchContent_Declare(
     freetype
     GIT_REPOSITORY https://github.com/freetype/freetype.git
     GIT_TAG VER-2-13-2
@@ -65,8 +55,8 @@ set(GLFW_BUILD_EXAMPLES OFF CACHE BOOL "" FORCE)
 set(GLFW_BUILD_TESTS OFF CACHE BOOL "" FORCE)
 set(GLFW_BUILD_DOCS OFF CACHE BOOL "" FORCE)
 set(GLFW_INSTALL OFF CACHE BOOL "" FORCE)
-# set(GLFW_USE_HYBRID_HPG ON CACHE BOOL "" FORCE)
-# set(GLFW_BUILD_WAYLAND ON CACHE BOOL "" FORCE)
+set(GLFW_USE_HYBRID_HPG ON CACHE BOOL "" FORCE)
+set(GLFW_BUILD_WAYLAND ON CACHE BOOL "" FORCE)
 
 set(FT_DISABLE_BROTLI ON CACHE BOOL "" FORCE)
 set(FT_DISABLE_BZIP2 ON CACHE BOOL "" FORCE)
@@ -81,14 +71,12 @@ FetchContent_MakeAvailable(stb)
 FetchContent_MakeAvailable(glm)
 FetchContent_MakeAvailable(glfw)
 FetchContent_MakeAvailable(uuid_v4)
-FetchContent_MakeAvailable(vma)
 FetchContent_MakeAvailable(freetype)
 FetchContent_MakeAvailable(loguru)
 FetchContent_MakeAvailable(DMAssetManager)
 
 target_link_libraries(AnterleEngine PUBLIC 
     Vulkan::Vulkan
-    VulkanMemoryAllocator
     uuid_v4::uuid_v4
     glm::glm
     glfw
