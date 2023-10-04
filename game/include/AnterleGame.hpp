@@ -1,6 +1,9 @@
 #pragma once
 
-#include <anterle_engine.hpp>
+#include <cstdint>
+#include <string>
+
+#include "game.hpp"
 
 struct GameConfigs
 {
@@ -11,17 +14,11 @@ struct GameConfigs
   std::string PlayerName = "Player";
 };
 
-class AnterleGame : public Anterle::Game
+class AnterleGame : public Game
 {
 public:
   GameConfigs *Configs;
 
-  AnterleGame(uint16_t width, uint16_t height);
-  AnterleGame(uint16_t width, uint16_t height, GameConfigs *Configs);
-
-  void Init();
-  void Update(float dt);
-  void ProcessInput(float dt);
-  void Render();
-  void ResetLevel();
+  AnterleGame();
+  AnterleGame(GameConfigs *Configs);
 };

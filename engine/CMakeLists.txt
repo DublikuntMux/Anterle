@@ -2,7 +2,7 @@ cmake_minimum_required(VERSION 3.25.0)
 
 project(AnterleEngine
         VERSION 1.0.3
-        DESCRIPTION "Visual novel game engine"
+        DESCRIPTION "3D game engine"
         LANGUAGES CXX
 )
 
@@ -15,6 +15,9 @@ target_include_directories(AnterleEngine PUBLIC include/)
 set_target_properties(AnterleEngine PROPERTIES VERSION ${PROJECT_VERSION})
 set_target_properties(AnterleEngine PROPERTIES SOVERSION 1)
 
+find_package(OpenMP REQUIRED)
+find_package(Vulkan REQUIRED)
+
 include(FetchContent)
 
 FetchContent_Declare(
@@ -23,14 +26,24 @@ FetchContent_Declare(
     GIT_TAG  master
 )
 FetchContent_Declare(
+    uuid_v4
+    GIT_REPOSITORY https://github.com/crashoz/uuid_v4.git
+    GIT_TAG  master
+)
+FetchContent_Declare(
     glm
     GIT_REPOSITORY https://github.com/g-truc/glm.git
     GIT_TAG 0.9.9.8
 )
 FetchContent_Declare(
-    glfw
-    GIT_REPOSITORY https://github.com/glfw/glfw.git
-    GIT_TAG 3.3.8
+    vulkanhpp
+	GIT_REPOSITORY https://github.com/KhronosGroup/Vulkan-Hpp.git
+    GIT_TAG main
+)
+FetchContent_Declare(
+    vma
+	GIT_REPOSITORY https://github.com/GPUOpen-LibrariesAndSDKs/VulkanMemoryAllocator.git
+    GIT_TAG master
 )
 FetchContent_Declare(
     freetype
@@ -67,12 +80,16 @@ set(DMASSET_ENABLE_DECODER OFF CACHE BOOL "" FORCE)
 FetchContent_MakeAvailable(stb)
 FetchContent_MakeAvailable(glm)
 FetchContent_MakeAvailable(glfw)
+FetchContent_MakeAvailable(uuid_v4)
+FetchContent_MakeAvailable(vma)
 FetchContent_MakeAvailable(freetype)
 FetchContent_MakeAvailable(loguru)
 FetchContent_MakeAvailable(DMAssetManager)
 
 target_link_libraries(AnterleEngine PUBLIC 
-    glad
+    Vulkan::Vulkan
+    VulkanMemoryAllocator
+    uuid_v4::uuid_v4
     glm::glm
     glfw
     imgui

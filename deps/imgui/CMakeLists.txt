@@ -4,6 +4,8 @@ project(Imgui LANGUAGES CXX)
 file(GLOB imgui_includes "include/*.h")
 file(GLOB imgui_src "src/*.cpp")
 
+find_package(Vulkan REQUIRED)
+
 include(FetchContent)
 
 FetchContent_Declare(
@@ -39,6 +41,7 @@ target_include_directories(imgui PUBLIC include/)
 
 
 target_link_libraries(imgui PRIVATE 
+    Vulkan::Vulkan
     glfw
     freetype
 )
