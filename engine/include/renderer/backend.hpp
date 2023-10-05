@@ -9,9 +9,10 @@
 #include <vulkan/vulkan.h>
 
 #include <glm/glm.hpp>
-#include <imgui_impl_vulkan.h>
 
 #include "renderer/settings.hpp"
+#include "renderer/types.hpp"
+
 
 class VulkanBackend
 {
@@ -20,6 +21,7 @@ public:
   ~VulkanBackend();
 
   GLFWwindow *GetGLFWWindow();
+  static void framebufferResizeCallback(GLFWwindow *window, int width, int height);
 
   void PreRender();
   void PostRender();
@@ -28,30 +30,103 @@ public:
   RenderSettings renderSettings;
 
 private:
-  bool IsExtensionAvailable(const std::vector<VkExtensionProperties> &properties, const char *extension);
-  VkPhysicalDevice SelectPhysicalDevice();
-  VkSampleCountFlagBits GetMsaaSampleCount(MsaaLevel msaaLevel);
+  void initVulkan();
 
-  void SetupVulkan(std::vector<const char *> instance_extensions);
-  void SetupVulkanWindow(ImGui_ImplVulkanH_Window *wd, VkSurfaceKHR surface, int width, int height);
+  void createInstance();
+  void createSurface();
+  void pickPhysicalDevice();
+  void createLogicalDevice();
+  void createRenderPass();
+  void createDescriptorSetLayout();
+  void createGraphicsPipeline();
+  void createCommandPool();
+  void createTextureImage();
+  void createTextureImageView();
+  void createTextureSampler();
+  void loadModel();
+  void createVertexBuffer();
+  void createIndexBuffer();
+  void createUniformBuffers();
+  void createDescriptorPool();
+  void createDescriptorSets();
+  void createCommandBuffers();
+  void createSyncObjects();
 
-  void FrameRender(ImGui_ImplVulkanH_Window *wd, ImDrawData *draw_data);
-  void FramePresent(ImGui_ImplVulkanH_Window *wd);
+  void recreateSwapChain();
+  void cleanupSwapChain();
+  void createSwapChain();
+  void createImageViews();
+  void createColorResources();
+  void createDepthResources();
+  void createFramebuffers();
+  void updateUniformBuffer(uint32_t currentImage);
+  void recordCommandBuffer(VkCommandBuffer commandBuffer, uint32_t imageIndex);
 
 private:
   GLFWwindow *window;
-  glm::vec4 clear_color;
 
+  VkInstance instance;
+  VkDebugUtilsMessengerEXT debugMessenger;
   VkSurfaceKHR surface;
-  VkAllocationCallbacks *g_Allocator;
-  VkInstance g_Instance;
-  VkPhysicalDevice g_PhysicalDevice;
-  VkDevice g_Device;
-  uint32_t g_QueueFamily;
-  VkQueue g_Queue;
-  VkPipelineCache g_PipelineCache;
-  VkDescriptorPool g_DescriptorPool;
-  ImGui_ImplVulkanH_Window g_MainWindowData;
-  uint32_t g_MinImageCount;
-  bool g_SwapChainRebuild;
+
+  VkPhysicalDevice physicalDevice = VK_NULL_HANDLE;
+  VkSampleCountFlagBits msaaSamples = VK_SAMPLE_COUNT_1_BIT;
+  VkDevice device;
+
+  VkQueue graphicsQueue;
+  VkQueue presentQueue;
+
+  VkSwapchainKHR swapChain;
+  std::vector<VkImage> swapChainImages;
+  VkFormat swapChainImageFormat;
+  VkExtent2D swapChainExtent;
+  std::vector<VkImageView> swapChainImageViews;
+  std::vector<VkFramebuffer> swapChainFramebuffers;
+
+  VkRenderPass renderPass;
+  VkDescriptorSetLayout descriptorSetLayout;
+  VkPipelineLayout pipelineLayout;
+  VkPipeline graphicsPipeline;
+
+  VkCommandPool commandPool;
+
+  VkImage colorImage;
+  VkDeviceMemory colorImageMemory;
+  VkImageView colorImageView;
+
+  VkImage depthImage;
+  VkDeviceMemory depthImageMemory;
+  VkImageView depthImageView;
+
+  uint32_t mipLevels;
+  VkImage textureImage;
+  VkDeviceMemory textureImageMemory;
+  VkImageView textureImageView;
+  VkSampler textureSampler;
+
+  std::vector<Vertex> vertices;
+  std::vector<uint32_t> indices;
+  VkBuffer vertexBuffer;
+  VkDeviceMemory vertexBufferMemory;
+  VkBuffer indexBuffer;
+  VkDeviceMemory indexBufferMemory;
+
+  std::vector<VkBuffer> uniformBuffers;
+  std::vector<VkDeviceMemory> uniformBuffersMemory;
+  std::vector<void *> uniformBuffersMapped;
+
+  VkDescriptorPool descriptorPool;
+  std::vector<VkDescriptorSet> descriptorSets;
+
+  std::vector<VkCommandBuffer> commandBuffers;
+
+  std::vector<VkSemaphore> imageAvailableSemaphores;
+  std::vector<VkSemaphore> renderFinishedSemaphores;
+  std::vector<VkFence> inFlightFences;
+  uint32_t currentFrame = 0;
+
+  bool framebufferResized = false;
+
+  const std::vector<const char *> deviceExtensions = { VK_KHR_SWAPCHAIN_EXTENSION_NAME };
+  const int MAX_FRAMES_IN_FLIGHT = 2;
 };

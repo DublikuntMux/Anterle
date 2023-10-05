@@ -3,7 +3,6 @@
 #include <loguru.hpp>
 
 #include "game.hpp"
-#include "imgui/plot_var.hpp"
 #include "renderer/backend.hpp"
 
 
@@ -29,15 +28,6 @@ void Game::Start()
 
     backend->PreRender();
 
-    if (debug_mode) {
-
-      ImGui::SetNextWindowSize(ImVec2(470, 200));
-      {
-        ImGui::Begin("Debug window");
-        ImGui::PlotVar("Delta time", deltaTime);
-        ImGui::End();
-      }
-    }
     Update(deltaTime);
 
     backend->PostRender();
