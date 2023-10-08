@@ -2,6 +2,7 @@
 
 #include "object/object.hpp"
 
+namespace Anterle {
 Object::Object()
 {
   UUIDv4::UUIDGenerator<std::mt19937_64> uuidGenerator;
@@ -11,3 +12,4 @@ Object::Object()
 Object::~Object() {}
 
 const char *Object::GetUUID() { return uuid; }
+}// namespace Anterle

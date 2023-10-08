@@ -1,5 +1,6 @@
 #pragma once
 
+namespace Anterle {
 class Object
 {
 public:
@@ -15,3 +16,4 @@ public:
 protected:
   char uuid[16];
 };
+}// namespace Anterle

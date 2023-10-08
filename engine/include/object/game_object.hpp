@@ -8,6 +8,7 @@
 
 #include "object/object.hpp"
 
+namespace Anterle {
 class Component;
 
 class GameObject : public Object
@@ -31,3 +32,4 @@ public:
 protected:
   std::vector<std::shared_ptr<Component>> components;
 };
+}// namespace Anterle

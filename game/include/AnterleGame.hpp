@@ -14,7 +14,7 @@ struct GameConfigs
   std::string PlayerName = "Player";
 };
 
-class AnterleGame : public Game
+class AnterleGame : public Anterle::Game
 {
 public:
   GameConfigs *Configs;

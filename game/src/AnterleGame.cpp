@@ -1,5 +1,6 @@
 #include "AnterleGame.hpp"
 #include "game.hpp"
+#include "backend/vulkan.hpp"
 
-AnterleGame::AnterleGame() : Game(1280, 720, "Antrele") {}
-AnterleGame::AnterleGame(GameConfigs *Configs) : Game(1280, 720, "Antrele"), Configs(Configs) {}
+AnterleGame::AnterleGame() : Game(Anterle::VulkanBackend(1280, 720, "Antrele")) {}
+AnterleGame::AnterleGame(GameConfigs *Configs) : Game(Anterle::VulkanBackend(1280, 720, "Antrele")), Configs(Configs) {}

@@ -5,6 +5,7 @@
 
 #include "object/object.hpp"
 
+namespace Anterle {
 class GameObject;
 
 class Scene : public Object
@@ -19,3 +20,4 @@ public:
 protected:
   std::vector<std::shared_ptr<GameObject>> game_objects;
 };
+}// namespace Anterle

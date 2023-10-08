@@ -1,6 +1,7 @@
 #include "object/game_object.hpp"
 #include "object/component.hpp"
 
+namespace Anterle {
 void GameObject::Update(double deltaTime)
 {
 #pragma omp parallel for
@@ -28,3 +29,4 @@ void GameObject::setRotation(const glm::quat &newRotation) { rotation = newRotat
 const glm::vec3 &GameObject::getPosition() const { return position; }
 
 const glm::quat &GameObject::getRotation() const { return rotation; }
+}// namespace Anterle

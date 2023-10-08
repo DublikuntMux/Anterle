@@ -4,6 +4,7 @@
 
 #include "object/object.hpp"
 
+namespace Anterle {
 class GameObject;
 
 class Component : public Object
@@ -18,3 +19,4 @@ public:
 protected:
   std::weak_ptr<GameObject> gameObject;
 };
+}// namespace Anterle

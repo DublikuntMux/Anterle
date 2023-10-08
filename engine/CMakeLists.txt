@@ -2,23 +2,63 @@ cmake_minimum_required(VERSION 3.25.0)
 
 project(AnterleEngine
         VERSION 1.0.3
-        DESCRIPTION "3D game engine"
+        DESCRIPTION "3D game engine."
         LANGUAGES CXX
 )
 
-file(GLOB_RECURSE engine_headers CONFIGURE_DEPENDS "./include/*.hpp")
-file(GLOB_RECURSE engine_sources CONFIGURE_DEPENDS "./src/*.cpp")
+set(ENGINE_SOURCES 
+    src/audio/audio_system.cpp
+    src/backend/base.cpp
+    src/helper/file.cpp
+    src/object/component.cpp
+    src/object/game_object.cpp
+    src/object/object.cpp
+    src/object/scene.cpp
+    src/game.cpp
 
-add_library(AnterleEngine ${engine_headers} ${engine_sources})
+    include/audio/audio_system.hpp
+    include/backend/base.hpp
+    include/helper/file.hpp
+    include/object/component.hpp
+    include/object/game_object.hpp
+    include/object/object.hpp
+    include/object/scene.hpp
+    include/game.hpp
+)
+
+option(USE_VULKAN "Use Vulkan backend" ON)
+option(USE_DIRECTX "Use DirectX 12 backend" ON)
+
+if(UNIX OR APPLE)
+    set(USE_DIRECTX OFF)
+endif()
+
+if(USE_DIRECTX)
+    list(APPEND ENGINE_SOURCES 
+        src/backend/directx.cpp
+        include/backend/directx.hpp
+    )
+endif()
+
+if(USE_VULKAN)
+    list(APPEND ENGINE_SOURCES 
+        src/backend/vulkan.cpp
+        include/backend/vulkan.hpp
+
+        src/helper/vulkan.cpp
+        include/helper/vulkan.hpp
+    )
+endif()
+
+add_library(AnterleEngine ${ENGINE_SOURCES})
 target_include_directories(AnterleEngine PUBLIC include/)
 
 set_target_properties(AnterleEngine PROPERTIES VERSION ${PROJECT_VERSION})
 set_target_properties(AnterleEngine PROPERTIES SOVERSION 1)
 
-find_package(OpenMP REQUIRED)
-find_package(Vulkan REQUIRED)
-
 include(FetchContent)
+
+find_package(OpenMP REQUIRED)
 
 FetchContent_Declare(
     stb
@@ -62,12 +102,27 @@ FetchContent_MakeAvailable(uuid_v4)
 FetchContent_MakeAvailable(loguru)
 FetchContent_MakeAvailable(tinyobjloader)
 
+if(USE_DIRECTX)
+    FetchContent_Declare(
+        directx
+	    GIT_REPOSITORY https://github.com/microsoft/DirectX-Headers.git
+	    GIT_TAG main
+    )
+    FetchContent_MakeAvailable(directx)
+    target_link_libraries(AnterleEngine PUBLIC DirectX-Headers)
+endif()
+
+if(USE_VULKAN)
+    find_package(Vulkan REQUIRED)
+    target_link_libraries(AnterleEngine PUBLIC Vulkan::Vulkan)
+endif()
+
 target_link_libraries(AnterleEngine PUBLIC 
-    Vulkan::Vulkan
     uuid_v4::uuid_v4
     glm::glm
     glfw
     miniaudio
+    imgui
     loguru::loguru
     tinyobjloader
 )

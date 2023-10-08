@@ -3,6 +3,7 @@
 #include "object/game_object.hpp"
 #include "object/scene.hpp"
 
+namespace Anterle {
 void Scene::Update(double deltaTime)
 {
 #pragma omp parallel for
@@ -22,3 +23,4 @@ void Scene::OnDespawn()
 }
 
 void Scene::addGameObject(std::shared_ptr<GameObject> object) { game_objects.push_back(object); }
+}// namespace Anterle
