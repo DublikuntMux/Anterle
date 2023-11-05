@@ -11,8 +11,7 @@ GameObject::GameObject(glm::vec2 pos, glm::vec2 size, Texture2D sprite, glm::vec
     Sprite(sprite)
 {}
 
-void GameObject::Draw(SpriteRenderer &renderer)
-{
-  renderer.DrawSprite(this->Sprite, this->Position, this->Size, this->Rotation, this->Color);
-}
+GameObject::~GameObject() {}
+
+void GameObject::Draw(SpriteRenderer &renderer) { renderer.DrawSprite(Sprite, Position, Size, Rotation, Color); }
 }// namespace Anterle

@@ -3,8 +3,8 @@
 #include "AnterleGame.hpp"
 #include "AnterleWindow.hpp"
 
-const uint32_t SCREEN_WIDTH = 1280;
-const uint32_t SCREEN_HEIGHT = 720;
+constexpr uint32_t SCREEN_WIDTH = 1280;
+constexpr uint32_t SCREEN_HEIGHT = 720;
 
 int main()
 {

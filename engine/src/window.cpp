@@ -112,7 +112,7 @@ void Window::glfw_error_callback(int error, const char *description)
   LOG_F(ERROR, "GLFW Error: %d : %s", error, description);
 }
 
-void Window::key_callback(GLFWwindow *window, int key, int scancode, int action, int mode)
+void Window::key_callback(GLFWwindow *window, int key, int, int action, int)
 {
   if (key == GLFW_KEY_ESCAPE && action == GLFW_PRESS) { glfwSetWindowShouldClose(window, GL_TRUE); }
   if (key == GLFW_KEY_D && action == GLFW_PRESS) {
@@ -135,15 +135,46 @@ void Window::key_callback(GLFWwindow *window, int key, int scancode, int action,
   }
 }
 
-void Window::mouse_callback(GLFWwindow *window, int button, int action, int modifier)
+void Window::mouse_callback(GLFWwindow *window, int button, int action, int)
 {
+  if (button == GLFW_MOUSE_BUTTON_LEFT) {
+    if (action == GLFW_PRESS) {
+      double mouseX, mouseY;
+      glfwGetCursorPos(window, &mouseX, &mouseY);
+
+      if (mouseX > 0 && mouseX < 0 + WindowWidth && mouseY > 0 && mouseY < 0 + 30) {
+        isDragging = true;
+        glfwGetCursorPos(window, &lastMouseX, &lastMouseY);
+      }
+    } else if (action == GLFW_RELEASE) {
+      isDragging = false;
+    }
+  }
+
   double xpos, ypos;
   glfwGetCursorPos(window, &xpos, &ypos);
-  if (action == GLFW_PRESS && button == GLFW_MOUSE_BUTTON_1) { this->CheckClickables(xpos, ypos); }
+  if (action == GLFW_PRESS && button == GLFW_MOUSE_BUTTON_1) { CheckClickables(xpos, ypos); }
 }
 
-Window::Window(uint32_t screen_width, uint32_t screen_hight, const char *name, Game *instance)
-  : ScreenWidth(screen_width), ScreenHight(screen_hight), GameInstance(instance)
+void Window::cursor_callback(GLFWwindow *window, double xpos, double ypos)
+{
+  if (isDragging) {
+    double deltaX = xpos - lastMouseX;
+    double deltaY = ypos - lastMouseY;
+
+    int windowX, windowY;
+    glfwGetWindowPos(window, &windowX, &windowY);
+
+    glfwSetWindowPos(window, windowX + static_cast<int>(deltaX), windowY + static_cast<int>(deltaY));
+
+    lastMouseX = xpos;
+    lastMouseY = ypos;
+  }
+}
+
+Window::Window(int window_width, int window_hight, const char *name, Game *instance, bool showCloseButton)
+  : GameInstance(instance), WindowWidth(window_width), WindowHight(window_hight), WindowName(name),
+    showClose(showCloseButton)
 {
   loguru::add_file("logging.log", loguru::Truncate, loguru::Verbosity_INFO);
 
@@ -154,10 +185,18 @@ Window::Window(uint32_t screen_width, uint32_t screen_hight, const char *name, G
   glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
   glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 0);
   glfwWindowHint(GLFW_RESIZABLE, GL_FALSE);
+  glfwWindowHint(GLFW_DECORATED, GLFW_FALSE);
+  glfwWindowHint(GLFW_DOUBLEBUFFER, GLFW_TRUE);
 
-  this->window = glfwCreateWindow(screen_width, screen_hight, name, nullptr, nullptr);
-  glfwMakeContextCurrent(this->window);
-  if (this->window == nullptr) { ABORT_F("Failed to initialize window."); }
+  GLFWmonitor *monitor = glfwGetPrimaryMonitor();
+  const GLFWvidmode *mode = glfwGetVideoMode(monitor);
+  int screenWidth = mode->width;
+  int screenHeight = mode->height;
+
+  GlfwWindow = glfwCreateWindow(window_width, window_hight, name, nullptr, nullptr);
+  glfwSetWindowPos(GlfwWindow, (screenWidth - window_width) / 2, (screenHeight - window_hight) / 2);
+  glfwMakeContextCurrent(GlfwWindow);
+  if (GlfwWindow == nullptr) { ABORT_F("Failed to initialize window."); }
 
   gladLoadGLES2(glfwGetProcAddress);
 }
@@ -170,20 +209,28 @@ Window::~Window()
   ImGui_ImplGlfw_Shutdown();
   ImGui::DestroyContext();
 
-  glfwDestroyWindow(window);
+  glfwDestroyWindow(GlfwWindow);
   glfwTerminate();
 }
 
 void Window::Init()
 {
   glfwSwapInterval(1);
-  glfwSetWindowUserPointer(window, this);
-  glfwSetKeyCallback(window, [](GLFWwindow *window, int key, int scancode, int action, int mode) {
+  glfwSetWindowUserPointer(GlfwWindow, this);
+  glfwSetKeyCallback(GlfwWindow, [](GLFWwindow *window, int key, int scancode, int action, int mode) {
     auto &self = *static_cast<Window *>(glfwGetWindowUserPointer(window));
     self.key_callback(window, key, scancode, action, mode);
   });
+  glfwSetMouseButtonCallback(GlfwWindow, [](GLFWwindow *window, int button, int action, int mods) {
+    auto &self = *static_cast<Window *>(glfwGetWindowUserPointer(window));
+    self.mouse_callback(window, button, action, mods);
+  });
+  glfwSetCursorPosCallback(GlfwWindow, [](GLFWwindow *window, double xpos, double ypos) {
+    auto &self = *static_cast<Window *>(glfwGetWindowUserPointer(window));
+    self.cursor_callback(window, xpos, ypos);
+  });
 
-  glViewport(0, 0, this->ScreenWidth, this->ScreenHight);
+  glViewport(0, 0, WindowWidth, WindowHight);
   glEnable(GL_BLEND);
   glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
@@ -191,29 +238,30 @@ void Window::Init()
   ImGui::CreateContext();
   ImGuiIO &io = ImGui::GetIO();
   (void)io;
+
   io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;
   io.ConfigFlags |= ImGuiConfigFlags_NavEnableGamepad;
   io.IniFilename = nullptr;
 
   SetupImGuiStyle();
 
-  ImGui_ImplGlfw_InitForOpenGL(window, true);
+  ImGui_ImplGlfw_InitForOpenGL(GlfwWindow, true);
   ImGui_ImplOpenGL3_Init("#version 300 es");
 
-  this->GameInstance->Init();
+  GameInstance->Init();
 }
 
 void Window::Start()
 {
-  float deltaTime = 0.0F;
-  float lastFrame = 0.0F;
+  double deltaTime = 0.0;
+  double lastFrame = 0.0;
   Profiler profiler;
 
-  while (!glfwWindowShouldClose(window)) {
+  while (!glfwWindowShouldClose(GlfwWindow)) {
     profiler.Frame();
 
     profiler.Begin(Profiler::Stage::PollEvents);
-    float currentFrame = glfwGetTime();
+    double currentFrame = glfwGetTime();
     deltaTime = currentFrame - lastFrame;
     lastFrame = currentFrame;
     glfwPollEvents();
@@ -221,11 +269,11 @@ void Window::Start()
 
     profiler.Begin(Profiler::Stage::GameEvents);
     profiler.Begin(Profiler::Stage::PressInput);
-    this->GameInstance->ProcessInput(deltaTime);
+    GameInstance->ProcessInput(deltaTime);
     profiler.End(Profiler::Stage::PressInput);
 
     profiler.Begin(Profiler::Stage::Update);
-    this->GameInstance->Update(deltaTime);
+    GameInstance->Update(deltaTime);
     profiler.End(Profiler::Stage::Update);
     profiler.End(Profiler::Stage::GameEvents);
 
@@ -233,6 +281,23 @@ void Window::Start()
     ImGui_ImplOpenGL3_NewFrame();
     ImGui_ImplGlfw_NewFrame();
     ImGui::NewFrame();
+
+    profiler.Begin(Profiler::Stage::CutomTitleBar);
+    static ImGuiWindowFlags titlebar_flags = ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoResize
+                                             | ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoScrollbar;
+    ImGui::SetNextWindowSizeConstraints(ImVec2(static_cast<float>(WindowWidth), 30.0f), ImVec2(FLT_MAX, FLT_MAX));
+    ImGui::SetNextWindowPos(ImVec2(0, 0));
+    ImGui::Begin("Title Bar", NULL, titlebar_flags);
+
+    ImGui::SetCursorPosX(10);
+    ImGui::Text("%s", WindowName);
+
+    ImGui::SameLine(ImGui::GetWindowWidth() - 80);
+    if (showClose && ImGui::Button("Close")) { glfwSetWindowShouldClose(glfwGetCurrentContext(), true); }
+
+
+    ImGui::End();
+    profiler.End(Profiler::Stage::CutomTitleBar);
 
     if (debug_mode) {
       ImGui::SetNextWindowSize(ImVec2(470, 200));
@@ -248,7 +313,7 @@ void Window::Start()
           FLT_MAX,
           FLT_MAX,
           ImVec2(400, 0));
-        ImGui::PlotVar("Delta time", deltaTime);
+        ImGui::PlotVar("Delta time", static_cast<float>(deltaTime));
         ImGui::End();
       }
     }
@@ -265,7 +330,7 @@ void Window::Start()
     glClearColor(0.0F, 0.0F, 0.0F, 1.0F);
     glClear(GL_COLOR_BUFFER_BIT);
     profiler.Begin(Profiler::Stage::GameRender);
-    this->GameInstance->Render();
+    GameInstance->Render();
     profiler.End(Profiler::Stage::GameRender);
     profiler.End(Profiler::Stage::OpenGL);
 
@@ -274,12 +339,12 @@ void Window::Start()
     profiler.End(Profiler::Stage::ImguiRender);
 
     profiler.Begin(Profiler::Stage::SwapBuffer);
-    glfwSwapBuffers(window);
+    glfwSwapBuffers(GlfwWindow);
     profiler.End(Profiler::Stage::SwapBuffer);
   }
 }
 
-void Window::CheckClickables(uint32_t x, uint32_t y)
+void Window::CheckClickables(double x, double y)
 {
   for (Clickable clickable : clickables) { clickable.CheckClick(x, y); }
 }

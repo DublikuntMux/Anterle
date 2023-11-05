@@ -6,10 +6,11 @@ namespace Anterle {
 Game::Game(uint16_t width, uint16_t height)
   : State(GameState::GAME_MENU), Width(width), Height(height), Keys(), KeysProcessed()
 {}
+Game::~Game(){}
 
 void Game::Init() {}
-void Game::Update(float dt) {}
-void Game::ProcessInput(float dt) {}
+void Game::Update(double dt) {}
+void Game::ProcessInput(double dt) {}
 void Game::Render() {}
 void Game::ResetLevel() {}
 }// namespace Anterle

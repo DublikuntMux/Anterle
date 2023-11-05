@@ -4,15 +4,15 @@
 #include "object/ui/notify.hpp"
 
 namespace Anterle {
-void ImGuiToast::set_title(const char *format, ...) { NOTIFY_FORMAT(this->set_title, format); }
-void ImGuiToast::set_content(const char *format, ...) { NOTIFY_FORMAT(this->set_content, format); }
-void ImGuiToast::set_type(const ImGuiToastType &tost_type) { this->type = tost_type; };
+void ImGuiToast::set_title(const char *format, ...) { NOTIFY_FORMAT(set_title, format); }
+void ImGuiToast::set_content(const char *format, ...) { NOTIFY_FORMAT(set_content, format); }
+void ImGuiToast::set_type(const ImGuiToastType &tost_type) { type = tost_type; };
 
-char *ImGuiToast::get_title() { return this->title; };
+char *ImGuiToast::get_title() { return title; };
 const char *ImGuiToast::get_default_title()
 {
-  if (!strlen(this->title)) {
-    switch (this->type) {
+  if (!strlen(title)) {
+    switch (type) {
     case ImGuiToastType::None:
       return NULL;
     case ImGuiToastType::Success:
@@ -26,12 +26,12 @@ const char *ImGuiToast::get_default_title()
     }
   }
 
-  return this->title;
+  return title;
 };
-const ImGuiToastType &ImGuiToast::get_type() { return this->type; };
+const ImGuiToastType &ImGuiToast::get_type() { return type; };
 const ImVec4 &ImGuiToast::get_color()
 {
-  switch (this->type) {
+  switch (type) {
   case ImGuiToastType::None:
     return { 255, 255, 255, 255 };
   case ImGuiToastType::Success:
@@ -46,7 +46,7 @@ const ImVec4 &ImGuiToast::get_color()
 }
 const char *ImGuiToast::get_icon()
 {
-  switch (this->type) {
+  switch (type) {
   case ImGuiToastType::None:
     return NULL;
   case ImGuiToastType::Success:
@@ -59,20 +59,20 @@ const char *ImGuiToast::get_icon()
     return ICON_FA_CIRCLE_INFO;
   }
 }
-char *ImGuiToast::get_content() { return this->content; };
+char *ImGuiToast::get_content() { return content; };
 int64_t ImGuiToast::get_elapsed_time()
 {
   return std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch())
            .count()
-         - this->creation_time;
+         - creation_time;
 }
 const ImGuiToastPhase &ImGuiToast::get_phase()
 {
   const auto elapsed = get_elapsed_time();
 
-  if (elapsed > NOTIFY_FADE_IN_OUT_TIME + this->dismiss_time + NOTIFY_FADE_IN_OUT_TIME) {
+  if (elapsed > NOTIFY_FADE_IN_OUT_TIME + dismiss_time + NOTIFY_FADE_IN_OUT_TIME) {
     return ImGuiToastPhase::Expired;
-  } else if (elapsed > NOTIFY_FADE_IN_OUT_TIME + this->dismiss_time) {
+  } else if (elapsed > NOTIFY_FADE_IN_OUT_TIME + dismiss_time) {
     return ImGuiToastPhase::FadeOut;
   } else if (elapsed > NOTIFY_FADE_IN_OUT_TIME) {
     return ImGuiToastPhase::Wait;
@@ -88,21 +88,14 @@ float ImGuiToast::get_fade_percent()
   if (phase == ImGuiToastPhase::FadeIn) {
     return (elapsed / NOTIFY_FADE_IN_OUT_TIME) * NOTIFY_OPACITY;
   } else if (phase == ImGuiToastPhase::FadeOut) {
-    return (1.f - ((elapsed - NOTIFY_FADE_IN_OUT_TIME - this->dismiss_time) / NOTIFY_FADE_IN_OUT_TIME))
-           * NOTIFY_OPACITY;
+    return (1.f - ((elapsed - NOTIFY_FADE_IN_OUT_TIME - dismiss_time) / NOTIFY_FADE_IN_OUT_TIME)) * NOTIFY_OPACITY;
   }
 
   return 1.f * NOTIFY_OPACITY;
 }
 
-void ImGuiToast::set_title(const char *format, va_list args)
-{
-  vsnprintf(this->title, sizeof(this->title), format, args);
-}
-void ImGuiToast::set_content(const char *format, va_list args)
-{
-  vsnprintf(this->content, sizeof(this->content), format, args);
-}
+void ImGuiToast::set_title(const char *format, va_list args) { vsnprintf(title, sizeof(title), format, args); }
+void ImGuiToast::set_content(const char *format, va_list args) { vsnprintf(content, sizeof(content), format, args); }
 }// namespace Anterle
 
 namespace ImGui {

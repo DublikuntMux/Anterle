@@ -32,24 +32,19 @@ enum class ImGuiToastPos { TopLeft, TopCenter, TopRight, BottomLeft, BottomCente
 class ImGuiToast
 {
 public:
-  ImGuiToast(ImGuiToastType type, int dismiss_time = NOTIFY_DEFAULT_DISMISS)
+  ImGuiToast(ImGuiToastType type, int dismiss_time = NOTIFY_DEFAULT_DISMISS) : type(type), dismiss_time(dismiss_time)
   {
-    this->type = type;
-    this->dismiss_time = dismiss_time;
-    this->creation_time =
+    creation_time =
       std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch())
         .count();
 
-    memset(this->title, 0, sizeof(this->title));
-    memset(this->content, 0, sizeof(this->content));
+    memset(title, 0, sizeof(title));
+    memset(content, 0, sizeof(content));
   }
-  ImGuiToast(ImGuiToastType type, const char *format, ...) : ImGuiToast(type)
-  {
-    NOTIFY_FORMAT(this->set_content, format);
-  }
+  ImGuiToast(ImGuiToastType type, const char *format, ...) : ImGuiToast(type) { NOTIFY_FORMAT(set_content, format); }
   ImGuiToast(ImGuiToastType type, int dismiss_time, const char *format, ...) : ImGuiToast(type, dismiss_time)
   {
-    NOTIFY_FORMAT(this->set_content, format);
+    NOTIFY_FORMAT(set_content, format);
   }
 
   void set_title(const char *format, ...);

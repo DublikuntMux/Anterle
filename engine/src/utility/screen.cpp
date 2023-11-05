@@ -1,14 +1,16 @@
+#include <cstdint>
 #include <fstream>
 
 #include <glad/gles2.h>
+#include <ios>
 #include <loguru.hpp>
 
 #include "utility/screen.hpp"
 
 namespace Anterle {
-void saveScreenshotToFile(std::string filename, int windowWidth, int windowHeight)
+void saveScreenshotToFile(std::string filename, uint16_t windowWidth, uint16_t windowHeight)
 {
-  int numberOfPixels = windowWidth * windowHeight * 3;
+  uint64_t numberOfPixels = windowWidth * windowHeight * 3ULL;
   unsigned char *pixels = new unsigned char[numberOfPixels];
 
   glPixelStorei(GL_PACK_ALIGNMENT, 1);
@@ -19,7 +21,7 @@ void saveScreenshotToFile(std::string filename, int windowWidth, int windowHeigh
   if (!outputFile) { LOG_F(ERROR, "Failed to create file for screenshot."); }
   short header[] = { 0, 2, 0, 0, 0, 0, static_cast<short>(windowWidth), static_cast<short>(windowHeight), 24 };
   outputFile.write(reinterpret_cast<const char *>(&header), sizeof(header));
-  outputFile.write(reinterpret_cast<const char *>(pixels), numberOfPixels * sizeof(*pixels));
+  outputFile.write(reinterpret_cast<const char *>(pixels), static_cast<std::streamsize>(numberOfPixels * sizeof(*pixels)));
   outputFile.close();
 
   delete[] pixels;

@@ -11,8 +11,9 @@ public:
   typedef void (*ClickCallback)();
 
   Clickable(uint32_t top, uint32_t left, uint32_t width, uint32_t height, ClickCallback onClick);
+  virtual ~Clickable();
 
-  virtual void CheckClick(uint32_t x, uint32_t y);
+  virtual void CheckClick(double x, double y);
   virtual void Render();
 
 private:

@@ -34,7 +34,6 @@ private:
   Texture2D m_texture;
   uint32_t m_VAO;
 
-  void init();
   uint32_t firstUnusedParticle();
   void respawnParticle(Particle particle, GameObject object, glm::vec2 offset = glm::vec2(0.0f, 0.0f));
 };

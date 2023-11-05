@@ -25,8 +25,8 @@ void GameLevel::Load(std::string level_name)
       if (!line.empty()) {
         if (line.length() != 1) {
           if (!(line.at(0) == *"#")) {
-            if (this->Name.empty()) { this->Name = FindByKey(delimName, &line); }
-            if (this->Description.empty()) { this->Description = FindByKey(delimDescription, &line); }
+            if (Name.empty()) { Name = FindByKey(delimName, &line); }
+            if (Description.empty()) { Description = FindByKey(delimDescription, &line); }
             size_t end = line.find(delimSpeech);
             while (end != std::string::npos) {
               std::string name = line.substr(0U, end - 0U);
@@ -42,7 +42,7 @@ void GameLevel::Load(std::string level_name)
     ABORT_F("Failed to load level: %s", file_name.c_str());
   }
 
-  this->Speech = speech;
+  Speech = speech;
   file.close();
 }
 

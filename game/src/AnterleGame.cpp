@@ -1,6 +1,3 @@
-#include <algorithm>
-#include <iostream>
-#include <sstream>
 #include <string>
 
 #include <GLFW/glfw3.h>
@@ -36,8 +33,7 @@ void AnterleGame::Init()
   Anterle::ResourceManager::LoadShader("sprite");
   Anterle::ResourceManager::LoadShader("particle");
 
-  glm::mat4 projection =
-    glm::ortho(0.0F, static_cast<float>(this->Width), static_cast<float>(this->Height), 0.0F, -1.0F, 1.0F);
+  glm::mat4 projection = glm::ortho(0.0F, static_cast<float>(Width), static_cast<float>(Height), 0.0F, -1.0F, 1.0F);
 
   Anterle::ResourceManager::GetShader("sprite").Use().SetInteger("sprite", 0);
   Anterle::ResourceManager::GetShader("sprite").SetMatrix4("projection", projection);
@@ -52,7 +48,7 @@ void AnterleGame::Init()
   Renderer = new Anterle::SpriteRenderer(Anterle::ResourceManager::GetShader("sprite"));
   Particles = new Anterle::ParticleGenerator(
     Anterle::ResourceManager::GetShader("particle"), Anterle::ResourceManager::GetTexture("particle"), 500);
-  Text = new Anterle::TextRenderer(this->Width, this->Height);
+  Text = new Anterle::TextRenderer(Width, Height);
   Text->Load("tahoma", 24);
   Audio = new Anterle::AudioSystem();
 
@@ -64,82 +60,81 @@ void AnterleGame::Init()
   three.Load("one");
   Anterle::GameLevel four;
   four.Load("one");
-  this->Levels.push_back(one);
-  this->Levels.push_back(two);
-  this->Levels.push_back(three);
-  this->Levels.push_back(four);
-  this->Configs->CurentLevel = 0;
+  Levels.push_back(one);
+  Levels.push_back(two);
+  Levels.push_back(three);
+  Levels.push_back(four);
+  Configs->CurentLevel = 0;
 }
 
 void AnterleGame::Update(float dt)
 {
-  if (this->State == Anterle::GameState::GAME_ACTIVE && this->Levels[this->Configs->CurentLevel].IsCompleted()) {
-    this->ResetLevel();
-    this->State = Anterle::GameState::GAME_WIN;
+  if (State == Anterle::GameState::GAME_ACTIVE && Levels[Configs->CurentLevel].IsCompleted()) {
+    ResetLevel();
+    State = Anterle::GameState::GAME_WIN;
   }
 }
 
 void AnterleGame::ProcessInput(float dt)
 {
-  if (this->State == Anterle::GameState::GAME_MENU) {
-    if (this->Keys[GLFW_KEY_ENTER] && !this->KeysProcessed[GLFW_KEY_ENTER]) {
-      this->State = Anterle::GameState::GAME_ACTIVE;
-      this->KeysProcessed[GLFW_KEY_ENTER] = true;
+  if (State == Anterle::GameState::GAME_MENU) {
+    if (Keys[GLFW_KEY_ENTER] && !KeysProcessed[GLFW_KEY_ENTER]) {
+      State = Anterle::GameState::GAME_ACTIVE;
+      KeysProcessed[GLFW_KEY_ENTER] = true;
     }
-    if (this->Keys[GLFW_KEY_W] && !this->KeysProcessed[GLFW_KEY_W]) {
-      this->Configs->CurentLevel = (this->Configs->CurentLevel + 1) % 4;
-      this->KeysProcessed[GLFW_KEY_W] = true;
+    if (Keys[GLFW_KEY_W] && !KeysProcessed[GLFW_KEY_W]) {
+      Configs->CurentLevel = (Configs->CurentLevel + 1) % 4;
+      KeysProcessed[GLFW_KEY_W] = true;
     }
-    if (this->Keys[GLFW_KEY_S] && !this->KeysProcessed[GLFW_KEY_S]) {
-      if (this->Configs->CurentLevel > 0) {
-        --this->Configs->CurentLevel;
+    if (Keys[GLFW_KEY_S] && !KeysProcessed[GLFW_KEY_S]) {
+      if (Configs->CurentLevel > 0) {
+        --Configs->CurentLevel;
       } else {
-        this->Configs->CurentLevel = 3;
+        Configs->CurentLevel = 3;
       }
-      this->KeysProcessed[GLFW_KEY_S] = true;
+      KeysProcessed[GLFW_KEY_S] = true;
     }
   }
-  if (this->State == Anterle::GameState::GAME_WIN) {
-    if (this->Keys[GLFW_KEY_ENTER]) {
-      this->KeysProcessed[GLFW_KEY_ENTER] = true;
-      this->State = Anterle::GameState::GAME_MENU;
+  if (State == Anterle::GameState::GAME_WIN) {
+    if (Keys[GLFW_KEY_ENTER]) {
+      KeysProcessed[GLFW_KEY_ENTER] = true;
+      State = Anterle::GameState::GAME_MENU;
     }
   }
-  if (this->Keys[GLFW_KEY_F11] && !this->KeysProcessed[GLFW_KEY_F11]) {
-    Anterle::saveScreenshotToFile("./screenshot.tga", this->Width, this->Height);
+  if (Keys[GLFW_KEY_F11] && !KeysProcessed[GLFW_KEY_F11]) {
+    Anterle::saveScreenshotToFile("./screenshot.tga", Width, Height);
     ImGui::InsertNotification({ Anterle::ImGuiToastType::Info, 3000, "Screenshot created" });
-    this->KeysProcessed[GLFW_KEY_F11] = true;
+    KeysProcessed[GLFW_KEY_F11] = true;
   }
 }
 
 void AnterleGame::Render()
 {
-  if (this->State == Anterle::GameState::GAME_MENU) {
-    Text->RenderText(L"Press ENTER to start", 250.0F, this->Height / 2.0F, 1.0F);
+  if (State == Anterle::GameState::GAME_MENU) {
+    Text->RenderText(L"Press ENTER to start", 250.0F, Height / 2.0F, 1.0F);
 
-  } else if (this->State == Anterle::GameState::GAME_ACTIVE) {
+  } else if (State == Anterle::GameState::GAME_ACTIVE) {
     Renderer->DrawSprite(Anterle::ResourceManager::GetTexture("face"),
       glm::vec2(200.0F, 200.0F),
       glm::vec2(300.0F, 400.0F),
       45.0F,
       glm::vec3(0.0F, 1.0F, 0.0F));
 
-  } else if (this->State == Anterle::GameState::GAME_WIN) {
-    Text->RenderText(L"You WON!!!", 320.0F, this->Height / 2.0F - 20.0F, 1.0F, glm::vec3(0.0F, 1.0F, 0.0F));
-    Text->RenderText(
-      L"Press ENTER to retry or ESC to quit", 130.0F, this->Height / 2.0F, 1.0F, glm::vec3(1.0F, 1.0F, 0.0F));
+  } else if (State == Anterle::GameState::GAME_WIN) {
+    Text->RenderText(L"You WON!!!", 320.0F, Height / 2.0F - 20.0F, 1.0F, glm::vec3(0.0F, 1.0F, 0.0F));
+    Text->RenderText(L"Press ENTER to retry or ESC to quit", 130.0F, Height / 2.0F, 1.0F, glm::vec3(1.0F, 1.0F, 0.0F));
   }
 }
 
 void AnterleGame::ResetLevel()
 {
-  if (this->Configs->CurentLevel == 0) {
-    this->Levels[0].Load("one");
-  } else if (this->Configs->CurentLevel == 1) {
-    this->Levels[1].Load("one");
-  } else if (this->Configs->CurentLevel == 2) {
-    this->Levels[2].Load("one");
-  } else if (this->Configs->CurentLevel == 3) {
-    this->Levels[3].Load("one");
+  if (Configs->CurentLevel == 0) {
+    Levels[0].Load("one");
+  } else if (Configs->CurentLevel == 1) {
+    Levels[1].Load("one");
+  } else if (Configs->CurentLevel == 2) {
+    Levels[2].Load("one");
+  } else if (Configs->CurentLevel == 3) {
+    Levels[3].Load("one");
   }
 }

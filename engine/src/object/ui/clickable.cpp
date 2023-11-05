@@ -7,7 +7,7 @@ namespace Anterle {
 Clickable::Clickable(uint32_t top, uint32_t left, uint32_t width, uint32_t height, ClickCallback onClick)
   : m_width(width), m_height(height), m_top(top), m_left(left), m_onClick(onClick)
 {
-  this->m_shader = ResourceManager::GetShader("clickable");
+  m_shader = ResourceManager::GetShader("clickable");
 
   float vertices[] = { -1.0f + 2.0f * m_left / m_width,
     1.0f - 2.0f * m_top / m_height,
@@ -24,26 +24,25 @@ Clickable::Clickable(uint32_t top, uint32_t left, uint32_t width, uint32_t heigh
     1.0f - 2.0f * (m_top + m_height) / m_height };
 
   uint32_t VBO;
-  glGenVertexArrays(1, &this->m_quadVAO);
+  glGenVertexArrays(1, &m_quadVAO);
   glGenBuffers(1, &VBO);
 
-  glBindVertexArray(this->m_quadVAO);
+  glBindVertexArray(m_quadVAO);
   glBindBuffer(GL_ARRAY_BUFFER, VBO);
   glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
   glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 2 * sizeof(float), nullptr);
   glEnableVertexAttribArray(0);
 }
+Clickable::~Clickable(){}
 
-void Clickable::CheckClick(uint32_t x, uint32_t y)
+void Clickable::CheckClick(double x, double y)
 {
-  if (x >= this->m_left && x <= this->m_left + this->m_width && y >= this->m_top && y <= this->m_top + this->m_height) {
-    this->m_onClick();
-  }
+  if (x >= m_left && x <= m_left + m_width && y >= m_top && y <= m_top + m_height) { m_onClick(); }
 }
 
 void Clickable::Render()
 {
-  glBindVertexArray(this->m_quadVAO);
+  glBindVertexArray(m_quadVAO);
   glDrawArrays(GL_TRIANGLES, 0, 4);
   glBindVertexArray(0);
 }

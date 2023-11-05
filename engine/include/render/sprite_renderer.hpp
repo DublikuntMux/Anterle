@@ -23,6 +23,5 @@ public:
 private:
   Shader m_shader;
   uint32_t m_quadVAO;
-  void initRenderData();
 };
 }// namespace Anterle

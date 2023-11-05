@@ -20,10 +20,11 @@ public:
   bool KeysProcessed[1024];
 
   Game(uint16_t width, uint16_t height);
+  virtual ~Game();
 
   virtual void Init();
-  virtual void Update(float dt);
-  virtual void ProcessInput(float dt);
+  virtual void Update(double dt);
+  virtual void ProcessInput(double dt);
   virtual void Render();
   virtual void ResetLevel();
 };
