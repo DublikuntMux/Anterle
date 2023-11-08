@@ -23,9 +23,12 @@ public:
   virtual ~Game();
 
   virtual void Init();
-  virtual void Update(double dt);
-  virtual void ProcessInput(double dt);
+  virtual void Update();
+  virtual void FixedUpdate();
+  virtual void ProcessInput();
+
   virtual void Render();
+
   virtual void ResetLevel();
 };
 }// namespace Anterle

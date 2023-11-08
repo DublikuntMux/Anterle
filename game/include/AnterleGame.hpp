@@ -22,14 +22,14 @@ public:
   ~AnterleGame();
 
   void Init();
-  void Update(float dt);
-  void ProcessInput(float dt);
+  void Update();
+  void FixedUpdate();
+  void ProcessInput();
   void Render();
   void ResetLevel();
 
 private:
   Anterle::SpriteRenderer *Renderer;
-  Anterle::ParticleGenerator *Particles;
   Anterle::TextRenderer *Text;
   Anterle::AudioSystem *Audio;
 };

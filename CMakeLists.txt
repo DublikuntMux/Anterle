@@ -11,6 +11,8 @@ if(PROJECT_SOURCE_DIR STREQUAL PROJECT_BINARY_DIR)
   )
 endif()
 
+include(FetchContent)
+
 include("cmake/Cache.cmake")
 include("cmake/CompilerWarnings.cmake")
 include("cmake/StaticAnalyzers.cmake")

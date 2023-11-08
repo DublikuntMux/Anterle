@@ -1,17 +1,26 @@
+#include "component/component.hpp"
 #include "object/game_object.hpp"
 
 namespace Anterle {
-GameObject::GameObject()
-  : Position(0.0f, 0.0f), Size(1.0f, 1.0f), Velocity(0.0f), Color(1.0f), Rotation(0.0f), IsSolid(false),
-    Destroyed(false), Sprite()
-{}
+GameObject::GameObject() : Position(0.0f, 0.0f), Rotation(0.0f), Destroyed(false) {}
 
-GameObject::GameObject(glm::vec2 pos, glm::vec2 size, Texture2D sprite, glm::vec3 color, glm::vec2 velocity)
-  : Position(pos), Size(size), Velocity(velocity), Color(color), Rotation(0.0f), IsSolid(false), Destroyed(false),
-    Sprite(sprite)
-{}
+GameObject::GameObject(glm::vec2 pos) : Position(pos), Rotation(0.0f), Destroyed(false) {}
 
-GameObject::~GameObject() {}
+void GameObject::Update() {
+        for (Component *comp : p_components) {
+            (comp->*(&Component::Update))();
+        }
+}
 
-void GameObject::Draw(SpriteRenderer &renderer) { renderer.DrawSprite(Sprite, Position, Size, Rotation, Color); }
+void GameObject::FixedUpdate() {
+        for (Component *comp : p_components) {
+            (comp->*(&Component::FixedUpdate))();
+        }
+}
+
+void GameObject::ProcessInput() {
+        for (Component *comp : p_components) {
+            (comp->*(&Component::ProcessInput))();
+        }
+}
 }// namespace Anterle

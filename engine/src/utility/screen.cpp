@@ -1,8 +1,8 @@
 #include <cstdint>
 #include <fstream>
+#include <ios>
 
 #include <glad/gles2.h>
-#include <ios>
 #include <loguru.hpp>
 
 #include "utility/screen.hpp"
@@ -21,7 +21,8 @@ void saveScreenshotToFile(std::string filename, uint16_t windowWidth, uint16_t w
   if (!outputFile) { LOG_F(ERROR, "Failed to create file for screenshot."); }
   short header[] = { 0, 2, 0, 0, 0, 0, static_cast<short>(windowWidth), static_cast<short>(windowHeight), 24 };
   outputFile.write(reinterpret_cast<const char *>(&header), sizeof(header));
-  outputFile.write(reinterpret_cast<const char *>(pixels), static_cast<std::streamsize>(numberOfPixels * sizeof(*pixels)));
+  outputFile.write(
+    reinterpret_cast<const char *>(pixels), static_cast<std::streamsize>(numberOfPixels * sizeof(*pixels)));
   outputFile.close();
 
   delete[] pixels;

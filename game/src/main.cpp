@@ -11,7 +11,6 @@ int main()
   AnterleGame game(SCREEN_WIDTH, SCREEN_HEIGHT);
   AnterleWindow window(SCREEN_WIDTH, SCREEN_HEIGHT, "Anterle", &game);
 
-  window.Init();
   window.Start();
 
   return 0;

@@ -20,10 +20,10 @@ TextRenderer::TextRenderer(uint32_t width, uint32_t height)
     "projection", glm::ortho(0.0F, static_cast<float>(width), static_cast<float>(height), 0.0F), true);
   TextShader.SetInteger("text", 0);
 
-  glGenVertexArrays(1, &m_VAO);
-  glGenBuffers(1, &m_VBO);
-  glBindVertexArray(m_VAO);
-  glBindBuffer(GL_ARRAY_BUFFER, m_VBO);
+  glGenVertexArrays(1, &_VAO);
+  glGenBuffers(1, &_VBO);
+  glBindVertexArray(_VAO);
+  glBindBuffer(GL_ARRAY_BUFFER, _VBO);
   glBufferData(GL_ARRAY_BUFFER, sizeof(float) * 6 * 4, nullptr, GL_DYNAMIC_DRAW);
   glEnableVertexAttribArray(0);
   glVertexAttribPointer(0, 4, GL_FLOAT, GL_FALSE, 4 * sizeof(float), nullptr);
@@ -93,7 +93,7 @@ void TextRenderer::RenderText(const std::wstring &text, float x, float y, float 
   TextShader.Use();
   TextShader.SetVector3f("textColor", color);
   glActiveTexture(GL_TEXTURE0);
-  glBindVertexArray(m_VAO);
+  glBindVertexArray(_VAO);
 
   std::wstring::const_iterator character_iter;
   for (character_iter = text.begin(); character_iter != text.end(); character_iter++) {
@@ -115,7 +115,7 @@ void TextRenderer::RenderText(const std::wstring &text, float x, float y, float 
 
     glBindTexture(GL_TEXTURE_2D, character.TextureID);
 
-    glBindBuffer(GL_ARRAY_BUFFER, m_VBO);
+    glBindBuffer(GL_ARRAY_BUFFER, _VBO);
     glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(vertices), vertices);
     glBindBuffer(GL_ARRAY_BUFFER, 0);
     glDrawArrays(GL_TRIANGLES, 0, 6);

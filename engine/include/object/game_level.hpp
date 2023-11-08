@@ -1,22 +1,42 @@
 #pragma once
 
+#include <mutex>
+#include <queue>
 #include <string>
 #include <vector>
+
+#include "object/game_object.hpp"
 
 namespace Anterle {
 class GameLevel
 {
 public:
-  std::vector<std::pair<std::string, std::string>> Speech;
-  std::string Name;
-  std::string Description;
+  GameLevel(std::string name);
 
-  GameLevel() = default;
+  void Update();
+  void FixedUpdate();
+  void ProcessInput();
 
-  void Load(std::string name);
+  void AddObject(GameObject* object);
   bool IsCompleted();
+  void Reset();
+  
+protected:
+std::vector<GameObject*> p_objects;
 
 private:
-  static std::string FindByKey(std::string key, const std::string *text);
+  void ParallelTask(void (GameObject::*func)());
+};
+
+class ConcurrentQueue
+{
+public:
+  void push(GameObject *comp);
+  GameObject *pop();
+
+private:
+  std::queue<GameObject *> queue;
+  std::mutex mtx;
+  std::condition_variable cv;
 };
 }// namespace Anterle

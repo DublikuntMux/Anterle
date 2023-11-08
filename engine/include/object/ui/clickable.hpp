@@ -17,13 +17,13 @@ public:
   virtual void Render();
 
 private:
-  uint32_t m_width;
-  uint32_t m_height;
-  uint32_t m_top;
-  uint32_t m_left;
-  ClickCallback m_onClick;
+  uint32_t _width;
+  uint32_t _height;
+  uint32_t _top;
+  uint32_t _left;
+  ClickCallback _onClick;
 
-  Shader m_shader;
-  uint32_t m_quadVAO;
+  Shader _shader;
+  uint32_t _quadVAO;
 };
 }// namespace Anterle

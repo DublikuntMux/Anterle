@@ -4,8 +4,6 @@ project(Imgui LANGUAGES CXX)
 file(GLOB imgui_includes "include/*.h")
 file(GLOB imgui_src "src/*.cpp")
 
-include(FetchContent)
-
 FetchContent_Declare(
     glfw
     GIT_REPOSITORY https://github.com/glfw/glfw.git
@@ -22,7 +20,7 @@ set(GLFW_BUILD_TESTS OFF CACHE BOOL "" FORCE)
 set(GLFW_BUILD_DOCS OFF CACHE BOOL "" FORCE)
 set(GLFW_INSTALL OFF CACHE BOOL "" FORCE)
 set(GLFW_USE_HYBRID_HPG ON CACHE BOOL "" FORCE)
-# set(GLFW_BUILD_WAYLAND ON CACHE BOOL "" FORCE)
+set(GLFW_BUILD_WAYLAND ON CACHE BOOL "" FORCE)
 
 set(FT_DISABLE_BROTLI ON CACHE BOOL "" FORCE)
 set(FT_DISABLE_BZIP2 ON CACHE BOOL "" FORCE)
@@ -36,7 +34,6 @@ FetchContent_MakeAvailable(glfw)
 add_library(imgui ${imgui_src} ${imgui_includes})
 
 target_include_directories(imgui PUBLIC include/)
-
 
 target_link_libraries(imgui PRIVATE 
     glfw

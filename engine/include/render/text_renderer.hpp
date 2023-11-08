@@ -29,6 +29,6 @@ public:
   void RenderText(const std::wstring &text, float x, float y, float scale, glm::vec3 color = glm::vec3(1.0F));
 
 private:
-  uint32_t m_VAO, m_VBO;
+  uint32_t _VAO, _VBO;
 };
 }// namespace Anterle

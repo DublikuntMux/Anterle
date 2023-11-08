@@ -14,8 +14,6 @@ AnterleGame::AnterleGame(uint16_t width, uint16_t height, GameConfigs *Configs) 
 
 AnterleGame::~AnterleGame()
 {
-  delete Renderer;
-  delete Particles;
   delete Text;
   delete Audio;
 }
@@ -31,35 +29,24 @@ void AnterleGame::Init()
   ImGui::MergeIconsWithLatestFont(16.f, false);
 
   Anterle::ResourceManager::LoadShader("sprite");
-  Anterle::ResourceManager::LoadShader("particle");
 
   glm::mat4 projection = glm::ortho(0.0F, static_cast<float>(Width), static_cast<float>(Height), 0.0F, -1.0F, 1.0F);
 
   Anterle::ResourceManager::GetShader("sprite").Use().SetInteger("sprite", 0);
   Anterle::ResourceManager::GetShader("sprite").SetMatrix4("projection", projection);
 
-  Anterle::ResourceManager::GetShader("particle").Use().SetInteger("sprite", 0);
-  Anterle::ResourceManager::GetShader("particle").SetMatrix4("projection", projection);
-
   Anterle::ResourceManager::LoadTexture("background", false);
   Anterle::ResourceManager::LoadTexture("face", true);
-  Anterle::ResourceManager::LoadTexture("particle", true);
 
-  Renderer = new Anterle::SpriteRenderer(Anterle::ResourceManager::GetShader("sprite"));
-  Particles = new Anterle::ParticleGenerator(
-    Anterle::ResourceManager::GetShader("particle"), Anterle::ResourceManager::GetTexture("particle"), 500);
+  Renderer = Anterle::SpriteRenderer::CreateInstance(Anterle::ResourceManager::GetShader("sprite"));
   Text = new Anterle::TextRenderer(Width, Height);
   Text->Load("tahoma", 24);
   Audio = new Anterle::AudioSystem();
 
-  Anterle::GameLevel one;
-  one.Load("one");
-  Anterle::GameLevel two;
-  two.Load("one");
-  Anterle::GameLevel three;
-  three.Load("one");
-  Anterle::GameLevel four;
-  four.Load("one");
+  Anterle::GameLevel one("one");
+  Anterle::GameLevel two("one");
+  Anterle::GameLevel three("one");
+  Anterle::GameLevel four("one");
   Levels.push_back(one);
   Levels.push_back(two);
   Levels.push_back(three);
@@ -67,7 +54,7 @@ void AnterleGame::Init()
   Configs->CurentLevel = 0;
 }
 
-void AnterleGame::Update(float dt)
+void AnterleGame::Update()
 {
   if (State == Anterle::GameState::GAME_ACTIVE && Levels[Configs->CurentLevel].IsCompleted()) {
     ResetLevel();
@@ -75,7 +62,9 @@ void AnterleGame::Update(float dt)
   }
 }
 
-void AnterleGame::ProcessInput(float dt)
+void AnterleGame::FixedUpdate() {}
+
+void AnterleGame::ProcessInput()
 {
   if (State == Anterle::GameState::GAME_MENU) {
     if (Keys[GLFW_KEY_ENTER] && !KeysProcessed[GLFW_KEY_ENTER]) {
@@ -129,12 +118,12 @@ void AnterleGame::Render()
 void AnterleGame::ResetLevel()
 {
   if (Configs->CurentLevel == 0) {
-    Levels[0].Load("one");
+    Levels[0].Reset();
   } else if (Configs->CurentLevel == 1) {
-    Levels[1].Load("one");
+    Levels[1].Reset();
   } else if (Configs->CurentLevel == 2) {
-    Levels[2].Load("one");
+    Levels[2].Reset();
   } else if (Configs->CurentLevel == 3) {
-    Levels[3].Load("one");
+    Levels[3].Reset();
   }
 }

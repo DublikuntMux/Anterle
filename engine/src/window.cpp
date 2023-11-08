@@ -1,3 +1,5 @@
+#include "resource/time.hpp"
+#include <cstdio>
 #include <glad/gles2.h>
 #define GLFW_INCLUDE_NONE
 #include <GLFW/glfw3.h>
@@ -143,11 +145,11 @@ void Window::mouse_callback(GLFWwindow *window, int button, int action, int)
       glfwGetCursorPos(window, &mouseX, &mouseY);
 
       if (mouseX > 0 && mouseX < 0 + WindowWidth && mouseY > 0 && mouseY < 0 + 30) {
-        isDragging = true;
-        glfwGetCursorPos(window, &lastMouseX, &lastMouseY);
+        _isDragging = true;
+        glfwGetCursorPos(window, &_lastMouseX, &_lastMouseY);
       }
     } else if (action == GLFW_RELEASE) {
-      isDragging = false;
+      _isDragging = false;
     }
   }
 
@@ -158,17 +160,17 @@ void Window::mouse_callback(GLFWwindow *window, int button, int action, int)
 
 void Window::cursor_callback(GLFWwindow *window, double xpos, double ypos)
 {
-  if (isDragging) {
-    double deltaX = xpos - lastMouseX;
-    double deltaY = ypos - lastMouseY;
+  if (_isDragging) {
+    double deltaX = xpos - _lastMouseX;
+    double deltaY = ypos - _lastMouseY;
 
     int windowX, windowY;
     glfwGetWindowPos(window, &windowX, &windowY);
 
     glfwSetWindowPos(window, windowX + static_cast<int>(deltaX), windowY + static_cast<int>(deltaY));
 
-    lastMouseX = xpos;
-    lastMouseY = ypos;
+    _lastMouseX = xpos;
+    _lastMouseY = ypos;
   }
 }
 
@@ -199,22 +201,7 @@ Window::Window(int window_width, int window_hight, const char *name, Game *insta
   if (GlfwWindow == nullptr) { ABORT_F("Failed to initialize window."); }
 
   gladLoadGLES2(glfwGetProcAddress);
-}
 
-Window::~Window()
-{
-  ResourceManager::Clear();
-
-  ImGui_ImplOpenGL3_Shutdown();
-  ImGui_ImplGlfw_Shutdown();
-  ImGui::DestroyContext();
-
-  glfwDestroyWindow(GlfwWindow);
-  glfwTerminate();
-}
-
-void Window::Init()
-{
   glfwSwapInterval(1);
   glfwSetWindowUserPointer(GlfwWindow, this);
   glfwSetKeyCallback(GlfwWindow, [](GLFWwindow *window, int key, int scancode, int action, int mode) {
@@ -251,29 +238,43 @@ void Window::Init()
   GameInstance->Init();
 }
 
+Window::~Window()
+{
+  ResourceManager::Clear();
+
+  ImGui_ImplOpenGL3_Shutdown();
+  ImGui_ImplGlfw_Shutdown();
+  ImGui::DestroyContext();
+
+  glfwDestroyWindow(GlfwWindow);
+  glfwTerminate();
+}
+
 void Window::Start()
 {
-  double deltaTime = 0.0;
-  double lastFrame = 0.0;
   Profiler profiler;
 
   while (!glfwWindowShouldClose(GlfwWindow)) {
     profiler.Frame();
-
+    Time::update();
     profiler.Begin(Profiler::Stage::PollEvents);
-    double currentFrame = glfwGetTime();
-    deltaTime = currentFrame - lastFrame;
-    lastFrame = currentFrame;
     glfwPollEvents();
     profiler.End(Profiler::Stage::PollEvents);
 
     profiler.Begin(Profiler::Stage::GameEvents);
     profiler.Begin(Profiler::Stage::PressInput);
-    GameInstance->ProcessInput(deltaTime);
+    GameInstance->ProcessInput();
     profiler.End(Profiler::Stage::PressInput);
 
+    profiler.Begin(Profiler::Stage::FixedUpdate);
+    while (Time::FixedAccumulator >= Time::FixedTimeStep) {
+      GameInstance->FixedUpdate();
+      Time::FixedAccumulator -= Time::FixedTimeStep;
+    }
+    profiler.End(Profiler::Stage::FixedUpdate);
+
     profiler.Begin(Profiler::Stage::Update);
-    GameInstance->Update(deltaTime);
+    GameInstance->Update();
     profiler.End(Profiler::Stage::Update);
     profiler.End(Profiler::Stage::GameEvents);
 
@@ -313,7 +314,7 @@ void Window::Start()
           FLT_MAX,
           FLT_MAX,
           ImVec2(400, 0));
-        ImGui::PlotVar("Delta time", static_cast<float>(deltaTime));
+        ImGui::PlotVar("Delta time", static_cast<float>(Time::getDeltaTime()));
         ImGui::End();
       }
     }

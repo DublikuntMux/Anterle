@@ -26,13 +26,12 @@ public:
   Window(int window_width, int window_hight, const char *name, Game *instance, bool show_close = true);
   virtual ~Window();
 
-  virtual void Init();
   virtual void Start();
 
 private:
-  double lastMouseX = 0;
-  double lastMouseY = 0;
-  bool isDragging = false;
+  double _lastMouseX = 0;
+  double _lastMouseY = 0;
+  bool _isDragging = false;
 
   void CheckClickables(double x, double y);
 

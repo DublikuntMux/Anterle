@@ -46,10 +46,10 @@ public:
   bool isChannelPaused(const std::string &channelName) const;
 
 private:
-  ma_context context;
-  ma_device device;
-  std::unordered_map<std::string, Channel> channels;
-  static const int bufferSize = 4096;
-  float buffer[bufferSize];
+  ma_context _context;
+  ma_device _device;
+  std::unordered_map<std::string, Channel> _channels;
+  static const int _bufferSize = 4096;
+  float _buffer[_bufferSize];
 };
 }// namespace Anterle

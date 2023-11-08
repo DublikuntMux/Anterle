@@ -8,32 +8,32 @@
 namespace Anterle {
 AudioSystem::AudioSystem()
 {
-  ma_context_init(NULL, 0, NULL, &context);
+  ma_context_init(NULL, 0, NULL, &_context);
   ma_device_config deviceConfig = ma_device_config_init(ma_device_type_playback);
   deviceConfig.playback.format = ma_format_f32;
   deviceConfig.playback.channels = 2;
   deviceConfig.sampleRate = 44100;
   deviceConfig.pUserData = this;
 
-  if (ma_device_init(NULL, &deviceConfig, &device) != MA_SUCCESS) {
+  if (ma_device_init(NULL, &deviceConfig, &_device) != MA_SUCCESS) {
     throw AudioSystemException("Failed to initialize audio device!");
   }
 
-  if (ma_device_start(&device) != MA_SUCCESS) { throw AudioSystemException("Failed to start audio device!"); }
+  if (ma_device_start(&_device) != MA_SUCCESS) { throw AudioSystemException("Failed to start audio device!"); }
 }
 
 AudioSystem::~AudioSystem()
 {
-  ma_device_uninit(&device);
-  ma_context_uninit(&context);
+  ma_device_uninit(&_device);
+  ma_context_uninit(&_context);
 }
 
 void AudioSystem::createChannel(const std::string &channelName, const char *filePath)
 {
-  if (channels.find(channelName) == channels.end()) {
+  if (_channels.find(channelName) == _channels.end()) {
     ma_decoder decoder;
     if (ma_decoder_init_file(filePath, NULL, &decoder) == MA_SUCCESS) {
-      channels[channelName] = { decoder, false, false, false, 1.0f };
+      _channels[channelName] = { decoder, false, false, false, 1.0f };
     } else {
       throw AudioSystemException("Failed to load sound: " + std::string(filePath));
     }
@@ -44,11 +44,11 @@ void AudioSystem::createChannel(const std::string &channelName, const char *file
 
 void AudioSystem::setSound(const std::string &channelName, const char *filePath)
 {
-  if (channels.find(channelName) != channels.end()) {
+  if (_channels.find(channelName) != _channels.end()) {
     ma_decoder decoder;
     if (ma_decoder_init_file(filePath, NULL, &decoder) == MA_SUCCESS) {
-      ma_decoder_uninit(&channels[channelName].decoder);
-      channels[channelName].decoder = decoder;
+      ma_decoder_uninit(&_channels[channelName].decoder);
+      _channels[channelName].decoder = decoder;
     } else {
       throw AudioSystemException("Failed to load sound: " + std::string(filePath));
     }
@@ -59,10 +59,10 @@ void AudioSystem::setSound(const std::string &channelName, const char *filePath)
 
 void AudioSystem::removeChannel(const std::string &channelName)
 {
-  auto it = channels.find(channelName);
-  if (it != channels.end()) {
+  auto it = _channels.find(channelName);
+  if (it != _channels.end()) {
     ma_decoder_uninit(&it->second.decoder);
-    channels.erase(it);
+    _channels.erase(it);
   } else {
     throw AudioSystemException("Channel does not exist: " + channelName);
   }
@@ -70,26 +70,26 @@ void AudioSystem::removeChannel(const std::string &channelName)
 
 float AudioSystem::getChannelVolume(const std::string &channelName) const
 {
-  if (channels.find(channelName) != channels.end()) { return channels.at(channelName).volume; }
+  if (_channels.find(channelName) != _channels.end()) { return _channels.at(channelName).volume; }
   return -1.0f;
 }
 
 bool AudioSystem::isChannelLooped(const std::string &channelName) const
 {
-  if (channels.find(channelName) != channels.end()) { return channels.at(channelName).isLooping; }
+  if (_channels.find(channelName) != _channels.end()) { return _channels.at(channelName).isLooping; }
   return false;
 }
 
 bool AudioSystem::isChannelPaused(const std::string &channelName) const
 {
-  if (channels.find(channelName) != channels.end()) { return channels.at(channelName).isPaused; }
+  if (_channels.find(channelName) != _channels.end()) { return _channels.at(channelName).isPaused; }
   return false;
 }
 
 void AudioSystem::play(const std::string &channelName)
 {
-  if (channels.find(channelName) != channels.end()) {
-    Channel &channel = channels[channelName];
+  if (_channels.find(channelName) != _channels.end()) {
+    Channel &channel = _channels[channelName];
     if (!channel.isPlaying && !channel.isPaused) { ma_decoder_seek_to_pcm_frame(&channel.decoder, 0); }
     channel.isPlaying = true;
     channel.isPaused = false;
@@ -98,8 +98,8 @@ void AudioSystem::play(const std::string &channelName)
 
 void AudioSystem::stop(const std::string &channelName)
 {
-  if (channels.find(channelName) != channels.end()) {
-    Channel &channel = channels[channelName];
+  if (_channels.find(channelName) != _channels.end()) {
+    Channel &channel = _channels[channelName];
     channel.isPlaying = false;
     channel.isPaused = false;
   }
@@ -107,16 +107,16 @@ void AudioSystem::stop(const std::string &channelName)
 
 void AudioSystem::pause(const std::string &channelName)
 {
-  if (channels.find(channelName) != channels.end()) {
-    Channel &channel = channels[channelName];
+  if (_channels.find(channelName) != _channels.end()) {
+    Channel &channel = _channels[channelName];
     channel.isPaused = true;
   }
 }
 
 void AudioSystem::resume(const std::string &channelName)
 {
-  if (channels.find(channelName) != channels.end()) {
-    Channel &channel = channels[channelName];
+  if (_channels.find(channelName) != _channels.end()) {
+    Channel &channel = _channels[channelName];
     if (!channel.isPlaying) { ma_decoder_seek_to_pcm_frame(&channel.decoder, 0); }
     channel.isPlaying = true;
     channel.isPaused = false;
@@ -125,22 +125,22 @@ void AudioSystem::resume(const std::string &channelName)
 
 void AudioSystem::loop(const std::string &channelName, bool enable)
 {
-  if (channels.find(channelName) != channels.end()) { channels[channelName].isLooping = enable; }
+  if (_channels.find(channelName) != _channels.end()) { _channels[channelName].isLooping = enable; }
 }
 
 void AudioSystem::setVolume(const std::string &channelName, float volume)
 {
-  if (channels.find(channelName) != channels.end()) { channels[channelName].volume = volume; }
+  if (_channels.find(channelName) != _channels.end()) { _channels[channelName].volume = volume; }
 }
 
 void AudioSystem::update()
 {
-  for (auto &channel : channels) {
+  for (auto &channel : _channels) {
     Channel &ch = channel.second;
     if (ch.isPlaying && !ch.isPaused) {
       ma_decoder_seek_to_pcm_frame(&ch.decoder, 0);
       float volume = ch.volume;
-      if (ma_decoder_read_pcm_frames(&ch.decoder, buffer, bufferSize, 0) == 0) {
+      if (ma_decoder_read_pcm_frames(&ch.decoder, _buffer, _bufferSize, 0) == 0) {
         if (ch.isLooping) {
           ma_decoder_seek_to_pcm_frame(&ch.decoder, 0);
         } else {
@@ -148,9 +148,9 @@ void AudioSystem::update()
         }
       }
 
-      for (int i = 0; i < bufferSize; ++i) { buffer[i] *= volume; }
+      for (int i = 0; i < _bufferSize; ++i) { _buffer[i] *= volume; }
     } else {
-      memset(buffer, 0, sizeof(buffer));
+      memset(_buffer, 0, sizeof(_buffer));
     }
   }
 }
