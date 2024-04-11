@@ -1,13 +1,12 @@
 cmake_minimum_required(VERSION 3.25.0)
 project(Imgui LANGUAGES CXX)
 
-file(GLOB imgui_includes "include/*.h")
 file(GLOB imgui_src "src/*.cpp")
 
 FetchContent_Declare(
     glfw
     GIT_REPOSITORY https://github.com/glfw/glfw.git
-    GIT_TAG 3.3.8
+    GIT_TAG 3.4
 )
 FetchContent_Declare(
     freetype
@@ -31,7 +30,7 @@ set(FT_DISABLE_HARFBUZZ ON CACHE BOOL "" FORCE)
 FetchContent_MakeAvailable(freetype)
 FetchContent_MakeAvailable(glfw)
 
-add_library(imgui ${imgui_src} ${imgui_includes})
+add_library(imgui ${imgui_src})
 
 target_include_directories(imgui PUBLIC include/)
 

@@ -13,6 +13,7 @@ const char *ImGuiToast::get_default_title()
 {
   if (!strlen(title)) {
     switch (type) {
+    case ImGuiToastType::COUNT:
     case ImGuiToastType::None:
       return NULL;
     case ImGuiToastType::Success:
@@ -29,9 +30,10 @@ const char *ImGuiToast::get_default_title()
   return title;
 };
 const ImGuiToastType &ImGuiToast::get_type() { return type; };
-const ImVec4 &ImGuiToast::get_color()
+ImVec4 ImGuiToast::get_color()
 {
   switch (type) {
+  case ImGuiToastType::COUNT:
   case ImGuiToastType::None:
     return { 255, 255, 255, 255 };
   case ImGuiToastType::Success:
@@ -47,6 +49,7 @@ const ImVec4 &ImGuiToast::get_color()
 const char *ImGuiToast::get_icon()
 {
   switch (type) {
+  case ImGuiToastType::COUNT:
   case ImGuiToastType::None:
     return NULL;
   case ImGuiToastType::Success:
@@ -66,7 +69,8 @@ int64_t ImGuiToast::get_elapsed_time()
            .count()
          - creation_time;
 }
-const ImGuiToastPhase &ImGuiToast::get_phase()
+
+ImGuiToastPhase ImGuiToast::get_phase()
 {
   const auto elapsed = get_elapsed_time();
 
@@ -80,6 +84,7 @@ const ImGuiToastPhase &ImGuiToast::get_phase()
     return ImGuiToastPhase::FadeIn;
   }
 }
+
 float ImGuiToast::get_fade_percent()
 {
   const auto phase = get_phase();

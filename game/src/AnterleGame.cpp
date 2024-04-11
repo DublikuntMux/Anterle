@@ -90,11 +90,6 @@ void AnterleGame::ProcessInput()
       State = Anterle::GameState::GAME_MENU;
     }
   }
-  if (Keys[GLFW_KEY_F11] && !KeysProcessed[GLFW_KEY_F11]) {
-    Anterle::saveScreenshotToFile("./screenshot.tga", Width, Height);
-    ImGui::InsertNotification({ Anterle::ImGuiToastType::Info, 3000, "Screenshot created" });
-    KeysProcessed[GLFW_KEY_F11] = true;
-  }
 }
 
 void AnterleGame::Render()

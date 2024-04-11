@@ -21,7 +21,5 @@
 #include "resource/texture.hpp"
 #include "resource/time.hpp"
 
-#include "utility/screen.hpp"
-
 #include "game.hpp"
 #include "window.hpp"

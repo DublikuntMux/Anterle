@@ -7,5 +7,5 @@
 class AnterleWindow : public Anterle::Window
 {
 public:
-  AnterleWindow(uint32_t screen_width, uint32_t screen_hight, const char *name, AnterleGame *instance);
+  AnterleWindow(int screen_width, int screen_hight, const char *name, AnterleGame *instance);
 };

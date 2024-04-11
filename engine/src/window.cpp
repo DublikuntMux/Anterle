@@ -1,5 +1,3 @@
-#include "resource/time.hpp"
-#include <cstdio>
 #include <glad/gles2.h>
 #define GLFW_INCLUDE_NONE
 #include <GLFW/glfw3.h>
@@ -16,6 +14,7 @@
 #include "imgui/plot_var.hpp"
 #include "object/ui/notify.hpp"
 #include "resource/resource_manager.hpp"
+#include "resource/time.hpp"
 #include "window.hpp"
 
 namespace Anterle {
@@ -186,8 +185,6 @@ Window::Window(int window_width, int window_hight, const char *name, Game *insta
   glfwWindowHint(GLFW_CLIENT_API, GLFW_OPENGL_ES_API);
   glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
   glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 0);
-  glfwWindowHint(GLFW_RESIZABLE, GL_FALSE);
-  glfwWindowHint(GLFW_DECORATED, GLFW_FALSE);
   glfwWindowHint(GLFW_DOUBLEBUFFER, GLFW_TRUE);
 
   GLFWmonitor *monitor = glfwGetPrimaryMonitor();
@@ -282,23 +279,6 @@ void Window::Start()
     ImGui_ImplOpenGL3_NewFrame();
     ImGui_ImplGlfw_NewFrame();
     ImGui::NewFrame();
-
-    profiler.Begin(Profiler::Stage::CutomTitleBar);
-    static ImGuiWindowFlags titlebar_flags = ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoResize
-                                             | ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoScrollbar;
-    ImGui::SetNextWindowSizeConstraints(ImVec2(static_cast<float>(WindowWidth), 30.0f), ImVec2(FLT_MAX, FLT_MAX));
-    ImGui::SetNextWindowPos(ImVec2(0, 0));
-    ImGui::Begin("Title Bar", NULL, titlebar_flags);
-
-    ImGui::SetCursorPosX(10);
-    ImGui::Text("%s", WindowName);
-
-    ImGui::SameLine(ImGui::GetWindowWidth() - 80);
-    if (showClose && ImGui::Button("Close")) { glfwSetWindowShouldClose(glfwGetCurrentContext(), true); }
-
-
-    ImGui::End();
-    profiler.End(Profiler::Stage::CutomTitleBar);
 
     if (debug_mode) {
       ImGui::SetNextWindowSize(ImVec2(470, 200));

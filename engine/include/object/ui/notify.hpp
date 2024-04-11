@@ -54,11 +54,11 @@ public:
   char *get_title();
   const char *get_default_title();
   const ImGuiToastType &get_type();
-  const ImVec4 &get_color();
+  ImVec4 get_color();
   const char *get_icon();
   char *get_content();
   int64_t get_elapsed_time();
-  const ImGuiToastPhase &get_phase();
+  ImGuiToastPhase get_phase();
   float get_fade_percent();
 
 private:
