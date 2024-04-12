@@ -16,8 +16,8 @@ class AnterleGame : public Anterle::Game
 public:
   GameConfigs *Configs;
 
-  AnterleGame(uint16_t width, uint16_t height);
-  AnterleGame(uint16_t width, uint16_t height, GameConfigs *Configs);
+  AnterleGame(uint16_t width, uint16_t height, const char *title);
+  AnterleGame(uint16_t width, uint16_t height, const char *title, GameConfigs *Configs);
 
   ~AnterleGame();
 

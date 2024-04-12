@@ -8,8 +8,11 @@
 
 #include "AnterleGame.hpp"
 
-AnterleGame::AnterleGame(uint16_t width, uint16_t height) : Game(width, height), Configs(new GameConfigs()) {}
-AnterleGame::AnterleGame(uint16_t width, uint16_t height, GameConfigs *Configs) : Game(width, height), Configs(Configs)
+AnterleGame::AnterleGame(uint16_t width, uint16_t height, const char *title)
+  : Game(width, height, title), Configs(new GameConfigs())
+{}
+AnterleGame::AnterleGame(uint16_t width, uint16_t height, const char *title, GameConfigs *Configs)
+  : Game(width, height, title), Configs(Configs)
 {}
 
 AnterleGame::~AnterleGame()
@@ -79,8 +82,8 @@ void AnterleGame::ProcessInput()
     }
   }
   if (Keys[GLFW_KEY_F11] && !KeysProcessed[GLFW_KEY_F11]) {
-    saveScreenshot("screenshot.png", Width, Height);
-    ImGui::InsertNotification({ ImGuiToastType::Info, 3000, "Screenshot created!" });
+    saveScreenshot("screenshot.png");
+    ImGui::InsertNotification({ Anterle::ImGuiToastType::Info, 3000, "Screenshot created!" });
     KeysProcessed[GLFW_KEY_F11] = true;
   }
 }

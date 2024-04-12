@@ -22,6 +22,5 @@
 #include "resource/time.hpp"
 
 #include "game.hpp"
-#include "window.hpp"
 
 #include "utils.hpp"
