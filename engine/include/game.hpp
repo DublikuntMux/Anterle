@@ -37,12 +37,12 @@ public:
   GLFWwindow *GlfwWindow;
 
   std::vector<Clickable> clickables;
-  bool debug_mode = false;
-
   std::vector<GameLevel> Levels;
 
   bool Keys[1024];
   bool KeysProcessed[1024];
+
+  bool debug_mode = false;
 
 private:
   void CheckClickables(double x, double y);

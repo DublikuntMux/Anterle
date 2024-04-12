@@ -2,6 +2,4 @@
 
 #include <filesystem>
 
-namespace fs = std::filesystem;
-
-void processImage(const fs::path &sourcePath, const fs::path &destPath);
+void processImage(const std::filesystem::path &sourcePath, const std::filesystem::path &destPath);

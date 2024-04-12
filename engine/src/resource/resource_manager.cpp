@@ -4,8 +4,8 @@
 
 #include <fpng.h>
 #include <glad/gl.h>
-#include <loguru.hpp>
 
+#include "logger.hpp"
 #include "resource/resource_manager.hpp"
 
 std::map<std::string, Anterle::Texture2D> Anterle::ResourceManager::Textures;
@@ -75,7 +75,8 @@ Texture2D ResourceManager::loadTextureFromFile(std::string file, bool alpha)
   try {
     file_stream.open(file_patch);
   } catch (std::ifstream::failure &e) {
-    ABORT_F("Failed to load level: %s", file_patch.c_str());
+    Logger::getInstance()->log("Failed to load level: %s", file_patch.c_str());
+    abort();
   }
 
   uint32_t width, height, nrChannels;

@@ -24,10 +24,6 @@ FetchContent_Declare(
   freetype
   GIT_REPOSITORY https://github.com/freetype/freetype.git
   GIT_TAG VER-2-13-2)
-FetchContent_Declare(
-  loguru
-  GIT_REPOSITORY https://github.com/emilk/loguru.git
-  GIT_TAG master)
 
 set(GLFW_BUILD_EXAMPLES
     OFF
@@ -64,14 +60,9 @@ set(FT_DISABLE_HARFBUZZ
     ON
     CACHE BOOL "" FORCE)
 
-set(LOGURU_WITH_STREAMS
-    ON
-    CACHE BOOL "" FORCE)
-
 FetchContent_MakeAvailable(glm)
 FetchContent_MakeAvailable(glfw)
 FetchContent_MakeAvailable(freetype)
-FetchContent_MakeAvailable(loguru)
 
 target_link_libraries(
   AnterleEngine
@@ -81,7 +72,6 @@ target_link_libraries(
          imgui
          freetype
          miniaudio
-         fpng
-         loguru::loguru)
+         fpng)
 
 target_include_directories(AnterleEngine PUBLIC ${freetype_SOURCE_DIR}/include)

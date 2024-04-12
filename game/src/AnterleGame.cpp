@@ -63,6 +63,7 @@ void AnterleGame::Update()
     ResetLevel();
     State = Anterle::GameState::GAME_WIN;
   }
+  Anterle::Logger::getInstance()->log("Update!");
 }
 
 void AnterleGame::FixedUpdate() {}
@@ -84,6 +85,8 @@ void AnterleGame::ProcessInput()
   if (Keys[GLFW_KEY_F11] && !KeysProcessed[GLFW_KEY_F11]) {
     saveScreenshot("screenshot.png");
     ImGui::InsertNotification({ Anterle::ImGuiToastType::Info, 3000, "Screenshot created!" });
+    Anterle::Logger::getInstance()->log("Screenshot saved!");
+    
     KeysProcessed[GLFW_KEY_F11] = true;
   }
 }

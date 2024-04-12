@@ -1,8 +1,8 @@
 #include <glad/gl.h>
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
-#include <loguru.hpp>
 
+#include "logger.hpp"
 #include "render/sprite_renderer.hpp"
 
 namespace Anterle {
@@ -10,7 +10,7 @@ SpriteRenderer *SpriteRenderer::_pinstance = nullptr;
 
 SpriteRenderer *SpriteRenderer::GetInstance()
 {
-  if (_pinstance == nullptr) { LOG_F(ERROR, "You must create instance first!"); }
+  if (_pinstance == nullptr) { Logger::getInstance()->log("You must create instance first!"); }
   return _pinstance;
 }
 

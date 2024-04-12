@@ -1,5 +1,6 @@
 #include <cstdint>
 #include <stdint.h>
+#include <stdlib.h>
 #include <string>
 
 #include <ft2build.h>
@@ -7,8 +8,8 @@
 
 #include <glad/gl.h>
 #include <glm/gtc/matrix_transform.hpp>
-#include <loguru.hpp>
 
+#include "logger.hpp"
 #include "render/text_renderer.hpp"
 #include "resource/resource_manager.hpp"
 
@@ -38,10 +39,16 @@ void TextRenderer::Load(std::string font, uint32_t fontSize)
   std::string file_font = "resources/fonts/" + font + ".ttf";
 
   FT_Library ft = nullptr;
-  if (FT_Init_FreeType(&ft) != 0) { ABORT_F("Could not init FreeType Library."); }
+  if (FT_Init_FreeType(&ft) != 0) {
+    Logger::getInstance()->log("Could not init FreeType Library.");
+    abort();
+  }
 
   FT_Face face = nullptr;
-  if (FT_New_Face(ft, file_font.c_str(), 0, &face) != 0) { ABORT_F("Failed to load font: %s", file_font.c_str()); }
+  if (FT_New_Face(ft, file_font.c_str(), 0, &face) != 0) {
+    Logger::getInstance()->log("Failed to load font: %s", file_font.c_str());
+    abort();
+  }
 
   FT_Select_Charmap(face, ft_encoding_unicode);
   FT_Set_Pixel_Sizes(face, 0, fontSize);
@@ -51,7 +58,7 @@ void TextRenderer::Load(std::string font, uint32_t fontSize)
   wchar_t character = static_cast<wchar_t>(FT_Get_First_Char(face, &index));
   while (true) {
     if (FT_Load_Char(face, character, FT_LOAD_RENDER) != 0) {
-      LOG_F(ERROR, "Failed to load Glyph.");
+      Logger::getInstance()->log("Failed to load Glyph.");
       continue;
     }
 

@@ -3,6 +3,7 @@
 #include <glad/gl.h>
 
 #include <GLFW/glfw3.h>
+#include <stdlib.h>
 
 #define IMGUI_IMPL_OPENGL_ES3
 #include <imgui.h>
@@ -10,11 +11,11 @@
 #include <imgui_impl_opengl3.h>
 
 #include <fpng.h>
-#include <loguru.hpp>
 
 #include "debug/profiler.hpp"
 #include "game.hpp"
 #include "imgui/plot_var.hpp"
+#include "logger.hpp"
 #include "object/ui/notify.hpp"
 #include "resource/resource_manager.hpp"
 #include "resource/time.hpp"
@@ -24,10 +25,12 @@ namespace Anterle {
 Game::Game(uint16_t width, uint16_t height, const char *title)
   : State(GameState::GAME_MENU), Width(width), Height(height), Title(title), Keys(), KeysProcessed()
 {
-  loguru::add_file("logging.log", loguru::Truncate, loguru::Verbosity_INFO);
-
   glfwSetErrorCallback(&Game::glfw_error_callback);
-  if (!glfwInit()) { ABORT_F("Failed to initialize GLFW."); }
+
+  if (!glfwInit()) {
+    Logger::getInstance()->log("Failed to initialize GLFW.");
+    abort();
+  }
 
   glfwWindowHint(GLFW_CLIENT_API, GLFW_OPENGL_API);
   glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
@@ -42,7 +45,10 @@ Game::Game(uint16_t width, uint16_t height, const char *title)
   GlfwWindow = glfwCreateWindow(Width, Height, title, nullptr, nullptr);
   glfwSetWindowPos(GlfwWindow, (screenWidth - Width) / 2, (screenHeight - Height) / 2);
   glfwMakeContextCurrent(GlfwWindow);
-  if (GlfwWindow == nullptr) { ABORT_F("Failed to initialize window."); }
+  if (GlfwWindow == nullptr) {
+    Logger::getInstance()->log("Failed to initialize window.");
+    abort();
+  }
 
   gladLoadGL(glfwGetProcAddress);
 
@@ -197,7 +203,7 @@ void Game::saveScreenshot(const char *filename)
 
 void Game::glfw_error_callback(int error, const char *description)
 {
-  LOG_F(ERROR, "GLFW Error: %d : %s", error, description);
+  Logger::getInstance()->log("GLFW Error: %d : %s", error, description);
 }
 
 void Game::key_callback(GLFWwindow *window, int key, int, int action, int)

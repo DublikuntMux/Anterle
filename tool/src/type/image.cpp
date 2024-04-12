@@ -9,9 +9,7 @@
 
 #include "type/image.hpp"
 
-namespace fs = std::filesystem;
-
-void processImage(const fs::path &sourcePath, const fs::path &destPath)
+void processImage(const std::filesystem::path &sourcePath, const std::filesystem::path &destPath)
 {
   int width, height, channels;
   unsigned char *image = stbi_load(sourcePath.string().c_str(), &width, &height, &channels, 0);
