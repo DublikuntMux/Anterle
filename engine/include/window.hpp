@@ -18,12 +18,12 @@ public:
   bool debug_mode = false;
 
   int WindowWidth;
-  int WindowHight;
+  int WindowHeight;
   const char *WindowName;
 
   bool showClose = true;
 
-  Window(int window_width, int window_hight, const char *name, Game *instance, bool show_close = true);
+  Window(int window_width, int window_Height, const char *name, Game *instance, bool show_close = true);
   virtual ~Window();
 
   virtual void Start();
@@ -34,6 +34,7 @@ private:
   bool _isDragging = false;
 
   void CheckClickables(double x, double y);
+  void saveScreenshot(std::string &filename);
 
   static void glfw_error_callback(int error, const char *description);
   void mouse_callback(GLFWwindow *window, int button, int action, int modifier);

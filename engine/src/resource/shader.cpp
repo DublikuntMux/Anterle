@@ -3,7 +3,7 @@
 #include <glm/glm.hpp>
 #include <glm/gtc/type_ptr.hpp>
 
-#include <glad/gles2.h>
+#include <glad/gl.h>
 #include <loguru.hpp>
 
 #include "resource/shader.hpp"
@@ -15,19 +15,17 @@ Shader &Shader::Use()
   return *this;
 }
 
-void Shader::Compile(const char *vertexSource, const char *fragmentSource)
+void Shader::Compile(std::vector<char> &vertexSource, std::vector<char> &fragmentSource)
 {
   uint32_t sVertex, sFragment;
 
   sVertex = glCreateShader(GL_VERTEX_SHADER);
-  glShaderSource(sVertex, 1, &vertexSource, NULL);
-  glCompileShader(sVertex);
-  checkCompileErrors(sVertex, "VERTEX");
+  glShaderBinary(1, &sVertex, GL_SHADER_BINARY_FORMAT_SPIR_V, vertexSource.data(), vertexSource.size());
+  glSpecializeShader(sVertex, "main", 0, 0, 0);
 
   sFragment = glCreateShader(GL_FRAGMENT_SHADER);
-  glShaderSource(sFragment, 1, &fragmentSource, NULL);
-  glCompileShader(sFragment);
-  checkCompileErrors(sFragment, "FRAGMENT");
+  glShaderBinary(1, &sFragment, GL_SHADER_BINARY_FORMAT_SPIR_V, fragmentSource.data(), fragmentSource.size());
+  glSpecializeShader(sFragment, "main", 0, 0, 0);
 
   ID = glCreateProgram();
   glAttachShader(ID, sVertex);

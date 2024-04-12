@@ -1,0 +1,58 @@
+project(fpng LANGUAGES CXX)
+
+file(GLOB fpng_src "src/*.cpp")
+
+option(BUILD_X64 "build 64-bit" ON)
+option(SSE "SSE 4.1 support" OFF)
+
+if(NOT MSVC)
+  set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -g")
+  set(CMAKE_C_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -g")
+
+  set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -O3")
+  set(CMAKE_C_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -O3")
+
+  set(CMAKE_CXX_FLAGS -std=c++11)
+  set(GCC_COMPILE_FLAGS
+      "-fvisibility=hidden -fno-strict-aliasing -D_LARGEFILE64_SOURCE=1 -D_FILE_OFFSET_BITS=64 -Wall -Wextra -Isrc"
+  )
+
+  if(NOT BUILD_X64)
+    set(GCC_COMPILE_FLAGS "${GCC_COMPILE_FLAGS} -m32")
+  endif()
+
+  if(NOT WIN32)
+    set(GCC_COMPILE_FLAGS "${GCC_COMPILE_FLAGS} -fPIC")
+  endif()
+
+  set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS}")
+  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS}")
+
+  set(CMAKE_EXE_LINKER_FLAGS
+      "${CMAKE_EXE_LINKER_FLAGS} ${GCC_LINK_FLAGS} -Wl,-rpath .")
+
+  set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${GCC_COMPILE_FLAGS}")
+  set(CMAKE_C_FLAGS_RELEASE "${CMAKE_C_FLAGS_RELEASE} ${GCC_COMPILE_FLAGS}")
+  set(CMAKE_C_FLAGS_DEBUG
+      "${CMAKE_C_FLAGS_DEBUG} ${GCC_COMPILE_FLAGS} -D_DEBUG")
+
+  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${GCC_COMPILE_FLAGS}")
+  set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} ${GCC_COMPILE_FLAGS}")
+  set(CMAKE_CXX_FLAGS_DEBUG
+      "${CMAKE_CXX_FLAGS_DEBUG} ${GCC_COMPILE_FLAGS} -D_DEBUG")
+
+  if(SSE)
+    set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -DFPNG_NO_SSE=0 -msse4.1 -mpclmul")
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DFPNG_NO_SSE=0 -msse4.1 -mpclmul")
+  else()
+    set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -DFPNG_NO_SSE=1")
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DFPNG_NO_SSE=1")
+  endif()
+else()
+  set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS}")
+  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS}")
+endif()
+
+add_library(fpng ${fpng_src})
+
+target_include_directories(fpng PUBLIC include/)

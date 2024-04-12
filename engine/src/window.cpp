@@ -1,5 +1,5 @@
-#include <glad/gles2.h>
-#define GLFW_INCLUDE_NONE
+#include <glad/gl.h>
+
 #include <GLFW/glfw3.h>
 
 #define IMGUI_IMPL_OPENGL_ES3
@@ -173,8 +173,8 @@ void Window::cursor_callback(GLFWwindow *window, double xpos, double ypos)
   }
 }
 
-Window::Window(int window_width, int window_hight, const char *name, Game *instance, bool showCloseButton)
-  : GameInstance(instance), WindowWidth(window_width), WindowHight(window_hight), WindowName(name),
+Window::Window(int window_width, int window_Height, const char *name, Game *instance, bool showCloseButton)
+  : GameInstance(instance), WindowWidth(window_width), WindowHeight(window_Height), WindowName(name),
     showClose(showCloseButton)
 {
   loguru::add_file("logging.log", loguru::Truncate, loguru::Verbosity_INFO);
@@ -182,9 +182,9 @@ Window::Window(int window_width, int window_hight, const char *name, Game *insta
   glfwSetErrorCallback(&Window::glfw_error_callback);
   if (!glfwInit()) { ABORT_F("Failed to initialize GLFW."); }
 
-  glfwWindowHint(GLFW_CLIENT_API, GLFW_OPENGL_ES_API);
-  glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
-  glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 0);
+  glfwWindowHint(GLFW_CLIENT_API, GLFW_OPENGL_API);
+  glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
+  glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 6);
   glfwWindowHint(GLFW_DOUBLEBUFFER, GLFW_TRUE);
 
   GLFWmonitor *monitor = glfwGetPrimaryMonitor();
@@ -192,12 +192,12 @@ Window::Window(int window_width, int window_hight, const char *name, Game *insta
   int screenWidth = mode->width;
   int screenHeight = mode->height;
 
-  GlfwWindow = glfwCreateWindow(window_width, window_hight, name, nullptr, nullptr);
-  glfwSetWindowPos(GlfwWindow, (screenWidth - window_width) / 2, (screenHeight - window_hight) / 2);
+  GlfwWindow = glfwCreateWindow(window_width, window_Height, name, nullptr, nullptr);
+  glfwSetWindowPos(GlfwWindow, (screenWidth - window_width) / 2, (screenHeight - window_Height) / 2);
   glfwMakeContextCurrent(GlfwWindow);
   if (GlfwWindow == nullptr) { ABORT_F("Failed to initialize window."); }
 
-  gladLoadGLES2(glfwGetProcAddress);
+  gladLoadGL(glfwGetProcAddress);
 
   glfwSwapInterval(1);
   glfwSetWindowUserPointer(GlfwWindow, this);
@@ -214,7 +214,7 @@ Window::Window(int window_width, int window_hight, const char *name, Game *insta
     self.cursor_callback(window, xpos, ypos);
   });
 
-  glViewport(0, 0, WindowWidth, WindowHight);
+  glViewport(0, 0, WindowWidth, WindowHeight);
   glEnable(GL_BLEND);
   glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
@@ -230,7 +230,7 @@ Window::Window(int window_width, int window_hight, const char *name, Game *insta
   SetupImGuiStyle();
 
   ImGui_ImplGlfw_InitForOpenGL(GlfwWindow, true);
-  ImGui_ImplOpenGL3_Init("#version 300 es");
+  ImGui_ImplOpenGL3_Init("#version 460 core");
 
   GameInstance->Init();
 }

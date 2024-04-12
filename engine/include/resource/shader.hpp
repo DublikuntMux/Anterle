@@ -14,7 +14,7 @@ public:
   Shader() {}
   Shader &Use();
 
-  void Compile(const char *vertexSource, const char *fragmentSource);
+  void Compile(std::vector<char> &vertexSource, std::vector<char> &fragmentSource);
 
   void SetFloat(const char *name, float value, bool useShader = false);
   void SetInteger(const char *name, int value, bool useShader = false);

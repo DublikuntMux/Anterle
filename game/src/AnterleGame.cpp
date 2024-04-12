@@ -71,24 +71,17 @@ void AnterleGame::ProcessInput()
       State = Anterle::GameState::GAME_ACTIVE;
       KeysProcessed[GLFW_KEY_ENTER] = true;
     }
-    if (Keys[GLFW_KEY_W] && !KeysProcessed[GLFW_KEY_W]) {
-      Configs->CurentLevel = (Configs->CurentLevel + 1) % 4;
-      KeysProcessed[GLFW_KEY_W] = true;
-    }
-    if (Keys[GLFW_KEY_S] && !KeysProcessed[GLFW_KEY_S]) {
-      if (Configs->CurentLevel > 0) {
-        --Configs->CurentLevel;
-      } else {
-        Configs->CurentLevel = 3;
-      }
-      KeysProcessed[GLFW_KEY_S] = true;
-    }
   }
   if (State == Anterle::GameState::GAME_WIN) {
     if (Keys[GLFW_KEY_ENTER]) {
       KeysProcessed[GLFW_KEY_ENTER] = true;
       State = Anterle::GameState::GAME_MENU;
     }
+  }
+  if (Keys[GLFW_KEY_F11] && !KeysProcessed[GLFW_KEY_F11]) {
+    saveScreenshot("screenshot.png", Width, Height);
+    ImGui::InsertNotification({ ImGuiToastType::Info, 3000, "Screenshot created!" });
+    KeysProcessed[GLFW_KEY_F11] = true;
   }
 }
 

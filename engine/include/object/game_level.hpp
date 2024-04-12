@@ -17,12 +17,12 @@ public:
   void FixedUpdate();
   void ProcessInput();
 
-  void AddObject(GameObject* object);
+  void AddObject(GameObject *object);
   bool IsCompleted();
   void Reset();
-  
+
 protected:
-std::vector<GameObject*> p_objects;
+  std::vector<GameObject *> p_objects;
 
 private:
   void ParallelTask(void (GameObject::*func)());

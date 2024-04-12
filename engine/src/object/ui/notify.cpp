@@ -1,3 +1,5 @@
+#include <vector>
+
 #include <imgui.h>
 
 #include "object/ui/IconsFontAwesome6.hpp"

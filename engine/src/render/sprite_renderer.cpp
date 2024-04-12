@@ -1,4 +1,4 @@
-#include <glad/gles2.h>
+#include <glad/gl.h>
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 #include <loguru.hpp>

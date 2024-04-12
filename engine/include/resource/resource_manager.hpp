@@ -10,15 +10,16 @@ namespace Anterle {
 class ResourceManager
 {
 public:
-  static std::map<std::string, Shader> Shaders;
-  static std::map<std::string, Texture2D> Textures;
-
   static Shader LoadShader(std::string name);
   static Shader GetShader(std::string name);
   static Texture2D LoadTexture(std::string name, bool alpha);
   static Texture2D GetTexture(std::string name);
 
   static void Clear();
+
+public:
+  static std::map<std::string, Shader> Shaders;
+  static std::map<std::string, Texture2D> Textures;
 
 private:
   ResourceManager() {}

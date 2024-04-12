@@ -6,7 +6,7 @@
 namespace Anterle {
 GameLevel::GameLevel(std::string level_name) {}
 
-void GameLevel::Update() 
+void GameLevel::Update()
 {
   if (p_objects.size() >= 3) {
     ParallelTask(&GameObject::Update);
@@ -14,7 +14,7 @@ void GameLevel::Update()
     for (GameObject *gobject : p_objects) { (gobject->*(&GameObject::Update))(); }
   }
 }
-void GameLevel::FixedUpdate() 
+void GameLevel::FixedUpdate()
 {
   if (p_objects.size() >= 3) {
     ParallelTask(&GameObject::FixedUpdate);

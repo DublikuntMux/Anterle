@@ -5,7 +5,7 @@ class Time
 {
 public:
   static double FixedTimeStep;
-static double FixedAccumulator;
+  static double FixedAccumulator;
 
   static void update();
 

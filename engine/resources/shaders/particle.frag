@@ -1,5 +1,4 @@
-#version 300 es
-precision mediump float;
+#version 460 core
 
 in vec2 TexCoords;
 in vec4 ParticleColor;

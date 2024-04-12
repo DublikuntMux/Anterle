@@ -1,18 +1,17 @@
 #include <cstdint>
 #include <fstream>
 #include <iostream>
-#include <sstream>
 
-#include <glad/gles2.h>
+#include <fpng.h>
+#include <glad/gl.h>
 #include <loguru.hpp>
-
-#define STB_IMAGE_IMPLEMENTATION
-#include <stb_image.h>
 
 #include "resource/resource_manager.hpp"
 
 std::map<std::string, Anterle::Texture2D> Anterle::ResourceManager::Textures;
 std::map<std::string, Anterle::Shader> Anterle::ResourceManager::Shaders;
+
+bool fpng_inited;
 
 namespace Anterle {
 Shader ResourceManager::LoadShader(std::string name)
@@ -40,52 +39,37 @@ void ResourceManager::Clear()
 
 Shader ResourceManager::loadShaderFromFile(std::string shaderName)
 {
-  std::string vertexCode;
-  std::string fragmentCode;
+  std::ifstream vertexShaderFile("./resources/shaders/" + shaderName + ".vert.spv", std::ios::binary);
+  std::ifstream fragmentShaderFile("./resources/shaders/" + shaderName + ".frag.spv", std::ios::binary);
 
-  std::ifstream vertexShaderFile;
-  std::ifstream fragmentShaderFile;
+  std::istreambuf_iterator<char> vertexStartIt(vertexShaderFile), vertexEndIt;
+  std::istreambuf_iterator<char> fragmentStartIt(fragmentShaderFile), fragmentEndIt;
 
-  vertexShaderFile.exceptions(std::ifstream::failbit | std::ifstream::badbit);
-  fragmentShaderFile.exceptions(std::ifstream::failbit | std::ifstream::badbit);
-  try {
-    vertexShaderFile.open("./resources/shaders/" + shaderName + ".vert");
-    fragmentShaderFile.open("./resources/shaders/" + shaderName + ".frag");
+  std::vector<char> vertexBuffer(vertexStartIt, vertexEndIt);
+  std::vector<char> fragmentBuffer(fragmentStartIt, fragmentEndIt);
 
-    std::stringstream vShaderStream, fShaderStream;
-
-    vShaderStream << vertexShaderFile.rdbuf();
-    fShaderStream << fragmentShaderFile.rdbuf();
-
-    vertexShaderFile.close();
-    fragmentShaderFile.close();
-
-    vertexCode = vShaderStream.str();
-    fragmentCode = fShaderStream.str();
-
-  } catch (std::ifstream::failure &e) {
-    ABORT_F("Failed to load shader: %s", shaderName.c_str());
-  }
-
-  const char *vShaderCode = vertexCode.c_str();
-  const char *fShaderCode = fragmentCode.c_str();
+  vertexShaderFile.close();
+  fragmentShaderFile.close();
 
   Shader shader;
-  shader.Compile(vShaderCode, fShaderCode);
+  shader.Compile(vertexBuffer, fragmentBuffer);
   return shader;
 }
 
 Texture2D ResourceManager::loadTextureFromFile(std::string file, bool alpha)
 {
+  if (!fpng_inited) {
+    fpng::fpng_init();
+    fpng_inited = true;
+  }
+
   Texture2D texture;
   if (alpha) {
     texture.Internal_Format = GL_RGBA;
     texture.Image_Format = GL_RGBA;
   }
-  int width, height, nrChannels;
 
   std::string file_patch = "./resources/textures/" + file + ".png";
-
   std::ifstream file_stream;
   file_stream.exceptions(std::ifstream::failbit | std::ifstream::badbit);
   try {
@@ -94,8 +78,12 @@ Texture2D ResourceManager::loadTextureFromFile(std::string file, bool alpha)
     ABORT_F("Failed to load level: %s", file_patch.c_str());
   }
 
-  uint8_t *data = stbi_load(file_patch.c_str(), &width, &height, &nrChannels, 0);
-  texture.Generate(width, height, data);
+  uint32_t width, height, nrChannels;
+  std::vector<uint8_t> out;
+  fpng::fpng_decode_file(file_patch.c_str(), out, width, height, nrChannels, 4);
+
+  texture.Generate(width, height, out.data());
+
   return texture;
 }
 }// namespace Anterle
