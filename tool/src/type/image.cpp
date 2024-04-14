@@ -1,6 +1,4 @@
-#include <filesystem>
 #include <iostream>
-#include <string>
 
 #define STB_IMAGE_IMPLEMENTATION
 #include "stb_image.h"
@@ -9,16 +7,16 @@
 
 #include "type/image.hpp"
 
-void processImage(const std::filesystem::path &sourcePath, const std::filesystem::path &destPath)
+void processImage(const char *sourcePath, const char *destPath)
 {
   int width, height, channels;
-  unsigned char *image = stbi_load(sourcePath.string().c_str(), &width, &height, &channels, 0);
+  unsigned char *image = stbi_load(sourcePath, &width, &height, &channels, 0);
   if (image == nullptr) {
     std::cerr << "Failed to load image: " << sourcePath << std::endl;
     return;
   }
 
-  if (!fpng::fpng_encode_image_to_file(destPath.string().c_str(),
+  if (!fpng::fpng_encode_image_to_file(destPath,
         image,
         static_cast<uint32_t>(width),
         static_cast<uint32_t>(height),

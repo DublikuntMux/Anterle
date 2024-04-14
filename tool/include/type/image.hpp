@@ -1,5 +1,3 @@
 #pragma once
 
-#include <filesystem>
-
-void processImage(const std::filesystem::path &sourcePath, const std::filesystem::path &destPath);
+void processImage(const char *sourcePath, const char *destPath);

@@ -3,7 +3,6 @@
 #include <glad/gl.h>
 
 #include <GLFW/glfw3.h>
-#include <stdlib.h>
 
 #define IMGUI_IMPL_OPENGL_ES3
 #include <imgui.h>
@@ -155,7 +154,7 @@ void Game::Start()
 
     profiler.Begin(Profiler::Stage::OpenGL);
     ImGui::Render();
-    glClearColor(0.0F, 0.0F, 0.0F, 1.0F);
+    glClearColor(0.3f, 0.2f, 0.6f, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT);
     profiler.Begin(Profiler::Stage::GameRender);
     Render();

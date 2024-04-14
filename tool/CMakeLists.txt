@@ -15,7 +15,6 @@ FetchContent_Declare(
   stb
   GIT_REPOSITORY https://github.com/nothings/stb.git
   GIT_TAG master)
-
 FetchContent_Declare(
   glslang
   GIT_REPOSITORY https://github.com/KhronosGroup/glslang.git
@@ -29,5 +28,4 @@ FetchContent_MakeAvailable(stb)
 FetchContent_MakeAvailable(glslang)
 
 target_link_libraries(AnterleTool PRIVATE AnterleEngine glslang SPIRV)
-
 target_include_directories(AnterleTool PUBLIC ${stb_SOURCE_DIR} AnterleEngine)

@@ -93,7 +93,7 @@ void Logger::log(const char *format, ...)
   localtime_s(&now_tm, &now_c);
   std::stringstream ss;
   ss << "[" << std::put_time(&now_tm, "%H:%M:%S") << "] " << ": " << buffer;
-  
+
   std::unique_lock<std::mutex> lock(mtx);
   logQueue.push(ss.str());
 }

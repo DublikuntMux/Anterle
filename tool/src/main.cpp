@@ -12,13 +12,16 @@ namespace fs = std::filesystem;
 
 void processDirectory(const fs::path &sourceDir, const fs::path &destDir)
 {
+  std::vector<std::string> imageExtensions = { ".png", ".jpg", ".png", ".bmp", ".tga", ".gif", ".hdr", ".pnm", ".psd" };
+
   for (const auto &entry : fs::recursive_directory_iterator(sourceDir)) {
-    if (entry.path().extension() == ".png") {
+    if (std::find(imageExtensions.begin(), imageExtensions.end(), entry.path().extension().string())
+        != imageExtensions.end()) {
       fs::path relativePath = fs::relative(entry.path(), sourceDir);
       fs::path destPath = destDir / relativePath;
 
       fs::create_directories(destPath.parent_path());
-      processImage(entry.path(), destPath);
+      processImage(entry.path().string().c_str(), destPath.replace_extension(".png").string().c_str());
 
     } else if (entry.path().extension() == ".frag") {
       fs::path relativePath = fs::relative(entry.path(), sourceDir);
@@ -27,8 +30,8 @@ void processDirectory(const fs::path &sourceDir, const fs::path &destDir)
 
       std::ifstream file(entry.path());
       fs::create_directories(destPath.parent_path());
-      compileGLSLToSPIRV(std::string((std::istreambuf_iterator<char>(file)), std::istreambuf_iterator<char>()),
-        destPath.string(),
+      compileGLSLToSPIRV(std::string((std::istreambuf_iterator<char>(file)), std::istreambuf_iterator<char>()).c_str(),
+        destPath.string().c_str(),
         EShLangFragment);
       file.close();
 
@@ -39,8 +42,8 @@ void processDirectory(const fs::path &sourceDir, const fs::path &destDir)
 
       std::ifstream file(entry.path());
       fs::create_directories(destPath.parent_path());
-      compileGLSLToSPIRV(std::string((std::istreambuf_iterator<char>(file)), std::istreambuf_iterator<char>()),
-        destPath.string(),
+      compileGLSLToSPIRV(std::string((std::istreambuf_iterator<char>(file)), std::istreambuf_iterator<char>()).c_str(),
+        destPath.string().c_str(),
         EShLangVertex);
       file.close();
     }

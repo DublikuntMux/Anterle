@@ -7,12 +7,12 @@
 
 #include "type/shader.hpp"
 
-bool compileGLSLToSPIRV(const std::string &glslSource, const std::string &outputFilename, EShLanguage shaderType)
+bool compileGLSLToSPIRV(const char *glslSource, const char *outputFilename, EShLanguage shaderType)
 {
   glslang::InitializeProcess();
 
   const char *shaderStrings[1];
-  shaderStrings[0] = glslSource.c_str();
+  shaderStrings[0] = glslSource;
 
   glslang::TShader shader(shaderType);
   shader.setStrings(shaderStrings, 1);
