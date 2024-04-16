@@ -1,27 +1,11 @@
-# Build directories and binary files
+# Xmake
+.xmake/
 build/
-out/
-cmake-build-*/
-conan-cache/
-
-# User spesific settings
-CMakeUserPresets.json
-CMakeSettings.json
 
 # IDE files
-.cache/
-.vs/
-.idea/
-.vscode/
-!.vscode/settings.json
-!.vscode/tasks.json
-!.vscode/launch.json
-!.vscode/extensions.json
-*.swp
-*~
-_ReSharper*
+.vscode/compile_commands.json
 *.log
-
+.cache
 
 # OS Generated Files
 .DS_Store

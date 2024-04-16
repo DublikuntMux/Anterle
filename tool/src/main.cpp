@@ -1,12 +1,9 @@
 #include <filesystem>
-#include <fstream>
 #include <iostream>
 
 #include <fpng.h>
-#include <glslang/Public/ShaderLang.h>
 
 #include "type/image.hpp"
-#include "type/shader.hpp"
 
 namespace fs = std::filesystem;
 
@@ -22,30 +19,6 @@ void processDirectory(const fs::path &sourceDir, const fs::path &destDir)
 
       fs::create_directories(destPath.parent_path());
       processImage(entry.path().string().c_str(), destPath.replace_extension(".png").string().c_str());
-
-    } else if (entry.path().extension() == ".frag") {
-      fs::path relativePath = fs::relative(entry.path(), sourceDir);
-      fs::path destPath = destDir / relativePath;
-      destPath += ".spv";
-
-      std::ifstream file(entry.path());
-      fs::create_directories(destPath.parent_path());
-      compileGLSLToSPIRV(std::string((std::istreambuf_iterator<char>(file)), std::istreambuf_iterator<char>()).c_str(),
-        destPath.string().c_str(),
-        EShLangFragment);
-      file.close();
-
-    } else if (entry.path().extension() == ".vert") {
-      fs::path relativePath = fs::relative(entry.path(), sourceDir);
-      fs::path destPath = destDir / relativePath;
-      destPath += ".spv";
-
-      std::ifstream file(entry.path());
-      fs::create_directories(destPath.parent_path());
-      compileGLSLToSPIRV(std::string((std::istreambuf_iterator<char>(file)), std::istreambuf_iterator<char>()).c_str(),
-        destPath.string().c_str(),
-        EShLangVertex);
-      file.close();
     }
   }
 }

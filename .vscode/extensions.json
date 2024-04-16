@@ -1,0 +1,8 @@
+{
+    "recommendations": [
+        "ms-vscode.cpptools",
+        "llvm-vs-code-extensions.vscode-clangd",
+        "slevesque.shader",
+        "tboox.xmake-vscode"
+    ]
+}
