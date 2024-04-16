@@ -17,6 +17,7 @@ AnterleGame::~AnterleGame()
 {
   delete Text;
   delete Audio;
+  delete Renderer;
 }
 
 void AnterleGame::Init()
@@ -39,29 +40,16 @@ void AnterleGame::Init()
   Anterle::ResourceManager::LoadTexture("background", false);
   Anterle::ResourceManager::LoadTexture("face", true);
 
-  Renderer = Anterle::SpriteRenderer::CreateInstance(Anterle::ResourceManager::GetShader("sprite"));
+  Renderer = new Anterle::SpriteRenderer(Anterle::ResourceManager::GetShader("sprite"));
   Text = new Anterle::TextRenderer(Width, Height);
   Text->Load("tahoma");
   Audio = new Anterle::AudioSystem();
 
-  Anterle::GameLevel one("one");
-  Anterle::GameLevel two("one");
-  Anterle::GameLevel three("one");
-  Anterle::GameLevel four("one");
-  Levels.push_back(one);
-  Levels.push_back(two);
-  Levels.push_back(three);
-  Levels.push_back(four);
   Configs->CurentLevel = 0;
 }
 
 void AnterleGame::Update()
-{
-  if (State == Anterle::GameState::GAME_ACTIVE && Levels[Configs->CurentLevel].IsCompleted()) {
-    ResetLevel();
-    State = Anterle::GameState::GAME_WIN;
-  }
-}
+{}
 
 void AnterleGame::FixedUpdate() {}
 
@@ -103,18 +91,5 @@ void AnterleGame::Render()
   } else if (State == Anterle::GameState::GAME_WIN) {
     Text->RenderText(L"You WON!!!", 320.0F, Height / 2.0F - 20.0F, 1.0F, glm::vec3(0.0F, 1.0F, 0.0F));
     Text->RenderText(L"Press ENTER to retry or ESC to quit", 130.0F, Height / 2.0F, 1.0F, glm::vec3(1.0F, 1.0F, 0.0F));
-  }
-}
-
-void AnterleGame::ResetLevel()
-{
-  if (Configs->CurentLevel == 0) {
-    Levels[0].Reset();
-  } else if (Configs->CurentLevel == 1) {
-    Levels[1].Reset();
-  } else if (Configs->CurentLevel == 2) {
-    Levels[2].Reset();
-  } else if (Configs->CurentLevel == 3) {
-    Levels[3].Reset();
   }
 }

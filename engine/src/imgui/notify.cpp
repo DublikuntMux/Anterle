@@ -2,8 +2,8 @@
 
 #include <imgui.h>
 
-#include "object/ui/IconsFontAwesome6.hpp"
-#include "object/ui/notify.hpp"
+#include "imgui/IconsFontAwesome6.hpp"
+#include "imgui/notify.hpp"
 
 namespace Anterle {
 void ImGuiToast::set_title(const char *format, ...) { NOTIFY_FORMAT(set_title, format); }

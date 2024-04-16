@@ -10,17 +10,9 @@
 namespace Anterle {
 class SpriteRenderer
 {
-protected:
+public:
   SpriteRenderer(Shader shader);
   ~SpriteRenderer();
-
-public:
-  SpriteRenderer(SpriteRenderer &other) = delete;
-
-  void operator=(const SpriteRenderer &) = delete;
-
-  static SpriteRenderer *GetInstance();
-  static SpriteRenderer *CreateInstance(Shader shader);
 
   void DrawSprite(Texture2D texture,
     glm::vec2 position,
@@ -31,8 +23,5 @@ public:
 protected:
   Shader p_shader;
   uint32_t p_quadVAO;
-
-private:
-  static SpriteRenderer *_pinstance;
 };
 }// namespace Anterle

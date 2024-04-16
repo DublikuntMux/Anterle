@@ -16,10 +16,10 @@ struct Channel
   float volume;
 };
 
-class AudioSystemException : public std::runtime_error
+class AudioException : public std::runtime_error
 {
 public:
-  AudioSystemException(const std::string &message) : std::runtime_error(message) {}
+  AudioException(const std::string &message) : std::runtime_error(message) {}
 };
 
 class AudioSystem

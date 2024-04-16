@@ -15,7 +15,7 @@
 #include "resource/resource_manager.hpp"
 #include "resource/shader.hpp"
 
-const unsigned int ARRAY_LIMIT = 255;
+const int ARRAY_LIMIT = 255;
 
 // clang-format off
 GLfloat vertex_data[] = {
@@ -29,9 +29,9 @@ GLfloat vertex_data[] = {
 namespace Anterle {
 TextRenderer::TextRenderer(uint32_t width, uint32_t height)
 {
-  TextShader = ResourceManager::LoadShader("text");
+  _textShader = ResourceManager::LoadShader("text");
   glm::mat4 projection = glm::ortho(0.0F, static_cast<float>(width), 0.0F, static_cast<float>(height));
-  TextShader.SetMatrix4("projection", projection, true);
+  _textShader.SetMatrix4("projection", projection, true);
 
   glGenVertexArrays(1, &_VAO);
   glGenBuffers(1, &_VBO);
@@ -46,7 +46,7 @@ TextRenderer::TextRenderer(uint32_t width, uint32_t height)
 
 void TextRenderer::Load(std::string font)
 {
-  Characters.clear();
+  _characters.clear();
 
   std::string file_font = "resources/fonts/" + font + ".ttf";
 
@@ -66,9 +66,9 @@ void TextRenderer::Load(std::string font)
   FT_Set_Pixel_Sizes(face, 256, 256);
   glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
 
-  glGenTextures(1, &textureArray);
+  glGenTextures(1, &_textureArray);
   glActiveTexture(GL_TEXTURE0);
-  glBindTexture(GL_TEXTURE_2D_ARRAY, textureArray);
+  glBindTexture(GL_TEXTURE_2D_ARRAY, _textureArray);
   glTexImage3D(GL_TEXTURE_2D_ARRAY, 0, GL_R8, 256, 256, 128, 0, GL_RED, GL_UNSIGNED_BYTE, 0);
 
   FT_UInt index;
@@ -100,7 +100,7 @@ void TextRenderer::Load(std::string font)
       glm::ivec2(face->glyph->bitmap.width, face->glyph->bitmap.rows),
       glm::ivec2(face->glyph->bitmap_left, face->glyph->bitmap_top),
       static_cast<unsigned int>(face->glyph->advance.x) };
-    Characters.insert(std::pair<char, Character>(char_code, character));
+    _characters.insert(std::pair<char, Character>(char_code, character));
 
     char_code = static_cast<wchar_t>(FT_Get_Next_Char(face, char_code, &index));
     if (!index) break;
@@ -111,8 +111,8 @@ void TextRenderer::Load(std::string font)
   FT_Done_FreeType(ft);
 
   for (int i = 0; i < ARRAY_LIMIT; i++) {
-    letterMap.push_back(0);
-    transforms.push_back(glm::mat4(1.0f));
+    _letterMap.push_back(0);
+    _transforms.push_back(glm::mat4(1.0f));
   }
 }
 
@@ -120,10 +120,10 @@ void TextRenderer::RenderText(const std::wstring &text, float x, float y, float 
 {
   scale = scale * 48.0f / 256.0f;
   float copyX = x;
-  TextShader.Use();
-  TextShader.SetVector3f("textColor", color);
+  _textShader.Use();
+  _textShader.SetVector3f("textColor", color);
   glActiveTexture(GL_TEXTURE0);
-  glBindTexture(GL_TEXTURE_2D_ARRAY, textureArray);
+  glBindTexture(GL_TEXTURE_2D_ARRAY, _textureArray);
   glBindVertexArray(_VAO);
   glBindBuffer(GL_ARRAY_BUFFER, _VBO);
 
@@ -131,7 +131,7 @@ void TextRenderer::RenderText(const std::wstring &text, float x, float y, float 
 
   std::wstring::const_iterator c;
   for (c = text.begin(); c != text.end(); c++) {
-    Character ch = Characters[*c];
+    Character ch = _characters[*c];
 
     if (*c == '\n') {
       y -= ((ch.Size.y)) * 1.3 * scale;
@@ -142,9 +142,9 @@ void TextRenderer::RenderText(const std::wstring &text, float x, float y, float 
       float xpos = x + ch.Bearing.x * scale;
       float ypos = y - (256 - ch.Bearing.y) * scale;
 
-      transforms[workingIndex] = translate(glm::mat4(1.0f), glm::vec3(xpos, ypos, 0))
+      _transforms[workingIndex] = translate(glm::mat4(1.0f), glm::vec3(xpos, ypos, 0))
                                  * glm::scale(glm::mat4(1.0f), glm::vec3(256 * scale, 256 * scale, 0));
-      letterMap[workingIndex] = ch.TextureID;
+      _letterMap[workingIndex] = ch.TextureID;
 
       x += (ch.Advance >> 6) * scale;
       workingIndex++;
@@ -164,8 +164,8 @@ void TextRenderer::RenderText(const std::wstring &text, float x, float y, float 
 void TextRenderer::TextRenderCall(int length)
 {
   if (length != 0) {
-    TextShader.SetMatrix4("transforms", transforms[0], length);
-    TextShader.SetIntegerVector("letterMap", letterMap, length);
+    _textShader.SetMatrix4("transforms", _transforms[0], length);
+    _textShader.SetIntegerVector("letterMap", _letterMap, length);
     glDrawArraysInstanced(GL_TRIANGLE_STRIP, 0, 4, length);
   }
 }

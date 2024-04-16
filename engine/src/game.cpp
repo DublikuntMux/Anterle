@@ -14,7 +14,7 @@
 #include "game.hpp"
 #include "imgui/plot_var.hpp"
 #include "logger.hpp"
-#include "object/ui/notify.hpp"
+#include "imgui/notify.hpp"
 #include "resource/resource_manager.hpp"
 #include "resource/time.hpp"
 #include "utils.hpp"
@@ -179,8 +179,6 @@ void Game::FixedUpdate() {}
 void Game::ProcessInput() {}
 void Game::Render() {}
 
-void Game::ResetLevel() {}
-
 void Game::saveScreenshot(const char *filename)
 {
   GLubyte *pixels = new GLubyte[3 * Width * Height];
@@ -234,11 +232,7 @@ void Game::mouse_callback(GLFWwindow *window, int button, int action, int)
 {
   double xpos, ypos;
   glfwGetCursorPos(window, &xpos, &ypos);
-  if (action == GLFW_PRESS && button == GLFW_MOUSE_BUTTON_1) { CheckClickables(xpos, ypos); }
-}
-
-void Game::CheckClickables(double x, double y)
-{
-  for (Clickable clickable : clickables) { clickable.CheckClick(x, y); }
+  if (action == GLFW_PRESS && button == GLFW_MOUSE_BUTTON_1) { 
+  }
 }
 }// namespace Anterle

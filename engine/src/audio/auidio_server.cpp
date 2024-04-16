@@ -17,10 +17,10 @@ AudioSystem::AudioSystem()
   deviceConfig.pUserData = this;
 
   if (ma_device_init(NULL, &deviceConfig, &_device) != MA_SUCCESS) {
-    throw AudioSystemException("Failed to initialize audio device!");
+    throw AudioException("Failed to initialize audio device!");
   }
 
-  if (ma_device_start(&_device) != MA_SUCCESS) { throw AudioSystemException("Failed to start audio device!"); }
+  if (ma_device_start(&_device) != MA_SUCCESS) { throw AudioException("Failed to start audio device!"); }
 }
 
 AudioSystem::~AudioSystem()
@@ -36,10 +36,10 @@ void AudioSystem::createChannel(const std::string &channelName, const char *file
     if (ma_decoder_init_file(filePath, NULL, &decoder) == MA_SUCCESS) {
       _channels[channelName] = { decoder, false, false, false, 1.0f };
     } else {
-      throw AudioSystemException("Failed to load sound: " + std::string(filePath));
+      throw AudioException("Failed to load sound: " + std::string(filePath));
     }
   } else {
-    throw AudioSystemException("Channel already exists: " + channelName);
+    throw AudioException("Channel already exists: " + channelName);
   }
 }
 
@@ -51,10 +51,10 @@ void AudioSystem::setSound(const std::string &channelName, const char *filePath)
       ma_decoder_uninit(&_channels[channelName].decoder);
       _channels[channelName].decoder = decoder;
     } else {
-      throw AudioSystemException("Failed to load sound: " + std::string(filePath));
+      throw AudioException("Failed to load sound: " + std::string(filePath));
     }
   } else {
-    throw AudioSystemException("Channel does not exist: " + channelName);
+    throw AudioException("Channel does not exist: " + channelName);
   }
 }
 
@@ -65,7 +65,7 @@ void AudioSystem::removeChannel(const std::string &channelName)
     ma_decoder_uninit(&it->second.decoder);
     _channels.erase(it);
   } else {
-    throw AudioSystemException("Channel does not exist: " + channelName);
+    throw AudioException("Channel does not exist: " + channelName);
   }
 }
 

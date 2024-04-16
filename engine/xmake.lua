@@ -1,7 +1,7 @@
 target("AnterleEngine")
     set_kind("static")
     add_deps("glad")
-    add_packages("glm", "glfw", "imgui", "freetype", "fpng", "miniaudio")
+    add_packages("glm", "glfw", "imgui", "freetype", "fpng", "miniaudio", "sol2")
     add_files("src/**.cpp")
     add_installfiles("include/**.hpp")
     add_includedirs("include", {public = true})

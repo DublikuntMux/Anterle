@@ -2,16 +2,7 @@
 
 #include "audio/auidio_server.hpp"
 
-#include "component/component.hpp"
-#include "component/sprite.hpp"
-
-#include "object/game_level.hpp"
-#include "object/game_object.hpp"
-#include "object/ui/button.hpp"
-#include "object/ui/check_box.hpp"
-#include "object/ui/clickable.hpp"
-#include "object/ui/notify.hpp"
-#include "object/ui/switch.hpp"
+#include "imgui/notify.hpp"
 
 #include "render/sprite_renderer.hpp"
 #include "render/text_renderer.hpp"

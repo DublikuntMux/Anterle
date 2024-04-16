@@ -3,24 +3,10 @@
 #include <glm/ext.hpp>
 #include <glm/glm.hpp>
 
-#include "logger.hpp"
 #include "render/sprite_renderer.hpp"
 
 namespace Anterle {
 SpriteRenderer *SpriteRenderer::_pinstance = nullptr;
-
-SpriteRenderer *SpriteRenderer::GetInstance()
-{
-  if (_pinstance == nullptr) { Logger::getInstance()->log("You must create instance first!"); }
-  return _pinstance;
-}
-
-SpriteRenderer *SpriteRenderer::CreateInstance(Shader shader)
-{
-  delete _pinstance;
-  _pinstance = new SpriteRenderer(shader);
-  return _pinstance;
-}
 
 SpriteRenderer::SpriteRenderer(Shader shader) : p_shader(shader)
 {

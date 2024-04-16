@@ -29,7 +29,6 @@ public:
   void FixedUpdate();
   void ProcessInput();
   void Render();
-  void ResetLevel();
 
 private:
   Anterle::SpriteRenderer *Renderer;

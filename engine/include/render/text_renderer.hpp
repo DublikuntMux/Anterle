@@ -28,12 +28,12 @@ public:
 private:
   void TextRenderCall(int length);
 
-  Shader TextShader;
+  Shader _textShader;
   uint32_t _VAO, _VBO;
 
-  std::unordered_map<wchar_t, Character> Characters;
-  uint32_t textureArray;
-  std::vector<glm::mat4> transforms;
-  std::vector<int> letterMap;
+  std::unordered_map<wchar_t, Character> _characters;
+  uint32_t _textureArray;
+  std::vector<glm::mat4> _transforms;
+  std::vector<int> _letterMap;
 };
 }// namespace Anterle

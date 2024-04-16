@@ -1,12 +1,8 @@
 #pragma once
 
 #include <cstdint>
-#include <vector>
 
 #include <GLFW/glfw3.h>
-
-#include "object/game_level.hpp"
-#include "object/ui/clickable.hpp"
 
 namespace Anterle {
 enum class GameState { GAME_ACTIVE, GAME_MENU, GAME_WIN };
@@ -27,8 +23,6 @@ public:
   virtual void ProcessInput();
   virtual void Render();
 
-  virtual void ResetLevel();
-
 public:
   GameState State;
   uint16_t Width, Height;
@@ -36,17 +30,12 @@ public:
 
   GLFWwindow *GlfwWindow;
 
-  std::vector<Clickable> clickables;
-  std::vector<GameLevel> Levels;
-
   bool Keys[1024];
   bool KeysProcessed[1024];
 
   bool debug_mode = false;
 
 private:
-  void CheckClickables(double x, double y);
-
   static void glfw_error_callback(int error, const char *description);
   void mouse_callback(GLFWwindow *window, int button, int action, int modifier);
   void key_callback(GLFWwindow *window, int key, int scancode, int action, int mode);
