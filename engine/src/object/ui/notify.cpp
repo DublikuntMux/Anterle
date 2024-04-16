@@ -110,7 +110,7 @@ std::vector<Anterle::ImGuiToast> notifications;
 
 void InsertNotification(const Anterle::ImGuiToast &toast) { notifications.push_back(toast); }
 
-void RemoveNotification(int index) { notifications.erase(notifications.begin() + index); }
+void RemoveNotification(size_t index) { notifications.erase(notifications.begin() + index); }
 
 void RenderNotifications()
 {
@@ -118,7 +118,7 @@ void RenderNotifications()
 
   float height = 0.f;
 
-  for (int i = 0; i < notifications.size(); i++) {
+  for (size_t i = 0; i < notifications.size(); i++) {
     auto *current_toast = &notifications[i];
 
     if (current_toast->get_phase() == Anterle::ImGuiToastPhase::Expired) {
@@ -136,7 +136,7 @@ void RenderNotifications()
     text_color.w = opacity;
 
     char window_name[50];
-    sprintf(window_name, "##TOAST%d", i);
+    sprintf_s(window_name, sizeof(window_name), "##TOAST%zu", i);
 
     SetNextWindowBgAlpha(opacity);
     SetNextWindowPos(ImVec2(vp_size.x - NOTIFY_PADDING_X, vp_size.y - NOTIFY_PADDING_Y - height),

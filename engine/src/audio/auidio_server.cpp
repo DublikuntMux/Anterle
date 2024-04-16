@@ -1,6 +1,7 @@
 #include <string>
 #include <unordered_map>
 
+#define MINIAUDIO_IMPLEMENTATION
 #include <miniaudio.h>
 
 #include "audio/auidio_server.hpp"

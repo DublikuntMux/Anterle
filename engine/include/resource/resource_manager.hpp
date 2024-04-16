@@ -3,8 +3,8 @@
 #include <map>
 #include <string>
 
-#include "shader.hpp"
-#include "texture.hpp"
+#include "resource/shader.hpp"
+#include "resource/texture.hpp"
 
 namespace Anterle {
 class ResourceManager

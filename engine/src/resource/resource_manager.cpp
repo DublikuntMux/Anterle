@@ -1,9 +1,10 @@
 #include <cstdint>
 #include <fstream>
 #include <iostream>
+#include <string>
 
 #include <fpng.h>
-#include <glad/gl.h>
+#include <glad/glad.h>
 
 #include "logger.hpp"
 #include "resource/resource_manager.hpp"
@@ -39,20 +40,11 @@ void ResourceManager::Clear()
 
 Shader ResourceManager::loadShaderFromFile(std::string shaderName)
 {
-  std::ifstream vertexShaderFile("./resources/shaders/" + shaderName + ".vert.spv", std::ios::binary);
-  std::ifstream fragmentShaderFile("./resources/shaders/" + shaderName + ".frag.spv", std::ios::binary);
-
-  std::istreambuf_iterator<char> vertexStartIt(vertexShaderFile), vertexEndIt;
-  std::istreambuf_iterator<char> fragmentStartIt(fragmentShaderFile), fragmentEndIt;
-
-  std::vector<char> vertexBuffer(vertexStartIt, vertexEndIt);
-  std::vector<char> fragmentBuffer(fragmentStartIt, fragmentEndIt);
-
-  vertexShaderFile.close();
-  fragmentShaderFile.close();
+  std::string vertexShaderFile("./resources/shaders/" + shaderName + ".vert");
+  std::string fragmentShaderFile("./resources/shaders/" + shaderName + ".frag");
 
   Shader shader;
-  shader.Compile(vertexBuffer, fragmentBuffer);
+  shader.Compile(vertexShaderFile.c_str(), fragmentShaderFile.c_str());
   return shader;
 }
 
@@ -75,7 +67,7 @@ Texture2D ResourceManager::loadTextureFromFile(std::string file, bool alpha)
   try {
     file_stream.open(file_patch);
   } catch (std::ifstream::failure &e) {
-    Logger::getInstance()->log("Failed to load level: %s", file_patch.c_str());
+    Logger::getInstance()->log("Failed to load texture: %s.\nBecause: %s", file_patch.c_str(), e.what());
     abort();
   }
 

@@ -1,10 +1,9 @@
 #include <cstdint>
 
-#include <glad/gl.h>
+#include <glad/glad.h>
 
 #include <GLFW/glfw3.h>
 
-#define IMGUI_IMPL_OPENGL_ES3
 #include <imgui.h>
 #include <imgui_impl_glfw.h>
 #include <imgui_impl_opengl3.h>
@@ -31,10 +30,12 @@ Game::Game(uint16_t width, uint16_t height, const char *title)
     abort();
   }
 
-  glfwWindowHint(GLFW_CLIENT_API, GLFW_OPENGL_API);
   glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
   glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 6);
-  glfwWindowHint(GLFW_DOUBLEBUFFER, GLFW_TRUE);
+  glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
+#ifdef __APPLE__
+  glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
+#endif
 
   GLFWmonitor *monitor = glfwGetPrimaryMonitor();
   const GLFWvidmode *mode = glfwGetVideoMode(monitor);
@@ -49,7 +50,7 @@ Game::Game(uint16_t width, uint16_t height, const char *title)
     abort();
   }
 
-  gladLoadGL(glfwGetProcAddress);
+  gladLoadGLLoader((GLADloadproc)glfwGetProcAddress);
 
   glfwSwapInterval(1);
   glfwSetWindowUserPointer(GlfwWindow, this);
@@ -63,6 +64,7 @@ Game::Game(uint16_t width, uint16_t height, const char *title)
   });
 
   glViewport(0, 0, Width, Height);
+  glEnable(GL_CULL_FACE);
   glEnable(GL_BLEND);
   glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
@@ -78,7 +80,7 @@ Game::Game(uint16_t width, uint16_t height, const char *title)
   SetupImGuiStyle();
 
   ImGui_ImplGlfw_InitForOpenGL(GlfwWindow, true);
-  ImGui_ImplOpenGL3_Init("#version 460 core");
+  ImGui_ImplOpenGL3_Init("#version 130");
 }
 
 Game::~Game()

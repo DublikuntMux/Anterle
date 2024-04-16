@@ -1,5 +1,3 @@
-#include <string>
-
 #include <GLFW/glfw3.h>
 #include <glm/ext.hpp>
 #include <imgui.h>
@@ -43,7 +41,7 @@ void AnterleGame::Init()
 
   Renderer = Anterle::SpriteRenderer::CreateInstance(Anterle::ResourceManager::GetShader("sprite"));
   Text = new Anterle::TextRenderer(Width, Height);
-  Text->Load("tahoma", 24);
+  Text->Load("tahoma");
   Audio = new Anterle::AudioSystem();
 
   Anterle::GameLevel one("one");

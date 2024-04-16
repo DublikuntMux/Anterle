@@ -1,4 +1,4 @@
-#include <glad/gl.h>
+#include <glad/glad.h>
 
 #include "object/ui/clickable.hpp"
 #include "resource/resource_manager.hpp"

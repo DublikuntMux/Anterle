@@ -1,5 +1,8 @@
 #pragma once
 
+#include <cstdint>
+#include <string>
+
 #include <anterle_engine.hpp>
 
 struct GameConfigs
