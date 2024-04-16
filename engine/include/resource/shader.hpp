@@ -15,7 +15,7 @@ public:
   Shader() {}
   Shader &Use();
 
-  void Compile(const char *vertexPath, const char *fragmentPath);
+  void Compile(const char *vertexCode, const char *fragmentCode);
 
   void SetFloat(const char *name, float value, bool useShader = false);
   void SetInteger(const char *name, int value, bool useShader = false);

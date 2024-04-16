@@ -1,6 +1,7 @@
 #include <cstdint>
 #include <fstream>
 #include <iostream>
+#include <sstream>
 #include <string>
 
 #include <fpng.h>
@@ -43,8 +44,32 @@ Shader ResourceManager::loadShaderFromFile(std::string shaderName)
   std::string vertexShaderFile("./resources/shaders/" + shaderName + ".vert");
   std::string fragmentShaderFile("./resources/shaders/" + shaderName + ".frag");
 
+  std::string vertexCode;
+  std::string fragmentCode;
+  std::ifstream vShaderFile;
+  std::ifstream fShaderFile;
+
+  vShaderFile.exceptions(std::ifstream::failbit | std::ifstream::badbit);
+  fShaderFile.exceptions(std::ifstream::failbit | std::ifstream::badbit);
+  try {
+    vShaderFile.open(vertexShaderFile);
+    fShaderFile.open(fragmentShaderFile);
+    std::stringstream vShaderStream, fShaderStream;
+
+    vShaderStream << vShaderFile.rdbuf();
+    fShaderStream << fShaderFile.rdbuf();
+
+    vShaderFile.close();
+    fShaderFile.close();
+
+    vertexCode = vShaderStream.str();
+    fragmentCode = fShaderStream.str();
+  } catch (std::ifstream::failure &e) {
+    Logger::getInstance()->log("%s | Failed to read sheader: %s", e.code(), e.what());
+  }
+
   Shader shader;
-  shader.Compile(vertexShaderFile.c_str(), fragmentShaderFile.c_str());
+  shader.Compile(vertexCode.c_str(), fragmentCode.c_str());
   return shader;
 }
 
