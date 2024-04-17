@@ -4,6 +4,7 @@
 #include <GLFW/glfw3.h>
 #include <fpng.h>
 #include <glad/glad.h>
+#include <glm/ext.hpp>
 #include <imgui.h>
 #include <imgui_impl_glfw.h>
 #include <imgui_impl_opengl3.h>
@@ -13,6 +14,7 @@
 #include "imgui/notify.hpp"
 #include "imgui/plot_var.hpp"
 #include "logger.hpp"
+#include "resource/resource_manager.hpp"
 #include "resource/time.hpp"
 #include "utils.hpp"
 
@@ -20,6 +22,7 @@ namespace Anterle {
 Game::Game(uint16_t width, uint16_t height, const char *title)
   : State(GameState::GAME_MENU), Width(width), Height(height), Title(title), Keys(), KeysProcessed()
 {
+  Logger::getInstance()->log("Starting game.");
   glfwSetErrorCallback(&Game::glfw_error_callback);
 
   if (!glfwInit()) {
@@ -168,7 +171,27 @@ void Game::Start()
   }
 }
 
-void Game::Init() {}
+void Game::Init()
+{
+Logger::getInstance()->log("Init resources.");
+  auto &resource = ResourceManager::getInstance();
+  resource->LoadShader("sprite");
+
+  glm::mat4 projection = glm::ortho(0.0F, static_cast<float>(Width), static_cast<float>(Height), 0.0F, -1.0F, 1.0F);
+
+  resource->GetShader("sprite").Use().SetInteger("sprite", 0);
+  resource->GetShader("sprite").SetMatrix4("projection", projection);
+
+  Logger::getInstance()->log("Load renderer.");
+  Renderer = std::make_unique<Anterle::SpriteRenderer>(resource->GetShader("sprite"));
+
+  Logger::getInstance()->log("Load text rendering.");
+  Text = std::make_unique<Anterle::TextRenderer>(Width, Height);
+  Text->Load("tahoma");
+  Logger::getInstance()->log("Load audio system.");
+  Audio = std::make_unique<Anterle::AudioSystem>();
+}
+
 void Game::Update() {}
 void Game::FixedUpdate() {}
 void Game::ProcessInput() {}
@@ -176,6 +199,7 @@ void Game::Render() {}
 
 void Game::saveScreenshot(const char *filename)
 {
+  Logger::getInstance()->log("Screenshot saved to %s", filename);
   std::vector<GLubyte> pixels(3 * Width * Height);
 
   glReadPixels(0, 0, Width, Height, GL_RGB, GL_UNSIGNED_BYTE, pixels.data());

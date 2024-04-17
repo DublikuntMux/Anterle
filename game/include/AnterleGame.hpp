@@ -1,7 +1,6 @@
 #pragma once
 
 #include <cstdint>
-#include <memory>
 #include <string>
 
 #include <anterle_engine.hpp>
@@ -28,9 +27,4 @@ public:
   void FixedUpdate() override;
   void ProcessInput() override;
   void Render() override;
-
-private:
-  std::unique_ptr<Anterle::SpriteRenderer> Renderer;
-  std::unique_ptr<Anterle::TextRenderer> Text;
-  std::unique_ptr<Anterle::AudioSystem> Audio;
 };

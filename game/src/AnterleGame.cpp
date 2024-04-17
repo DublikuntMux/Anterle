@@ -17,6 +17,8 @@ AnterleGame::AnterleGame(uint16_t width, uint16_t height, const char *title, Gam
 
 void AnterleGame::Init()
 {
+  Game::Init();
+  
   ImGuiIO &io = ImGui::GetIO();
   (void)io;
   ImFontConfig font_cfg;
@@ -26,20 +28,8 @@ void AnterleGame::Init()
   ImGui::MergeIconsWithLatestFont(16.f, false);
 
   auto &resource = Anterle::ResourceManager::getInstance();
-  resource->LoadShader("sprite");
-
-  glm::mat4 projection = glm::ortho(0.0F, static_cast<float>(Width), static_cast<float>(Height), 0.0F, -1.0F, 1.0F);
-
-  resource->GetShader("sprite").Use().SetInteger("sprite", 0);
-  resource->GetShader("sprite").SetMatrix4("projection", projection);
-
   resource->LoadTexture("background", false);
   resource->LoadTexture("face", true);
-
-  Renderer = std::make_unique<Anterle::SpriteRenderer>(resource->GetShader("sprite"));
-  Text = std::make_unique<Anterle::TextRenderer>(Width, Height);
-  Text->Load("tahoma");
-  Audio = std::make_unique<Anterle::AudioSystem>();
 
   Configs->CurentLevel = 0;
 }
@@ -65,7 +55,6 @@ void AnterleGame::ProcessInput()
   if (Keys[GLFW_KEY_F11] && !KeysProcessed[GLFW_KEY_F11]) {
     saveScreenshot("screenshot.png");
     ImGui::InsertNotification({ Anterle::ImGuiToastType::Info, 3000, "Screenshot created!" });
-    Anterle::Logger::getInstance()->log("Screenshot saved!");
 
     KeysProcessed[GLFW_KEY_F11] = true;
   }

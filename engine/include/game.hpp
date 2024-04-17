@@ -1,9 +1,14 @@
 #pragma once
 
+#include <memory>
 #include <array>
 #include <cstdint>
 
 #include <GLFW/glfw3.h>
+
+#include "audio/auidio_server.hpp"
+#include "render/sprite_renderer.hpp"
+#include "render/text_renderer.hpp"
 
 namespace Anterle {
 enum class GameState { GAME_ACTIVE, GAME_MENU, GAME_WIN };
@@ -35,6 +40,10 @@ public:
   std::array<bool, 1024> KeysProcessed;
 
   bool debug_mode = false;
+
+  std::unique_ptr<Anterle::SpriteRenderer> Renderer;
+  std::unique_ptr<Anterle::TextRenderer> Text;
+  std::unique_ptr<Anterle::AudioSystem> Audio;
 
 private:
   static void glfw_error_callback(int error, const char *description);
