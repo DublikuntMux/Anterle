@@ -44,12 +44,12 @@ static int get_exts(void) {
         exts = (const char *)glGetString(GL_EXTENSIONS);
 #ifdef _GLAD_IS_SOME_NEW_VERSION
     } else {
-        unsigned int index;
+      unsigned int index = 0;
 
-        num_exts_i = 0;
-        glGetIntegerv(GL_NUM_EXTENSIONS, &num_exts_i);
-        if (num_exts_i > 0) {
-            exts_i = (char **)malloc((size_t)num_exts_i * (sizeof *exts_i));
+      num_exts_i = 0;
+      glGetIntegerv(GL_NUM_EXTENSIONS, &num_exts_i);
+      if (num_exts_i > 0) {
+        exts_i = (char **)malloc((size_t)num_exts_i * (sizeof *exts_i));
         }
 
         if (exts_i == NULL) {
@@ -73,9 +73,9 @@ static int get_exts(void) {
 
 static void free_exts(void) {
     if (exts_i != NULL) {
-        int index;
-        for(index = 0; index < num_exts_i; index++) {
-            free((char *)exts_i[index]);
+      int index = 0;
+      for (index = 0; index < num_exts_i; index++) {
+        free((char *)exts_i[index]);
         }
         free((void *)exts_i);
         exts_i = NULL;
@@ -86,12 +86,12 @@ static int has_ext(const char *ext) {
 #ifdef _GLAD_IS_SOME_NEW_VERSION
     if(max_loaded_major < 3) {
 #endif
-        const char *extensions;
-        const char *loc;
-        const char *terminator;
-        extensions = exts;
-        if(extensions == NULL || ext == NULL) {
-            return 0;
+      const char *extensions = NULL;
+      const char *loc = NULL;
+      const char *terminator = NULL;
+      extensions = exts;
+      if (extensions == NULL || ext == NULL) {
+        return 0;
         }
 
         while(1) {
@@ -109,14 +109,14 @@ static int has_ext(const char *ext) {
         }
 #ifdef _GLAD_IS_SOME_NEW_VERSION
     } else {
-        int index;
-        if(exts_i == NULL) return 0;
-        for(index = 0; index < num_exts_i; index++) {
-            const char *e = exts_i[index];
+      int index = 0;
+      if (exts_i == NULL) return 0;
+      for (index = 0; index < num_exts_i; index++) {
+        const char *e = exts_i[index];
 
-            if(exts_i[index] != NULL && strcmp(e, ext) == 0) {
-                return 1;
-            }
+        if (exts_i[index] != NULL && strcmp(e, ext) == 0) {
+          return 1;
+        }
         }
     }
 #endif
@@ -1614,9 +1614,9 @@ static void find_coreGL(void) {
      * https://github.com/elmindreda/greg/blob/master/templates/greg.c.in#L176
      * https://github.com/glfw/glfw/blob/master/src/context.c#L36
      */
-    int i, major, minor;
+    int i = 0, major = 0, minor = 0;
 
-    const char* version;
+    const char *version = NULL;
     const char* prefixes[] = {
         "OpenGL ES-CM ",
         "OpenGL ES-CL ",

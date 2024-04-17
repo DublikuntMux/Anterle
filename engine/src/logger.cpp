@@ -15,9 +15,9 @@
 #include "logger.hpp"
 
 namespace Anterle {
-Logger *Logger::instance = nullptr;
+std::unique_ptr<Logger> Logger::_instance = nullptr;
 
-Logger::Logger() : running(true)
+Logger::Logger()
 {
   std::filesystem::path logDir("log");
   if (!std::filesystem::exists(logDir)) {
@@ -29,41 +29,41 @@ Logger::Logger() : running(true)
 
   auto now = std::chrono::system_clock::now();
   std::time_t now_c = std::chrono::system_clock::to_time_t(now);
-  std::tm now_tm;
+  std::tm now_tm{};
   localtime_s(&now_tm, &now_c);
   std::stringstream ss;
   ss << "log/" << std::put_time(&now_tm, "%Y-%m-%d_%H-%M-%S") << ".log";
-  logFileName = ss.str();
+  _logFileName = ss.str();
 
-  worker = std::thread(&Logger::workerThread, this);
+  _worker = std::thread(&Logger::workerThread, this);
 }
 
 Logger::~Logger()
 {
   {
-    std::unique_lock<std::mutex> lock(mtx);
-    running = false;
+    std::unique_lock<std::mutex> lock(_mtx);
+    _running = false;
   }
-  if (worker.joinable()) { worker.join(); }
+  if (_worker.joinable()) { _worker.join(); }
 }
 
 void Logger::workerThread()
 {
-  std::ofstream logFile(logFileName, std::ios_base::app);
+  std::ofstream logFile(_logFileName, std::ios_base::app);
   if (!logFile.is_open()) {
-    std::cerr << "Failed to open log file: " << logFileName << std::endl;
+    std::cerr << "Failed to open log file: " << _logFileName << std::endl;
     return;
   }
 
   while (true) {
     std::string message;
     {
-      std::unique_lock<std::mutex> lock(mtx);
-      if (!logQueue.empty()) {
-        message = logQueue.front();
-        logQueue.pop();
+      std::unique_lock<std::mutex> lock(_mtx);
+      if (!_logQueue.empty()) {
+        message = _logQueue.front();
+        _logQueue.pop();
       }
-      if (!running && logQueue.empty()) { break; }
+      if (!_running && _logQueue.empty()) { break; }
     }
     if (!message.empty()) {
       logFile << message << std::endl;
@@ -73,28 +73,28 @@ void Logger::workerThread()
   logFile.close();
 }
 
-Logger *Logger::getInstance()
+std::unique_ptr<Logger> &Logger::getInstance()
 {
-  if (!instance) { instance = new Logger(); }
-  return instance;
+  if (!_instance) { _instance = std::make_unique<Logger>(); }
+  return _instance;
 }
 
 void Logger::log(const char *format, ...)
 {
   char buffer[1024];
-  va_list args;
+  va_list args = nullptr;
   va_start(args, format);
   vsnprintf(buffer, sizeof(buffer), format, args);
   va_end(args);
 
   auto now = std::chrono::system_clock::now();
   std::time_t now_c = std::chrono::system_clock::to_time_t(now);
-  std::tm now_tm;
+  std::tm now_tm{};
   localtime_s(&now_tm, &now_c);
   std::stringstream ss;
   ss << "[" << std::put_time(&now_tm, "%H:%M:%S") << "] " << ": " << buffer;
 
-  std::unique_lock<std::mutex> lock(mtx);
-  logQueue.push(ss.str());
+  std::unique_lock<std::mutex> lock(_mtx);
+  _logQueue.push(ss.str());
 }
 }// namespace Anterle

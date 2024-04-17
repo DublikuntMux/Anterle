@@ -6,7 +6,7 @@ namespace Anterle {
 class Texture2D
 {
 public:
-  uint32_t ID;
+  uint32_t ID{};
   int Width, Height;
   int Internal_Format;
   uint32_t Image_Format;

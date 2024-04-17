@@ -1,6 +1,7 @@
 #pragma once
 
 #include <cstdint>
+#include <memory>
 #include <string>
 
 #include <anterle_engine.hpp>
@@ -22,16 +23,14 @@ public:
   AnterleGame(uint16_t width, uint16_t height, const char *title);
   AnterleGame(uint16_t width, uint16_t height, const char *title, GameConfigs *Configs);
 
-  ~AnterleGame();
-
-  void Init();
-  void Update();
-  void FixedUpdate();
-  void ProcessInput();
-  void Render();
+  void Init() override;
+  void Update() override;
+  void FixedUpdate() override;
+  void ProcessInput() override;
+  void Render() override;
 
 private:
-  Anterle::SpriteRenderer *Renderer;
-  Anterle::TextRenderer *Text;
-  Anterle::AudioSystem *Audio;
+  std::unique_ptr<Anterle::SpriteRenderer> Renderer;
+  std::unique_ptr<Anterle::TextRenderer> Text;
+  std::unique_ptr<Anterle::AudioSystem> Audio;
 };

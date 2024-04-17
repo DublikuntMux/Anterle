@@ -1,6 +1,7 @@
 #pragma once
 
 #include <chrono>
+#include <string>
 
 #include <imgui.h>
 
@@ -37,9 +38,6 @@ public:
     creation_time =
       std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch())
         .count();
-
-    memset(title, 0, sizeof(title));
-    memset(content, 0, sizeof(content));
   }
   ImGuiToast(ImGuiToastType type, const char *format, ...) : ImGuiToast(type) { NOTIFY_FORMAT(set_content, format); }
   ImGuiToast(ImGuiToastType type, int dismiss_time, const char *format, ...) : ImGuiToast(type, dismiss_time)
@@ -51,7 +49,7 @@ public:
   void set_content(const char *format, ...);
   void set_type(const ImGuiToastType &type);
 
-  char *get_title();
+  const char *get_title();
   const char *get_default_title();
   const ImGuiToastType &get_type();
   ImVec4 get_color();
@@ -63,8 +61,8 @@ public:
 
 private:
   ImGuiToastType type = ImGuiToastType::None;
-  char title[NOTIFY_MAX_MSG_LENGTH];
-  char content[NOTIFY_MAX_MSG_LENGTH];
+  std::string title;
+  std::string content;
   int dismiss_time = NOTIFY_DEFAULT_DISMISS;
   int64_t creation_time = 0;
 

@@ -1,5 +1,6 @@
 #pragma once
 
+#include <array>
 #include <cstdint>
 
 #include <GLFW/glfw3.h>
@@ -30,8 +31,8 @@ public:
 
   GLFWwindow *GlfwWindow;
 
-  bool Keys[1024];
-  bool KeysProcessed[1024];
+  std::array<bool, 1024> Keys;
+  std::array<bool, 1024> KeysProcessed;
 
   bool debug_mode = false;
 

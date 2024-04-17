@@ -1,5 +1,3 @@
-#include <cstddef>
-
 #define IMGUI_DEFINE_MATH_OPERATORS
 #include <imgui.h>
 #include <imgui_internal.h>
@@ -7,6 +5,33 @@
 #include "debug/profiler.hpp"
 
 namespace Anterle {
+void Profiler::Frame()
+{
+  auto &prevEntry = entries.at(_currentEntry);
+  _currentEntry = (_currentEntry + 1) % entries.size();
+  prevEntry.frameEnd = entries.at(_currentEntry).frameStart = std::chrono::system_clock::now();
+}
+
+void Profiler::Begin(Stage stage)
+{
+  auto &entry = entries.at(_currentEntry).stages.at(stage);
+  entry.level = _currentLevel;
+  _currentLevel++;
+  entry.start = std::chrono::system_clock::now();
+  entry.finalized = false;
+}
+
+void Profiler::End(Stage stage)
+{
+  auto &entry = entries.at(_currentEntry).stages.at(stage);
+  _currentLevel--;
+  entry.end = std::chrono::system_clock::now();
+  entry.finalized = true;
+}
+
+Profiler::Entry &Profiler::getEntry(size_t index) { return entries.at(index); }
+
+void Profiler::setEntry(size_t index, const Entry &entry) { entries.at(index) = entry; }
 void ProfilerValueGetter(float *startTimestamp,
   float *endTimestamp,
   ImU8 *level,
@@ -21,13 +46,13 @@ void ProfilerValueGetter(float *startTimestamp,
     *startTimestamp = fltStart.count();
   }
   if (endTimestamp) {
-    *endTimestamp = stage.end.time_since_epoch().count() / 1000000.0f;
+    *endTimestamp = static_cast<float>(stage.end.time_since_epoch().count() / 1000000LL);
 
     std::chrono::duration<float, std::milli> fltEnd = stage.end - entry->frameStart;
     *endTimestamp = fltEnd.count();
   }
   if (level) { *level = stage.level; }
-  if (caption) { *caption = stageNames[idx]; }
+  if (caption) { *caption = stageNames.at(idx); }
 }
 
 void PlotFlame(const char *label,
@@ -48,15 +73,16 @@ void PlotFlame(const char *label,
 
   ImU8 maxDepth = 0;
   for (int i = values_offset; i < values_count; ++i) {
-    ImU8 depth;
+    ImU8 depth = 0;
     values_getter(nullptr, nullptr, &depth, nullptr, data, i);
     maxDepth = ImMax(maxDepth, depth);
   }
 
   const auto blockHeight = ImGui::GetTextLineHeight() + (style.FramePadding.y * 2);
-  const ImVec2 label_size = ImGui::CalcTextSize(label, NULL, true);
+  const ImVec2 label_size = ImGui::CalcTextSize(label, nullptr, true);
   if (graph_size.x == 0.0f) graph_size.x = ImGui::CalcItemWidth();
-  if (graph_size.y == 0.0f) graph_size.y = label_size.y + (style.FramePadding.y * 3) + blockHeight * (maxDepth + 1);
+  if (graph_size.y == 0.0f)
+    graph_size.y = label_size.y + (style.FramePadding.y * 3) + blockHeight * static_cast<float>(maxDepth + 1);
 
   const ImRect frame_bb(window->DC.CursorPos, window->DC.CursorPos + graph_size);
   const ImRect inner_bb(frame_bb.Min + style.FramePadding, frame_bb.Max - style.FramePadding);
@@ -69,7 +95,7 @@ void PlotFlame(const char *label,
     float v_min = FLT_MAX;
     float v_max = -FLT_MAX;
     for (int i = values_offset; i < values_count; i++) {
-      float v_start, v_end;
+      float v_start = NAN, v_end = NAN;
       values_getter(&v_start, &v_end, nullptr, nullptr, data, i);
       if (v_start == v_start) v_min = ImMin(v_min, v_start);
       if (v_end == v_end) v_max = ImMax(v_max, v_end);
@@ -88,9 +114,9 @@ void PlotFlame(const char *label,
     const ImU32 col_outline_hovered = ImGui::GetColorU32(ImGuiCol_PlotHistogramHovered) & 0x7FFFFFFF;
 
     for (int i = values_offset; i < values_count; ++i) {
-      float stageStart, stageEnd;
-      ImU8 depth;
-      const char *caption;
+      float stageStart = NAN, stageEnd = NAN;
+      ImU8 depth = 0;
+      const char *caption = nullptr;
 
       values_getter(&stageStart, &stageEnd, &depth, &caption, data, i);
 
@@ -104,7 +130,7 @@ void PlotFlame(const char *label,
       auto endX = static_cast<float>(end / duration);
 
       float width = inner_bb.Max.x - inner_bb.Min.x;
-      float height = blockHeight * (maxDepth - depth + 1) - style.FramePadding.y;
+      float height = blockHeight * static_cast<float>(maxDepth - depth + 1) - style.FramePadding.y;
 
       auto pos0 = inner_bb.Min + ImVec2(startX * width, height);
       auto pos1 = inner_bb.Min + ImVec2(endX * width, height + blockHeight);
@@ -131,8 +157,8 @@ void PlotFlame(const char *label,
       ImGui::RenderTextClipped(ImVec2(frame_bb.Min.x, frame_bb.Min.y + style.FramePadding.y),
         frame_bb.Max,
         overlay_text,
-        NULL,
-        NULL,
+        nullptr,
+        nullptr,
         ImVec2(0.5f, 0.0f));
 
     if (label_size.x > 0.0f)

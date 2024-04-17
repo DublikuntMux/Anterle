@@ -1,21 +1,18 @@
+#include <cmath>
 #include <cstdint>
 
-#include <glad/glad.h>
-
 #include <GLFW/glfw3.h>
-
+#include <fpng.h>
+#include <glad/glad.h>
 #include <imgui.h>
 #include <imgui_impl_glfw.h>
 #include <imgui_impl_opengl3.h>
 
-#include <fpng.h>
-
 #include "debug/profiler.hpp"
 #include "game.hpp"
+#include "imgui/notify.hpp"
 #include "imgui/plot_var.hpp"
 #include "logger.hpp"
-#include "imgui/notify.hpp"
-#include "resource/resource_manager.hpp"
 #include "resource/time.hpp"
 #include "utils.hpp"
 
@@ -85,8 +82,6 @@ Game::Game(uint16_t width, uint16_t height, const char *title)
 
 Game::~Game()
 {
-  ResourceManager::Clear();
-
   ImGui_ImplOpenGL3_Shutdown();
   ImGui_ImplGlfw_Shutdown();
   ImGui::DestroyContext();
@@ -132,7 +127,7 @@ void Game::Start()
       ImGui::SetNextWindowSize(ImVec2(470, 200));
       {
         ImGui::Begin("Debug window");
-        auto &entry = profiler.entries[profiler.GetCurrentEntryIndex()];
+        auto &entry = profiler.getEntry(profiler.GetCurrentEntryIndex());
         PlotFlame("GPU",
           &ProfilerValueGetter,
           &entry,
@@ -181,11 +176,11 @@ void Game::Render() {}
 
 void Game::saveScreenshot(const char *filename)
 {
-  GLubyte *pixels = new GLubyte[3 * Width * Height];
+  std::vector<GLubyte> pixels(3 * Width * Height);
 
-  glReadPixels(0, 0, Width, Height, GL_RGB, GL_UNSIGNED_BYTE, pixels);
+  glReadPixels(0, 0, Width, Height, GL_RGB, GL_UNSIGNED_BYTE, pixels.data());
 
-  GLubyte *flippedPixels = new GLubyte[3 * Width * Height];
+  std::vector<GLubyte> flippedPixels(3 * Width * Height);
   for (int y = 0; y < Height; ++y) {
     for (int x = 0; x < Width; ++x) {
       for (int c = 0; c < 3; ++c) {
@@ -194,10 +189,7 @@ void Game::saveScreenshot(const char *filename)
     }
   }
 
-  if (!fpng::fpng_encode_image_to_file(filename, flippedPixels, Width, Height, 3, fpng::FPNG_ENCODE_SLOWER)) {}
-
-  delete[] pixels;
-  delete[] flippedPixels;
+  if (!fpng::fpng_encode_image_to_file(filename, flippedPixels.data(), Width, Height, 3, fpng::FPNG_ENCODE_SLOWER)) {}
 }
 
 void Game::glfw_error_callback(int error, const char *description)
@@ -220,19 +212,18 @@ void Game::key_callback(GLFWwindow *window, int key, int, int action, int)
 
   if (key >= 0 && key < 1024) {
     if (action == GLFW_PRESS) {
-      Keys[key] = true;
+      Keys.at(key) = true;
     } else if (action == GLFW_RELEASE) {
-      Keys[key] = false;
-      KeysProcessed[key] = false;
+      Keys.at(key) = false;
+      KeysProcessed.at(key) = false;
     }
   }
 }
 
 void Game::mouse_callback(GLFWwindow *window, int button, int action, int)
 {
-  double xpos, ypos;
+  double xpos = NAN, ypos = NAN;
   glfwGetCursorPos(window, &xpos, &ypos);
-  if (action == GLFW_PRESS && button == GLFW_MOUSE_BUTTON_1) { 
-  }
+  if (action == GLFW_PRESS && button == GLFW_MOUSE_BUTTON_1) {}
 }
 }// namespace Anterle

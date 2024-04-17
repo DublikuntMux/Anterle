@@ -1,6 +1,5 @@
+#include <array>
 #include <cstdint>
-#include <stdint.h>
-#include <stdlib.h>
 #include <string>
 
 #include <ft2build.h>
@@ -18,7 +17,7 @@
 const int ARRAY_LIMIT = 255;
 
 // clang-format off
-GLfloat vertex_data[] = {
+const std::array<GLfloat, 8> vertex_data = {
   0.0f,1.0f,
   0.0f,0.0f,
   1.0f,1.0f,
@@ -29,7 +28,7 @@ GLfloat vertex_data[] = {
 namespace Anterle {
 TextRenderer::TextRenderer(uint32_t width, uint32_t height)
 {
-  _textShader = ResourceManager::LoadShader("text");
+  _textShader = ResourceManager::getInstance()->LoadShader("text");
   glm::mat4 projection = glm::ortho(0.0F, static_cast<float>(width), 0.0F, static_cast<float>(height));
   _textShader.SetMatrix4("projection", projection, true);
 
@@ -37,9 +36,9 @@ TextRenderer::TextRenderer(uint32_t width, uint32_t height)
   glGenBuffers(1, &_VBO);
   glBindVertexArray(_VAO);
   glBindBuffer(GL_ARRAY_BUFFER, _VBO);
-  glBufferData(GL_ARRAY_BUFFER, sizeof(vertex_data), vertex_data, GL_STATIC_DRAW);
+  glBufferData(GL_ARRAY_BUFFER, sizeof(vertex_data), vertex_data.data(), GL_STATIC_DRAW);
   glEnableVertexAttribArray(0);
-  glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 0, 0);
+  glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 0, nullptr);
   glBindBuffer(GL_ARRAY_BUFFER, 0);
   glBindVertexArray(0);
 }
@@ -69,10 +68,10 @@ void TextRenderer::Load(std::string font)
   glGenTextures(1, &_textureArray);
   glActiveTexture(GL_TEXTURE0);
   glBindTexture(GL_TEXTURE_2D_ARRAY, _textureArray);
-  glTexImage3D(GL_TEXTURE_2D_ARRAY, 0, GL_R8, 256, 256, 128, 0, GL_RED, GL_UNSIGNED_BYTE, 0);
+  glTexImage3D(GL_TEXTURE_2D_ARRAY, 0, GL_R8, 256, 256, 128, 0, GL_RED, GL_UNSIGNED_BYTE, nullptr);
 
-  FT_UInt index;
-  wchar_t char_code = static_cast<wchar_t>(FT_Get_First_Char(face, &index));
+  FT_UInt index = 0;
+  auto char_code = static_cast<wchar_t>(FT_Get_First_Char(face, &index));
   while (true) {
     if (FT_Load_Char(face, char_code, FT_LOAD_RENDER) != 0) {
       Logger::getInstance()->log("Failed to load Glyph.");
@@ -112,7 +111,7 @@ void TextRenderer::Load(std::string font)
 
   for (int i = 0; i < ARRAY_LIMIT; i++) {
     _letterMap.push_back(0);
-    _transforms.push_back(glm::mat4(1.0f));
+    _transforms.emplace_back(1.0f);
   }
 }
 
@@ -143,7 +142,7 @@ void TextRenderer::RenderText(const std::wstring &text, float x, float y, float 
       float ypos = y - (256 - ch.Bearing.y) * scale;
 
       _transforms[workingIndex] = translate(glm::mat4(1.0f), glm::vec3(xpos, ypos, 0))
-                                 * glm::scale(glm::mat4(1.0f), glm::vec3(256 * scale, 256 * scale, 0));
+                                  * glm::scale(glm::mat4(1.0f), glm::vec3(256 * scale, 256 * scale, 0));
       _letterMap[workingIndex] = ch.TextureID;
 
       x += (ch.Advance >> 6) * scale;

@@ -26,7 +26,7 @@ public:
 
   struct Scope
   {
-    ImU8 level;
+    ImU8 level{};
     std::chrono::system_clock::time_point start;
     std::chrono::system_clock::time_point end;
     bool finalized = false;
@@ -39,41 +39,18 @@ public:
     std::array<Scope, _StageCount> stages;
   };
 
-  static const ImU8 bufferSize = 100;
-  std::array<Entry, bufferSize> entries;
+  void Frame();
+  void Begin(Stage stage);
+  void End(Stage stage);
 
-  void Frame()
-  {
-    auto &prevEntry = entries[_currentEntry];
-    _currentEntry = (_currentEntry + 1) % bufferSize;
-    prevEntry.frameEnd = entries[_currentEntry].frameStart = std::chrono::system_clock::now();
-  }
+  Entry &getEntry(size_t index);
+  void setEntry(size_t index, const Entry &entry);
 
-  void Begin(Stage stage)
-  {
-    assert(_currentLevel < 255);
-    auto &entry = entries[_currentEntry].stages[stage];
-    entry.level = _currentLevel;
-    _currentLevel++;
-    entry.start = std::chrono::system_clock::now();
-    entry.finalized = false;
-  }
-
-  void End(Stage stage)
-  {
-    assert(_currentLevel > 0);
-    auto &entry = entries[_currentEntry].stages[stage];
-    assert(!entry.finalized);
-    _currentLevel--;
-    assert(entry.level == _currentLevel);
-    entry.end = std::chrono::system_clock::now();
-    entry.finalized = true;
-  }
-
-  ImU8 GetCurrentEntryIndex() const { return (_currentEntry + bufferSize - 1) % bufferSize; }
+  [[nodiscard]] ImU8 GetCurrentEntryIndex() const { return (_currentEntry + entries.size() - 1) % entries.size(); }
 
 private:
-  ImU8 _currentEntry = bufferSize - 1;
+  std::array<Entry, 100> entries;
+  ImU8 _currentEntry = entries.size() - 1;
   ImU8 _currentLevel = 0;
 };
 
@@ -96,12 +73,13 @@ void ProfilerValueGetter(float *startTimestamp,
   const char **caption,
   const void *data,
   size_t idx);
+
 void PlotFlame(const char *label,
   void (*values_getter)(float *start, float *end, ImU8 *level, const char **caption, const void *data, size_t idx),
   const void *data,
   int values_count,
   int values_offset = 0,
-  const char *overlay_text = NULL,
+  const char *overlay_text = nullptr,
   float scale_min = FLT_MAX,
   float scale_max = FLT_MAX,
   ImVec2 graph_size = ImVec2(0, 0));

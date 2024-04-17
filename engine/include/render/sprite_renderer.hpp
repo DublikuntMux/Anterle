@@ -20,8 +20,8 @@ public:
     float rotate = 0.0f,
     glm::vec3 color = glm::vec3(1.0f));
 
-protected:
-  Shader p_shader;
-  uint32_t p_quadVAO;
+private:
+  Shader _shader;
+  uint32_t _quadVAO{};
 };
 }// namespace Anterle

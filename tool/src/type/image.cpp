@@ -9,7 +9,7 @@
 
 void processImage(const char *sourcePath, const char *destPath)
 {
-  int width, height, channels;
+  int width = 0, height = 0, channels = 0;
   unsigned char *image = stbi_load(sourcePath, &width, &height, &channels, 0);
   if (image == nullptr) {
     std::cerr << "Failed to load image: " << sourcePath << std::endl;

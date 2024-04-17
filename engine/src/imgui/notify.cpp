@@ -1,3 +1,4 @@
+#include <array>
 #include <vector>
 
 #include <imgui.h>
@@ -10,14 +11,13 @@ void ImGuiToast::set_title(const char *format, ...) { NOTIFY_FORMAT(set_title, f
 void ImGuiToast::set_content(const char *format, ...) { NOTIFY_FORMAT(set_content, format); }
 void ImGuiToast::set_type(const ImGuiToastType &tost_type) { type = tost_type; };
 
-char *ImGuiToast::get_title() { return title; };
 const char *ImGuiToast::get_default_title()
 {
-  if (!strlen(title)) {
+  if (title.empty()) {
     switch (type) {
     case ImGuiToastType::COUNT:
     case ImGuiToastType::None:
-      return NULL;
+      return nullptr;
     case ImGuiToastType::Success:
       return "Success";
     case ImGuiToastType::Warning:
@@ -29,7 +29,7 @@ const char *ImGuiToast::get_default_title()
     }
   }
 
-  return title;
+  return title.c_str();
 };
 const ImGuiToastType &ImGuiToast::get_type() { return type; };
 ImVec4 ImGuiToast::get_color()
@@ -53,7 +53,7 @@ const char *ImGuiToast::get_icon()
   switch (type) {
   case ImGuiToastType::COUNT:
   case ImGuiToastType::None:
-    return NULL;
+    return nullptr;
   case ImGuiToastType::Success:
     return ICON_FA_CIRCLE_CHECK;
   case ImGuiToastType::Warning:
@@ -64,7 +64,9 @@ const char *ImGuiToast::get_icon()
     return ICON_FA_CIRCLE_INFO;
   }
 }
-char *ImGuiToast::get_content() { return content; };
+const char *ImGuiToast::get_title() { return title.c_str(); }
+char *ImGuiToast::get_content() { return &content[0]; }
+
 int64_t ImGuiToast::get_elapsed_time()
 {
   return std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch())
@@ -90,19 +92,31 @@ ImGuiToastPhase ImGuiToast::get_phase()
 float ImGuiToast::get_fade_percent()
 {
   const auto phase = get_phase();
-  const float elapsed = static_cast<float>(get_elapsed_time());
+  const auto elapsed = get_elapsed_time();
 
   if (phase == ImGuiToastPhase::FadeIn) {
-    return (elapsed / NOTIFY_FADE_IN_OUT_TIME) * NOTIFY_OPACITY;
+    return static_cast<float>(elapsed / NOTIFY_FADE_IN_OUT_TIME) * NOTIFY_OPACITY;
   } else if (phase == ImGuiToastPhase::FadeOut) {
-    return (1.f - ((elapsed - NOTIFY_FADE_IN_OUT_TIME - dismiss_time) / NOTIFY_FADE_IN_OUT_TIME)) * NOTIFY_OPACITY;
+    return static_cast<float>(1 - ((elapsed - NOTIFY_FADE_IN_OUT_TIME - dismiss_time) / NOTIFY_FADE_IN_OUT_TIME))
+           * NOTIFY_OPACITY;
   }
 
   return 1.f * NOTIFY_OPACITY;
 }
 
-void ImGuiToast::set_title(const char *format, va_list args) { vsnprintf(title, sizeof(title), format, args); }
-void ImGuiToast::set_content(const char *format, va_list args) { vsnprintf(content, sizeof(content), format, args); }
+void ImGuiToast::set_title(const char *format, va_list args)
+{
+  std::array<char, NOTIFY_MAX_MSG_LENGTH> buffer{};
+  vsnprintf(buffer.data(), buffer.size(), format, args);
+  title = buffer.data();
+}
+
+void ImGuiToast::set_content(const char *format, va_list args)
+{
+  std::array<char, NOTIFY_MAX_MSG_LENGTH> buffer{};
+  vsnprintf(buffer.data(), buffer.size(), format, args);
+  content = buffer.data();
+}
 }// namespace Anterle
 
 namespace ImGui {
@@ -110,7 +124,10 @@ std::vector<Anterle::ImGuiToast> notifications;
 
 void InsertNotification(const Anterle::ImGuiToast &toast) { notifications.push_back(toast); }
 
-void RemoveNotification(size_t index) { notifications.erase(notifications.begin() + index); }
+void RemoveNotification(size_t index)
+{
+  notifications.erase(notifications.begin() + static_cast<std::vector<Anterle::ImGuiToast>::difference_type>(index));
+}
 
 void RenderNotifications()
 {
@@ -135,14 +152,15 @@ void RenderNotifications()
     auto text_color = current_toast->get_color();
     text_color.w = opacity;
 
-    char window_name[50];
-    sprintf_s(window_name, sizeof(window_name), "##TOAST%zu", i);
+    std::string window_name{};
+    window_name.append(std::to_string(i));
+    window_name.insert(0, "##TOAST");
 
     SetNextWindowBgAlpha(opacity);
     SetNextWindowPos(ImVec2(vp_size.x - NOTIFY_PADDING_X, vp_size.y - NOTIFY_PADDING_Y - height),
       ImGuiCond_Always,
       ImVec2(1.0f, 1.0f));
-    Begin(window_name, NULL, NOTIFY_TOAST_FLAGS);
+    Begin(window_name.c_str(), nullptr, NOTIFY_TOAST_FLAGS);
 
     {
       PushTextWrapPos(vp_size.x / 3.f);
@@ -182,7 +200,7 @@ void RenderNotifications()
 
 void MergeIconsWithLatestFont(float font_size, bool FontDataOwnedByAtlas)
 {
-  static const ImWchar icons_ranges[] = { ICON_MIN_FA, ICON_MAX_FA, 0 };
+  static const std::array<ImWchar, 3> icons_ranges{ ICON_MIN_FA, ICON_MAX_FA, 0 };
 
   ImFontConfig icons_config;
   icons_config.MergeMode = true;
@@ -190,6 +208,6 @@ void MergeIconsWithLatestFont(float font_size, bool FontDataOwnedByAtlas)
   icons_config.GlyphMinAdvanceX = 13.0f;
   icons_config.FontDataOwnedByAtlas = FontDataOwnedByAtlas;
 
-  GetIO().Fonts->AddFontFromFileTTF("resources/fonts/fa-solid-900.ttf", font_size, &icons_config, icons_ranges);
+  GetIO().Fonts->AddFontFromFileTTF("resources/fonts/fa-solid-900.ttf", font_size, &icons_config, icons_ranges.data());
 }
 }// namespace ImGui

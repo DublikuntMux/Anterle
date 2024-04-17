@@ -8,16 +8,16 @@
 
 struct PlotVarData
 {
-  ImGuiID ID;
+  ImGuiID ID{ 0 };
   ImVector<float> Data;
-  int DataInsertIdx;
-  int LastFrame;
+  int DataInsertIdx{ 0 };
+  int LastFrame{ 0 };
 
-  PlotVarData() : ID(0), DataInsertIdx(0), LastFrame(0) {}
+  PlotVarData() = default;
 };
 
-typedef std::map<ImGuiID, PlotVarData> PlotVarsMap;
-static PlotVarsMap g_PlotVarsMap;
+using PlotVarsMap = std::map<ImGuiID, PlotVarData>;
+static PlotVarsMap plotVarsMap;
 
 void ImGui::PlotVar(const char *label, float value, float scale_min, float scale_max, int buffer_size)
 {
@@ -27,7 +27,7 @@ void ImGui::PlotVar(const char *label, float value, float scale_min, float scale
   ImGui::PushID(label);
   ImGuiID id = ImGui::GetID("");
 
-  PlotVarData &pvd = g_PlotVarsMap[id];
+  PlotVarData &pvd = plotVarsMap[id];
 
   if (pvd.Data.capacity() != buffer_size) {
     pvd.Data.resize(buffer_size);
@@ -42,7 +42,8 @@ void ImGui::PlotVar(const char *label, float value, float scale_min, float scale
 
   int current_frame = ImGui::GetFrameCount();
   if (pvd.LastFrame != current_frame) {
-    ImGui::PlotLines("##plot", &pvd.Data[0], buffer_size, pvd.DataInsertIdx, NULL, scale_min, scale_max, ImVec2(0, 40));
+    ImGui::PlotLines(
+      "##plot", &pvd.Data[0], buffer_size, pvd.DataInsertIdx, nullptr, scale_min, scale_max, ImVec2(0, 40));
     ImGui::SameLine();
     ImGui::Text("%s\n%-3.4f", label, pvd.Data[display_idx]);
     pvd.LastFrame = current_frame;
@@ -54,10 +55,10 @@ void ImGui::PlotVar(const char *label, float value, float scale_min, float scale
 void ImGui::PlotVarFlushOldEntries()
 {
   int current_frame = ImGui::GetFrameCount();
-  for (PlotVarsMap::iterator it = g_PlotVarsMap.begin(); it != g_PlotVarsMap.end();) {
+  for (auto it = plotVarsMap.begin(); it != plotVarsMap.end();) {
     PlotVarData &pvd = it->second;
     if (pvd.LastFrame < current_frame - std::max(400, (int)pvd.Data.size()))
-      it = g_PlotVarsMap.erase(it);
+      it = plotVarsMap.erase(it);
     else
       ++it;
   }

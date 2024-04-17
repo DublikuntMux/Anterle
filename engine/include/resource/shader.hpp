@@ -10,9 +10,7 @@ namespace Anterle {
 class Shader
 {
 public:
-  uint32_t ID;
-
-  Shader() {}
+  Shader();
   Shader &Use();
 
   void Compile(const char *vertexCode, const char *fragmentCode);
@@ -28,6 +26,9 @@ public:
   void SetVector4f(const char *name, const glm::vec4 &value, bool useShader = false);
   void SetMatrix4(const char *name, const glm::mat4 &matrix, bool useShader = false);
   void SetMatrix4(const char *name, const glm::mat4 &matrix, int count, bool useShader = false);
+
+public:
+  uint32_t ID;
 
 private:
   void checkCompileErrors(uint32_t object, std::string type);

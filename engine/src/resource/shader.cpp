@@ -1,3 +1,4 @@
+#include <array>
 #include <cstdint>
 
 #include <glm/glm.hpp>
@@ -9,6 +10,8 @@
 #include "resource/shader.hpp"
 
 namespace Anterle {
+Shader::Shader() : ID(glCreateProgram()) {}
+
 Shader &Shader::Use()
 {
   glUseProgram(ID);
@@ -17,19 +20,18 @@ Shader &Shader::Use()
 
 void Shader::Compile(const char *vertexCode, const char *fragmentPath)
 {
-  unsigned int vertex, fragment;
+  unsigned int vertex = 0, fragment = 0;
 
   vertex = glCreateShader(GL_VERTEX_SHADER);
-  glShaderSource(vertex, 1, &vertexCode, NULL);
+  glShaderSource(vertex, 1, &vertexCode, nullptr);
   glCompileShader(vertex);
   checkCompileErrors(vertex, "VERTEX");
 
   fragment = glCreateShader(GL_FRAGMENT_SHADER);
-  glShaderSource(fragment, 1, &fragmentPath, NULL);
+  glShaderSource(fragment, 1, &fragmentPath, nullptr);
   glCompileShader(fragment);
   checkCompileErrors(fragment, "FRAGMENT");
 
-  ID = glCreateProgram();
   glAttachShader(ID, vertex);
   glAttachShader(ID, fragment);
 
@@ -98,18 +100,18 @@ void Shader::SetMatrix4(const char *name, const glm::mat4 &matrix, int count, bo
 
 void Shader::checkCompileErrors(uint32_t object, std::string type)
 {
-  int success;
-  char infoLog[1024];
+  int success = 0;
+  std::array<char, 1024> infoLog{};
   if (type != "PROGRAM") {
     glGetShaderiv(object, GL_COMPILE_STATUS, &success);
     if (!success) {
-      glGetShaderInfoLog(object, 1024, NULL, infoLog);
+      glGetShaderInfoLog(object, 1024, nullptr, infoLog.data());
       Logger::getInstance()->log("Shader compile-time error: Type: %s\n%s", type.c_str(), infoLog);
     }
   } else {
     glGetProgramiv(object, GL_LINK_STATUS, &success);
     if (!success) {
-      glGetProgramInfoLog(object, 1024, NULL, infoLog);
+      glGetProgramInfoLog(object, 1024, nullptr, infoLog.data());
       Logger::getInstance()->log("Shader link-time error: Type: %s\n%s", type.c_str(), infoLog);
     }
   }

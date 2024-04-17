@@ -29,10 +29,10 @@ private:
   void TextRenderCall(int length);
 
   Shader _textShader;
-  uint32_t _VAO, _VBO;
+  uint32_t _VAO{}, _VBO{};
 
   std::unordered_map<wchar_t, Character> _characters;
-  uint32_t _textureArray;
+  uint32_t _textureArray{};
   std::vector<glm::mat4> _transforms;
   std::vector<int> _letterMap;
 };

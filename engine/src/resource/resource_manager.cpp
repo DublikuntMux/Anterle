@@ -10,12 +10,15 @@
 #include "logger.hpp"
 #include "resource/resource_manager.hpp"
 
-std::map<std::string, Anterle::Texture2D> Anterle::ResourceManager::Textures;
-std::map<std::string, Anterle::Shader> Anterle::ResourceManager::Shaders;
-
-bool fpng_inited;
-
 namespace Anterle {
+std::unique_ptr<ResourceManager> ResourceManager::_instance = nullptr;
+
+std::unique_ptr<ResourceManager> &ResourceManager::getInstance()
+{
+  if (!_instance) { _instance = std::make_unique<ResourceManager>(); }
+  return _instance;
+}
+
 Shader ResourceManager::LoadShader(std::string name)
 {
   Shaders[name] = loadShaderFromFile(name);
@@ -32,10 +35,9 @@ Texture2D ResourceManager::LoadTexture(std::string name, bool alpha)
 
 Texture2D ResourceManager::GetTexture(std::string name) { return Textures[name]; }
 
-void ResourceManager::Clear()
+ResourceManager::~ResourceManager()
 {
   for (auto &iter : Shaders) glDeleteProgram(iter.second.ID);
-
   for (auto &iter : Textures) glDeleteTextures(1, &iter.second.ID);
 }
 
@@ -65,7 +67,7 @@ Shader ResourceManager::loadShaderFromFile(std::string shaderName)
     vertexCode = vShaderStream.str();
     fragmentCode = fShaderStream.str();
   } catch (std::ifstream::failure &e) {
-    Logger::getInstance()->log("%s | Failed to read sheader: %s", e.code(), e.what());
+    Logger::getInstance()->log("Failed to read sheader: %s", e.what());
   }
 
   Shader shader;
@@ -96,7 +98,7 @@ Texture2D ResourceManager::loadTextureFromFile(std::string file, bool alpha)
     abort();
   }
 
-  uint32_t width, height, nrChannels;
+  uint32_t width = 0, height = 0, nrChannels = 0;
   std::vector<uint8_t> out;
   fpng::fpng_decode_file(file_patch.c_str(), out, width, height, nrChannels, 4);
 

@@ -1,5 +1,6 @@
 #pragma once
 
+#include <array>
 #include <stdexcept>
 #include <string>
 #include <unordered_map>
@@ -41,15 +42,14 @@ public:
   void loop(const std::string &channelName, bool enable);
   void setVolume(const std::string &channelName, float volume);
 
-  float getChannelVolume(const std::string &channelName) const;
-  bool isChannelLooped(const std::string &channelName) const;
-  bool isChannelPaused(const std::string &channelName) const;
+  [[nodiscard]] float getChannelVolume(const std::string &channelName) const;
+  [[nodiscard]] bool isChannelLooped(const std::string &channelName) const;
+  [[nodiscard]] bool isChannelPaused(const std::string &channelName) const;
 
 private:
-  ma_context _context;
-  ma_device _device;
+  ma_context _context{};
+  ma_device _device{};
   std::unordered_map<std::string, Channel> _channels;
-  static const int _bufferSize = 4096;
-  float _buffer[_bufferSize];
+  std::array<float, 4096> _buffer{};
 };
 }// namespace Anterle

@@ -9,14 +9,14 @@
 namespace Anterle {
 AudioSystem::AudioSystem()
 {
-  ma_context_init(NULL, 0, NULL, &_context);
+  ma_context_init(nullptr, 0, nullptr, &_context);
   ma_device_config deviceConfig = ma_device_config_init(ma_device_type_playback);
   deviceConfig.playback.format = ma_format_f32;
   deviceConfig.playback.channels = 2;
   deviceConfig.sampleRate = 44100;
   deviceConfig.pUserData = this;
 
-  if (ma_device_init(NULL, &deviceConfig, &_device) != MA_SUCCESS) {
+  if (ma_device_init(nullptr, &deviceConfig, &_device) != MA_SUCCESS) {
     throw AudioException("Failed to initialize audio device!");
   }
 
@@ -33,7 +33,7 @@ void AudioSystem::createChannel(const std::string &channelName, const char *file
 {
   if (_channels.find(channelName) == _channels.end()) {
     ma_decoder decoder;
-    if (ma_decoder_init_file(filePath, NULL, &decoder) == MA_SUCCESS) {
+    if (ma_decoder_init_file(filePath, nullptr, &decoder) == MA_SUCCESS) {
       _channels[channelName] = { decoder, false, false, false, 1.0f };
     } else {
       throw AudioException("Failed to load sound: " + std::string(filePath));
@@ -47,7 +47,7 @@ void AudioSystem::setSound(const std::string &channelName, const char *filePath)
 {
   if (_channels.find(channelName) != _channels.end()) {
     ma_decoder decoder;
-    if (ma_decoder_init_file(filePath, NULL, &decoder) == MA_SUCCESS) {
+    if (ma_decoder_init_file(filePath, nullptr, &decoder) == MA_SUCCESS) {
       ma_decoder_uninit(&_channels[channelName].decoder);
       _channels[channelName].decoder = decoder;
     } else {
@@ -141,7 +141,7 @@ void AudioSystem::update()
     if (ch.isPlaying && !ch.isPaused) {
       ma_decoder_seek_to_pcm_frame(&ch.decoder, 0);
       float volume = ch.volume;
-      if (ma_decoder_read_pcm_frames(&ch.decoder, _buffer, _bufferSize, 0) == 0) {
+      if (ma_decoder_read_pcm_frames(&ch.decoder, _buffer.data(), _buffer.size(), nullptr) == 0) {
         if (ch.isLooping) {
           ma_decoder_seek_to_pcm_frame(&ch.decoder, 0);
         } else {
@@ -149,9 +149,9 @@ void AudioSystem::update()
         }
       }
 
-      for (int i = 0; i < _bufferSize; ++i) { _buffer[i] *= volume; }
+      for (float &i : _buffer) { i *= volume; }
     } else {
-      memset(_buffer, 0, sizeof(_buffer));
+      memset(_buffer.data(), 0, sizeof(_buffer));
     }
   }
 }

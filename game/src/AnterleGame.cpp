@@ -1,3 +1,5 @@
+#include <memory>
+
 #include <GLFW/glfw3.h>
 #include <glm/ext.hpp>
 #include <imgui.h>
@@ -13,13 +15,6 @@ AnterleGame::AnterleGame(uint16_t width, uint16_t height, const char *title, Gam
   : Game(width, height, title), Configs(Configs)
 {}
 
-AnterleGame::~AnterleGame()
-{
-  delete Text;
-  delete Audio;
-  delete Renderer;
-}
-
 void AnterleGame::Init()
 {
   ImGuiIO &io = ImGui::GetIO();
@@ -30,26 +25,26 @@ void AnterleGame::Init()
 
   ImGui::MergeIconsWithLatestFont(16.f, false);
 
-  Anterle::ResourceManager::LoadShader("sprite");
+  auto &resource = Anterle::ResourceManager::getInstance();
+  resource->LoadShader("sprite");
 
   glm::mat4 projection = glm::ortho(0.0F, static_cast<float>(Width), static_cast<float>(Height), 0.0F, -1.0F, 1.0F);
 
-  Anterle::ResourceManager::GetShader("sprite").Use().SetInteger("sprite", 0);
-  Anterle::ResourceManager::GetShader("sprite").SetMatrix4("projection", projection);
+  resource->GetShader("sprite").Use().SetInteger("sprite", 0);
+  resource->GetShader("sprite").SetMatrix4("projection", projection);
 
-  Anterle::ResourceManager::LoadTexture("background", false);
-  Anterle::ResourceManager::LoadTexture("face", true);
+  resource->LoadTexture("background", false);
+  resource->LoadTexture("face", true);
 
-  Renderer = new Anterle::SpriteRenderer(Anterle::ResourceManager::GetShader("sprite"));
-  Text = new Anterle::TextRenderer(Width, Height);
+  Renderer = std::make_unique<Anterle::SpriteRenderer>(resource->GetShader("sprite"));
+  Text = std::make_unique<Anterle::TextRenderer>(Width, Height);
   Text->Load("tahoma");
-  Audio = new Anterle::AudioSystem();
+  Audio = std::make_unique<Anterle::AudioSystem>();
 
   Configs->CurentLevel = 0;
 }
 
-void AnterleGame::Update()
-{}
+void AnterleGame::Update() {}
 
 void AnterleGame::FixedUpdate() {}
 
@@ -82,7 +77,7 @@ void AnterleGame::Render()
     Text->RenderText(L"Press ENTER to start", 250.0F, Height / 2.0F, 1.0F);
 
   } else if (State == Anterle::GameState::GAME_ACTIVE) {
-    Renderer->DrawSprite(Anterle::ResourceManager::GetTexture("face"),
+    Renderer->DrawSprite(Anterle::ResourceManager::getInstance()->GetTexture("face"),
       glm::vec2(200.0F, 200.0F),
       glm::vec2(300.0F, 400.0F),
       45.0F,
