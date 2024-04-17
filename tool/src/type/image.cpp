@@ -7,16 +7,16 @@
 
 #include "type/image.hpp"
 
-void processImage(const char *sourcePath, const char *destPath)
+void processImage(std::string &sourcePath, std::string &destPath)
 {
   int width = 0, height = 0, channels = 0;
-  unsigned char *image = stbi_load(sourcePath, &width, &height, &channels, 0);
+  unsigned char *image = stbi_load(sourcePath.c_str(), &width, &height, &channels, 0);
   if (image == nullptr) {
     std::cerr << "Failed to load image: " << sourcePath << std::endl;
     return;
   }
 
-  if (!fpng::fpng_encode_image_to_file(destPath,
+  if (!fpng::fpng_encode_image_to_file(destPath.c_str(),
         image,
         static_cast<uint32_t>(width),
         static_cast<uint32_t>(height),

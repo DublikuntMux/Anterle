@@ -35,6 +35,11 @@ Texture2D ResourceManager::LoadTexture(std::string name, bool alpha)
 
 Texture2D ResourceManager::GetTexture(std::string name) { return Textures[name]; }
 
+ResourceManager::ResourceManager()
+{
+  fpng::fpng_init();
+}
+
 ResourceManager::~ResourceManager()
 {
   for (auto &iter : Shaders) glDeleteProgram(iter.second.ID);
@@ -77,11 +82,6 @@ Shader ResourceManager::loadShaderFromFile(std::string shaderName)
 
 Texture2D ResourceManager::loadTextureFromFile(std::string file, bool alpha)
 {
-  if (!fpng_inited) {
-    fpng::fpng_init();
-    fpng_inited = true;
-  }
-
   Texture2D texture;
   if (alpha) {
     texture.Internal_Format = GL_RGBA;

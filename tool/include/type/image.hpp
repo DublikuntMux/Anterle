@@ -1,3 +1,5 @@
 #pragma once
 
-void processImage(const char *sourcePath, const char *destPath);
+#include <string>
+
+void processImage(std::string &sourcePath, std::string &destPath);

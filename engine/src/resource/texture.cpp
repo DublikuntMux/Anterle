@@ -10,7 +10,7 @@ Texture2D::Texture2D()
   glGenTextures(1, &ID);
 }
 
-void Texture2D::Generate(int width, int height, uint8_t *data)
+void Texture2D::Generate(uint32_t width, uint32_t height, uint8_t *data)
 {
   Width = width;
   Height = height;

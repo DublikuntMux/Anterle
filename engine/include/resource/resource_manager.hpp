@@ -11,7 +11,7 @@ namespace Anterle {
 class ResourceManager
 {
 public:
-  ResourceManager() = default;
+  ResourceManager();
   ~ResourceManager();
 
   ResourceManager(const ResourceManager &) = delete;
@@ -36,6 +36,5 @@ private:
 
 private:
   static std::unique_ptr<ResourceManager> _instance;
-  bool fpng_inited;
 };
 }// namespace Anterle

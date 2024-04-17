@@ -73,7 +73,7 @@ void TextRenderer::Load(std::string font)
   FT_UInt index = 0;
   auto char_code = static_cast<wchar_t>(FT_Get_First_Char(face, &index));
   while (true) {
-    if (FT_Load_Char(face, char_code, FT_LOAD_RENDER) != 0) {
+    if (FT_Load_Char(face, char_code, FT_LOAD_RENDER | FT_LOAD_TARGET_LIGHT) != 0) {
       Logger::getInstance()->log("Failed to load Glyph.");
       continue;
     }

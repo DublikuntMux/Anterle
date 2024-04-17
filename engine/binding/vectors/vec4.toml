@@ -1,0 +1,7 @@
+typeImport = "glm/glm.hpp"
+type = "glm::vec4"
+
+constructorParams = ["float", "float, float, float, float"]
+operatorVar = ["float"]
+bindVar = ["x", "y", "z", "w", "r", "g", "b", "a", "s", "t", "p", "q"]
+bindFunction = [["length", "glm::length"]]

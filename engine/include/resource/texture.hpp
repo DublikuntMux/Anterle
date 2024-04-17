@@ -7,7 +7,7 @@ class Texture2D
 {
 public:
   uint32_t ID{};
-  int Width, Height;
+  uint32_t Width, Height;
   int Internal_Format;
   uint32_t Image_Format;
   int Wrap_S;
@@ -17,7 +17,7 @@ public:
 
   Texture2D();
 
-  void Generate(int width, int height, uint8_t *data);
+  void Generate(uint32_t width, uint32_t height, uint8_t *data);
   void Bind() const;
 };
 }// namespace Anterle

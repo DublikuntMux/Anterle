@@ -81,10 +81,11 @@ std::unique_ptr<Logger> &Logger::getInstance()
 
 void Logger::log(const char *format, ...)
 {
-  char buffer[1024];
   va_list args = nullptr;
   va_start(args, format);
-  vsnprintf(buffer, sizeof(buffer), format, args);
+  int size = vsnprintf(nullptr, 0, format, args) + 1;
+  std::string buffer(size, '\0');
+  vsnprintf(&buffer[0], size, format, args);
   va_end(args);
 
   auto now = std::chrono::system_clock::now();
