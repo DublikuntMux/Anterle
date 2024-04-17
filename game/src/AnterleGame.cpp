@@ -18,7 +18,7 @@ AnterleGame::AnterleGame(uint16_t width, uint16_t height, const char *title, Gam
 void AnterleGame::Init()
 {
   Game::Init();
-  
+
   ImGuiIO &io = ImGui::GetIO();
   (void)io;
   ImFontConfig font_cfg;

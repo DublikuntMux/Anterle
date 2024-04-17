@@ -1,5 +1,5 @@
-#include <cmath>
 #include <cstdint>
+#include <memory>
 
 #include <GLFW/glfw3.h>
 #include <fpng.h>
@@ -9,6 +9,8 @@
 #include <imgui_impl_glfw.h>
 #include <imgui_impl_opengl3.h>
 
+#include <sol/sol.hpp>
+
 #include "debug/profiler.hpp"
 #include "game.hpp"
 #include "imgui/notify.hpp"
@@ -16,6 +18,7 @@
 #include "logger.hpp"
 #include "resource/resource_manager.hpp"
 #include "resource/time.hpp"
+#include "scripting/glm/vector.hpp"
 #include "utils.hpp"
 
 namespace Anterle {
@@ -173,7 +176,7 @@ void Game::Start()
 
 void Game::Init()
 {
-Logger::getInstance()->log("Init resources.");
+  Logger::getInstance()->log("Init resources.");
   auto &resource = ResourceManager::getInstance();
   resource->LoadShader("sprite");
 
@@ -190,6 +193,18 @@ Logger::getInstance()->log("Init resources.");
   Text->Load("tahoma");
   Logger::getInstance()->log("Load audio system.");
   Audio = std::make_unique<Anterle::AudioSystem>();
+
+  Logger::getInstance()->log("Load lua scripting.");
+  Lua = std::make_shared<sol::state>();
+  Lua->open_libraries(sol::lib::base,
+    sol::lib::string,
+    sol::lib::math,
+    sol::lib::io,
+    sol::lib::table,
+    sol::lib::package,
+    sol::lib::utf8,
+    sol::lib::count);
+  Andterle::Scripting::BindGLMVectors(*Lua);
 }
 
 void Game::Update() {}
@@ -246,7 +261,7 @@ void Game::key_callback(GLFWwindow *window, int key, int, int action, int)
 
 void Game::mouse_callback(GLFWwindow *window, int button, int action, int)
 {
-  double xpos = NAN, ypos = NAN;
+  double xpos = 0, ypos = 0;
   glfwGetCursorPos(window, &xpos, &ypos);
   if (action == GLFW_PRESS && button == GLFW_MOUSE_BUTTON_1) {}
 }

@@ -1,10 +1,11 @@
 #pragma once
 
-#include <memory>
 #include <array>
 #include <cstdint>
+#include <memory>
 
 #include <GLFW/glfw3.h>
+#include <sol/sol.hpp>
 
 #include "audio/auidio_server.hpp"
 #include "render/sprite_renderer.hpp"
@@ -40,6 +41,7 @@ public:
   std::array<bool, 1024> KeysProcessed;
 
   bool debug_mode = false;
+  std::shared_ptr<sol::state> Lua;
 
   std::unique_ptr<Anterle::SpriteRenderer> Renderer;
   std::unique_ptr<Anterle::TextRenderer> Text;
