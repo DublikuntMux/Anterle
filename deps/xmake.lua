@@ -1,3 +1,8 @@
+target("glad")
+    set_kind("static")
+    add_files("glad/src/**.c")
+    add_includedirs("glad/include", {public = true})
+
 target("sol")
     set_kind("headeronly")
     add_headerfiles("sol2/**.hpp")

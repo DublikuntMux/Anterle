@@ -55,7 +55,7 @@ void Logger::workerThread()
     return;
   }
 
-  while (true) {
+  while (_running) {
     std::string message;
     {
       std::unique_lock<std::mutex> lock(_mtx);
@@ -93,7 +93,7 @@ void Logger::log(const char *format, ...)
   std::tm now_tm{};
   localtime_s(&now_tm, &now_c);
   std::stringstream ss;
-  ss << "[" << std::put_time(&now_tm, "%H:%M:%S") << "] " << ": " << buffer;
+  ss << "[" << std::put_time(&now_tm, "%H:%M:%S") << "]: " << buffer;
 
   std::unique_lock<std::mutex> lock(_mtx);
   _logQueue.push(ss.str());

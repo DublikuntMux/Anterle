@@ -1,4 +1,4 @@
-#include <GLFW/glfw3.h>
+#include <SDL.h>
 
 #include "resource/time.hpp"
 
@@ -8,11 +8,11 @@ double Time::_deltaTime = 0.0;
 double Time::_lastFrame = 0.0;
 double Time::_currentFrame = 0.0;
 double Time::FixedAccumulator = 0.0;
-double Time::_currentTime = glfwGetTime();
+double Time::_currentTime = SDL_GetTicks() / 1000.0;
 
 void Time::update()
 {
-  _currentFrame = glfwGetTime();
+  _currentFrame = SDL_GetTicks() / 1000.0;
   _deltaTime = _currentFrame - _lastFrame;
   _lastFrame = _currentFrame;
 

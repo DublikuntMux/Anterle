@@ -1,16 +1,20 @@
 #include <cstdint>
 #include <memory>
 
-#include <GLFW/glfw3.h>
-#include <fpng.h>
 #include <glad/glad.h>
+
+#include <SDL.h>
+#include <SDL_opengl.h>
+
+#include <fpng.h>
 #include <glm/ext.hpp>
 #include <imgui.h>
-#include <imgui_impl_glfw.h>
 #include <imgui_impl_opengl3.h>
+#include <imgui_impl_sdl2.h>
 
 #include <sol/sol.hpp>
 
+#include "SDL_video.h"
 #include "debug/profiler.hpp"
 #include "game.hpp"
 #include "imgui/notify.hpp"
@@ -23,48 +27,49 @@
 
 namespace Anterle {
 Game::Game(uint16_t width, uint16_t height, const char *title)
-  : State(GameState::GAME_MENU), Width(width), Height(height), Title(title), Keys(), KeysProcessed()
+  : State(GameState::GAME_MENU), Width(width), Height(height), Title(title)
 {
   Logger::getInstance()->log("Starting game.");
-  glfwSetErrorCallback(&Game::glfw_error_callback);
 
-  if (!glfwInit()) {
+  if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_TIMER | SDL_INIT_GAMECONTROLLER | SDL_INIT_SENSOR) < 0) {
     Logger::getInstance()->log("Failed to initialize GLFW.");
     abort();
   }
 
-  glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
-  glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 6);
-  glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
+  SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 4);
+  SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 6);
+  SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE);
 #ifdef __APPLE__
-  glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
+  SDL_GL_SetAttribute(SDL_GL_CONTEXT_FLAGS, SDL_GL_CONTEXT_FORWARD_COMPATIBLE_FLAG);
 #endif
 
-  GLFWmonitor *monitor = glfwGetPrimaryMonitor();
-  const GLFWvidmode *mode = glfwGetVideoMode(monitor);
-  int screenWidth = mode->width;
-  int screenHeight = mode->height;
+#ifdef SDL_HINT_IME_SHOW_UI
+  SDL_SetHint(SDL_HINT_IME_SHOW_UI, "1");
+#endif
 
-  GlfwWindow = glfwCreateWindow(Width, Height, title, nullptr, nullptr);
-  glfwSetWindowPos(GlfwWindow, (screenWidth - Width) / 2, (screenHeight - Height) / 2);
-  glfwMakeContextCurrent(GlfwWindow);
-  if (GlfwWindow == nullptr) {
-    Logger::getInstance()->log("Failed to initialize window.");
+  SDL_GL_SetAttribute(SDL_GL_DEPTH_SIZE, 24);
+  SDL_GL_SetAttribute(SDL_GL_STENCIL_SIZE, 8);
+
+  Window = SDL_CreateWindow(title,
+    SDL_WINDOWPOS_CENTERED,
+    SDL_WINDOWPOS_CENTERED,
+    Width,
+    Height,
+    SDL_WINDOW_OPENGL | SDL_WINDOW_SHOWN | SDL_WINDOW_ALLOW_HIGHDPI);
+  if (!Window) {
+    Logger::getInstance()->log("Failed to create window: %s", SDL_GetError());
+    abort();
+  }
+  glContext = SDL_GL_CreateContext(Window);
+  if (!glContext) {
+    Logger::getInstance()->log("Failed to create OpenGL context: %s", SDL_GetError());
     abort();
   }
 
-  gladLoadGLLoader((GLADloadproc)glfwGetProcAddress);
+  gladLoadGLLoader((GLADloadproc)SDL_GL_GetProcAddress);
 
-  glfwSwapInterval(1);
-  glfwSetWindowUserPointer(GlfwWindow, this);
-  glfwSetKeyCallback(GlfwWindow, [](GLFWwindow *window, int key, int scancode, int action, int mode) {
-    auto &self = *static_cast<Game *>(glfwGetWindowUserPointer(window));
-    self.key_callback(window, key, scancode, action, mode);
-  });
-  glfwSetMouseButtonCallback(GlfwWindow, [](GLFWwindow *window, int button, int action, int mods) {
-    auto &self = *static_cast<Game *>(glfwGetWindowUserPointer(window));
-    self.mouse_callback(window, button, action, mods);
-  });
+  SDL_GL_MakeCurrent(Window, glContext);
+  SDL_GL_SetSwapInterval(1);
 
   glViewport(0, 0, Width, Height);
   glEnable(GL_CULL_FACE);
@@ -73,45 +78,42 @@ Game::Game(uint16_t width, uint16_t height, const char *title)
 
   IMGUI_CHECKVERSION();
   ImGui::CreateContext();
-  ImGuiIO &io = ImGui::GetIO();
+  io = &ImGui::GetIO();
   (void)io;
 
-  io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;
-  io.ConfigFlags |= ImGuiConfigFlags_NavEnableGamepad;
-  io.IniFilename = nullptr;
+  io->ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;
+  io->ConfigFlags |= ImGuiConfigFlags_NavEnableGamepad;
+  io->IniFilename = nullptr;
 
   Utils::SetupImGuiStyle();
 
-  ImGui_ImplGlfw_InitForOpenGL(GlfwWindow, true);
-  ImGui_ImplOpenGL3_Init("#version 130");
+  ImGui_ImplSDL2_InitForOpenGL(Window, glContext);
+  ImGui_ImplOpenGL3_Init("#version 150");
 }
 
 Game::~Game()
 {
   ImGui_ImplOpenGL3_Shutdown();
-  ImGui_ImplGlfw_Shutdown();
+  ImGui_ImplSDL2_Shutdown();
   ImGui::DestroyContext();
 
-  glfwDestroyWindow(GlfwWindow);
-  glfwTerminate();
+  SDL_GL_DeleteContext(glContext);
+  SDL_DestroyWindow(Window);
+  SDL_Quit();
 }
 
 void Game::Start()
 {
   Profiler profiler;
 
-  while (!glfwWindowShouldClose(GlfwWindow)) {
-    profiler.Frame();
+  while (!quit) {
     Time::update();
+    profiler.Frame();
     profiler.Begin(Profiler::Stage::PollEvents);
-    glfwPollEvents();
+    HandleEvents();
     profiler.End(Profiler::Stage::PollEvents);
 
     profiler.Begin(Profiler::Stage::GameEvents);
-    profiler.Begin(Profiler::Stage::PressInput);
-    ProcessInput();
-    profiler.End(Profiler::Stage::PressInput);
-
     profiler.Begin(Profiler::Stage::FixedUpdate);
     while (Time::FixedAccumulator >= Time::FixedTimeStep) {
       FixedUpdate();
@@ -126,7 +128,7 @@ void Game::Start()
 
     profiler.Begin(Profiler::Stage::ImguiNewFrame);
     ImGui_ImplOpenGL3_NewFrame();
-    ImGui_ImplGlfw_NewFrame();
+    ImGui_ImplSDL2_NewFrame();
     ImGui::NewFrame();
 
     if (debug_mode) {
@@ -157,6 +159,7 @@ void Game::Start()
 
     profiler.Begin(Profiler::Stage::OpenGL);
     ImGui::Render();
+    glViewport(0, 0, (int)io->DisplaySize.x, (int)io->DisplaySize.y);
     glClearColor(0.3f, 0.2f, 0.6f, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT);
     profiler.Begin(Profiler::Stage::GameRender);
@@ -169,7 +172,8 @@ void Game::Start()
     profiler.End(Profiler::Stage::ImguiRender);
 
     profiler.Begin(Profiler::Stage::SwapBuffer);
-    glfwSwapBuffers(GlfwWindow);
+    SDL_GL_SwapWindow(Window);
+    SDL_Delay(1);
     profiler.End(Profiler::Stage::SwapBuffer);
   }
 }
@@ -208,7 +212,7 @@ void Game::Init()
 
 void Game::Update() {}
 void Game::FixedUpdate() {}
-void Game::ProcessInput() {}
+void Game::ProcessInput(SDL_Keycode _) {}
 void Game::Render() {}
 
 void Game::saveScreenshot(const char *filename)
@@ -230,38 +234,31 @@ void Game::saveScreenshot(const char *filename)
   if (!fpng::fpng_encode_image_to_file(filename, flippedPixels.data(), Width, Height, 3, fpng::FPNG_ENCODE_SLOWER)) {}
 }
 
-void Game::glfw_error_callback(int error, const char *description)
+void Game::HandleEvents()
 {
-  Logger::getInstance()->log("GLFW Error: %d : %s", error, description);
-}
-
-void Game::key_callback(GLFWwindow *window, int key, int, int action, int)
-{
-  if (key == GLFW_KEY_ESCAPE && action == GLFW_PRESS) { glfwSetWindowShouldClose(window, GL_TRUE); }
-  if (key == GLFW_KEY_D && action == GLFW_PRESS) {
-    if (debug_mode) {
-      debug_mode = false;
-      ImGui::InsertNotification({ ImGuiToastType::Info, 3000, "Disable debuge mode." });
-    } else {
-      debug_mode = true;
-      ImGui::InsertNotification({ ImGuiToastType::Info, 3000, "Enable debuge mode." });
+  SDL_Event event;
+  while (SDL_PollEvent(&event)) {
+    ImGui_ImplSDL2_ProcessEvent(&event);
+    if (event.type == SDL_QUIT) {
+      quit = true;
+    } else if (event.type == SDL_KEYDOWN) {
+      if (event.key.keysym.sym == SDLK_ESCAPE) {
+        quit = true;
+      } else if (event.key.keysym.sym == SDLK_d) {
+        debug_mode = !debug_mode;
+        if (debug_mode) {
+          ImGui::InsertNotification({ ImGuiToastType::Info, 3000, "Enable debug mode." });
+        } else {
+          ImGui::InsertNotification({ ImGuiToastType::Info, 3000, "Disable debug mode." });
+        }
+      }
+      ProcessInput(event.key.keysym.sym);
+    } else if (event.type == SDL_MOUSEBUTTONDOWN) {
+      if (event.button.button == SDL_BUTTON_LEFT) {
+        int xpos = 0, ypos = 0;
+        SDL_GetMouseState(&xpos, &ypos);
+      }
     }
   }
-
-  if (key >= 0 && key < 1024) {
-    if (action == GLFW_PRESS) {
-      Keys.at(key) = true;
-    } else if (action == GLFW_RELEASE) {
-      Keys.at(key) = false;
-      KeysProcessed.at(key) = false;
-    }
-  }
-}
-
-void Game::mouse_callback(GLFWwindow *window, int button, int action, int)
-{
-  double xpos = 0, ypos = 0;
-  glfwGetCursorPos(window, &xpos, &ypos);
-  if (action == GLFW_PRESS && button == GLFW_MOUSE_BUTTON_1) {}
 }
 }// namespace Anterle

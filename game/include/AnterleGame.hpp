@@ -25,6 +25,6 @@ public:
   void Init() override;
   void Update() override;
   void FixedUpdate() override;
-  void ProcessInput() override;
+  void ProcessInput(SDL_Keycode key) override;
   void Render() override;
 };

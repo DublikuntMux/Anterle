@@ -1,6 +1,5 @@
 #include <memory>
 
-#include <GLFW/glfw3.h>
 #include <glm/ext.hpp>
 #include <imgui.h>
 
@@ -34,25 +33,17 @@ void AnterleGame::Update() {}
 
 void AnterleGame::FixedUpdate() {}
 
-void AnterleGame::ProcessInput()
+void AnterleGame::ProcessInput(SDL_Keycode key)
 {
   if (State == Anterle::GameState::GAME_MENU) {
-    if (Keys[GLFW_KEY_ENTER] && !KeysProcessed[GLFW_KEY_ENTER]) {
-      State = Anterle::GameState::GAME_ACTIVE;
-      KeysProcessed[GLFW_KEY_ENTER] = true;
-    }
+    if (key == SDLK_e) { State = Anterle::GameState::GAME_ACTIVE; }
   }
   if (State == Anterle::GameState::GAME_WIN) {
-    if (Keys[GLFW_KEY_ENTER]) {
-      KeysProcessed[GLFW_KEY_ENTER] = true;
-      State = Anterle::GameState::GAME_MENU;
-    }
+    if (key == SDLK_e) { State = Anterle::GameState::GAME_MENU; }
   }
-  if (Keys[GLFW_KEY_F11] && !KeysProcessed[GLFW_KEY_F11]) {
+  if (key == SDLK_F11) {
     saveScreenshot("screenshot.png");
     ImGui::InsertNotification({ Anterle::ImGuiToastType::Info, 3000, "Screenshot created!" });
-
-    KeysProcessed[GLFW_KEY_F11] = true;
   }
 }
 

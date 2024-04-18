@@ -12,7 +12,6 @@ public:
   enum Stage {
     PollEvents,
     GameEvents,
-    PressInput,
     FixedUpdate,
     Update,
     ImguiNewFrame,
@@ -57,7 +56,6 @@ private:
 static const std::array<const char *, Profiler::_StageCount> stageNames = {
   "Poll Events",
   "Game Events",
-  "Press Input",
   "Fixed Update",
   "Update",
   "Imgui new frame",

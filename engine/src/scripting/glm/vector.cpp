@@ -4,6 +4,8 @@
 #include "scripting/glm/generated/vectors/vec3.hpp"
 #include "scripting/glm/generated/vectors/vec4.hpp"
 #include "scripting/glm/vector.hpp"
+#include "sol/sol.hpp"
+
 
 namespace Andterle::Scripting {
 void BindVectorOperation(sol::state &lua)
@@ -17,6 +19,11 @@ void BindVectorOperation(sol::state &lua)
     sol::overload([](float value, float min, float max) { return std::clamp(value, min, max); },
       [](double value, double min, double max) { return std::clamp(value, min, max); },
       [](int value, int min, int max) { return std::clamp(value, min, max); }));
+
+  lua.set_function("dot",
+    sol::overload([](glm::vec2 &a, glm::vec2 &b) { return glm::dot(a, b); },
+      [](glm::vec3 &a, glm::vec3 &b) { return glm::dot(a, b); },
+      [](glm::vec4 &a, glm::vec4 &b) { return glm::dot(a, b); }));
 }
 
 void BindGLMVectors(sol::state &lua)

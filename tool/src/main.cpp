@@ -1,3 +1,6 @@
+#include <mimalloc-new-delete.h>
+#include <mimalloc-override.h>
+
 #include <filesystem>
 #include <iostream>
 #include <string>

@@ -1,10 +1,10 @@
 #pragma once
 
-#include <array>
 #include <cstdint>
 #include <memory>
 
-#include <GLFW/glfw3.h>
+#include <SDL.h>
+#include <imgui.h>
 #include <sol/sol.hpp>
 
 #include "audio/auidio_server.hpp"
@@ -32,7 +32,7 @@ public:
   virtual void Init();
   virtual void Update();
   virtual void FixedUpdate();
-  virtual void ProcessInput();
+  virtual void ProcessInput(SDL_Keycode key);
   virtual void Render();
 
 public:
@@ -40,11 +40,11 @@ public:
   uint16_t Width, Height;
   const char *Title;
 
-  GLFWwindow *GlfwWindow;
+  SDL_Window *Window;
+  SDL_GLContext glContext;
+  ImGuiIO *io;
 
-  std::array<bool, 1024> Keys;
-  std::array<bool, 1024> KeysProcessed;
-
+  bool quit = false;
   bool debug_mode = false;
   std::shared_ptr<sol::state> Lua;
 
@@ -53,8 +53,6 @@ public:
   std::unique_ptr<Anterle::AudioSystem> Audio;
 
 private:
-  static void glfw_error_callback(int error, const char *description);
-  void mouse_callback(GLFWwindow *window, int button, int action, int modifier);
-  void key_callback(GLFWwindow *window, int key, int scancode, int action, int mode);
+  void HandleEvents();
 };
 }// namespace Anterle
