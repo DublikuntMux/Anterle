@@ -20,6 +20,11 @@ public:
   Game(uint16_t width, uint16_t height, const char *title);
   virtual ~Game();
 
+  Game(const Game &) = delete;
+  Game &operator=(const Game &) = delete;
+  Game(Game &&) noexcept = delete;
+  Game &operator=(Game &&) noexcept = delete;
+
   void saveScreenshot(const char *filename);
 
   void Start();

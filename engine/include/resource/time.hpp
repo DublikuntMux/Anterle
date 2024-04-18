@@ -4,14 +4,15 @@ namespace Anterle {
 class Time
 {
 public:
-  static double FixedTimeStep;
-  static double FixedAccumulator;
-
   static void update();
 
   static double getDeltaTime();
   static double getLastFrame();
   static double getCurentFrame();
+
+public:
+  static double FixedTimeStep;
+  static double FixedAccumulator;
 
 private:
   static double _deltaTime;

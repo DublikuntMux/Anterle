@@ -39,7 +39,7 @@ void ProfilerValueGetter(float *startTimestamp,
   size_t idx)
 {
   auto entry = reinterpret_cast<const Profiler::Entry *>(data);
-  auto &stage = entry->stages[idx];
+  auto &stage = entry->stages.at(idx);
   if (startTimestamp) {
     std::chrono::duration<float, std::milli> fltStart = stage.start - entry->frameStart;
     *startTimestamp = fltStart.count();

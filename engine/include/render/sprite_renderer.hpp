@@ -14,6 +14,11 @@ public:
   SpriteRenderer(Shader shader);
   ~SpriteRenderer();
 
+  SpriteRenderer(const SpriteRenderer &) = default;
+  SpriteRenderer &operator=(const SpriteRenderer &) = default;
+  SpriteRenderer(SpriteRenderer &&) noexcept = default;
+  SpriteRenderer &operator=(SpriteRenderer &&) noexcept = default;
+
   void DrawSprite(Texture2D texture,
     glm::vec2 position,
     glm::vec2 size = glm::vec2(10.0f, 10.0f),

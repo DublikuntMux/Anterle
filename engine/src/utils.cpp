@@ -1,5 +1,6 @@
 #include <imgui.h>
 
+namespace Anterle::Utils {
 void SetupImGuiStyle()
 {
   ImGuiStyle &style = ImGui::GetStyle();
@@ -89,3 +90,4 @@ void SetupImGuiStyle()
   style.Colors[ImGuiCol_NavWindowingDimBg] = ImVec4(0.8f, 0.8f, 0.8f, 0.2f);
   style.Colors[ImGuiCol_ModalWindowDimBg] = ImVec4(0.145f, 0.145f, 0.149f, 1.0f);
 }
+}// namespace Anterle::Utils

@@ -29,6 +29,11 @@ public:
   AudioSystem();
   ~AudioSystem();
 
+  AudioSystem(const AudioSystem &) = default;
+  AudioSystem &operator=(const AudioSystem &) = default;
+  AudioSystem(AudioSystem &&) noexcept = default;
+  AudioSystem &operator=(AudioSystem &&) noexcept = default;
+
   void createChannel(const std::string &channelName, const char *filePath);
 
   void setSound(const std::string &channelName, const char *filePath);

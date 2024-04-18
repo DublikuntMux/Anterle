@@ -1,10 +1,7 @@
 #pragma once
 
-#include <array>
-#include <chrono>
 #include <mutex>
 #include <queue>
-#include <sstream>
 #include <string>
 #include <thread>
 
@@ -16,12 +13,12 @@ public:
   Logger();
   ~Logger();
 
-  static std::unique_ptr<Logger> &getInstance();
-
   Logger(const Logger &) = delete;
   Logger &operator=(const Logger &) = delete;
   Logger(Logger &&) = delete;
   Logger &operator=(Logger &&) = delete;
+
+  static std::unique_ptr<Logger> &getInstance();
 
   void log(const char *format, ...);
 

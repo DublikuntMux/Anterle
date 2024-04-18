@@ -80,7 +80,7 @@ Game::Game(uint16_t width, uint16_t height, const char *title)
   io.ConfigFlags |= ImGuiConfigFlags_NavEnableGamepad;
   io.IniFilename = nullptr;
 
-  SetupImGuiStyle();
+  Utils::SetupImGuiStyle();
 
   ImGui_ImplGlfw_InitForOpenGL(GlfwWindow, true);
   ImGui_ImplOpenGL3_Init("#version 130");
@@ -178,7 +178,6 @@ void Game::Init()
 {
   Logger::getInstance()->log("Init resources.");
   auto &resource = ResourceManager::getInstance();
-  resource->LoadShader("sprite");
 
   glm::mat4 projection = glm::ortho(0.0F, static_cast<float>(Width), static_cast<float>(Height), 0.0F, -1.0F, 1.0F);
 
