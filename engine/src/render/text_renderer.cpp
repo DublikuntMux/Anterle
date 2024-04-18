@@ -28,7 +28,7 @@ const std::array<GLfloat, 8> vertex_data = {
 namespace Anterle {
 TextRenderer::TextRenderer(uint32_t width, uint32_t height)
 {
-  _textShader = ResourceManager::getInstance()->LoadShader("text");
+  _textShader = ResourceManager::getInstance()->GetShader("text");
   glm::mat4 projection = glm::ortho(0.0F, static_cast<float>(width), 0.0F, static_cast<float>(height));
   _textShader.SetMatrix4("projection", projection, true);
 
@@ -83,8 +83,8 @@ void TextRenderer::Load(std::string font)
       0,
       0,
       int(char_code),
-      face->glyph->bitmap.width,
-      face->glyph->bitmap.rows,
+      static_cast<GLsizei>(face->glyph->bitmap.width),
+      static_cast<GLsizei>(face->glyph->bitmap.rows),
       1,
       GL_RED,
       GL_UNSIGNED_BYTE,
@@ -133,19 +133,19 @@ void TextRenderer::RenderText(const std::wstring &text, float x, float y, float 
     Character ch = _characters[*c];
 
     if (*c == '\n') {
-      y -= ((ch.Size.y)) * 1.3 * scale;
+      y -= static_cast<float>(ch.Size.y) * 1.3f * scale;
       x = copyX;
     } else if (*c == ' ') {
-      x += (ch.Advance >> 6) * scale;
+      x += static_cast<float>(ch.Advance >> 6) * scale;
     } else {
-      float xpos = x + ch.Bearing.x * scale;
-      float ypos = y - (256 - ch.Bearing.y) * scale;
+      float xpos = x + static_cast<float>(ch.Bearing.x) * scale;
+      float ypos = y - static_cast<float>(256 - ch.Bearing.y) * scale;
 
       _transforms[workingIndex] = translate(glm::mat4(1.0f), glm::vec3(xpos, ypos, 0))
                                   * glm::scale(glm::mat4(1.0f), glm::vec3(256 * scale, 256 * scale, 0));
-      _letterMap[workingIndex] = ch.TextureID;
+      _letterMap[workingIndex] = static_cast<int>(ch.TextureID);
 
-      x += (ch.Advance >> 6) * scale;
+      x += static_cast<float>(ch.Advance >> 6) * scale;
       workingIndex++;
       if (workingIndex == ARRAY_LIMIT) {
         TextRenderCall(workingIndex);

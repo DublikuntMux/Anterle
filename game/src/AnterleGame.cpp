@@ -27,10 +27,6 @@ void AnterleGame::Init()
 
   ImGui::MergeIconsWithLatestFont(16.f, false);
 
-  auto &resource = Anterle::ResourceManager::getInstance();
-  resource->LoadTexture("background", false);
-  resource->LoadTexture("face", true);
-
   Configs->CurentLevel = 0;
 }
 

@@ -21,9 +21,7 @@ public:
 
   static std::unique_ptr<ResourceManager> &getInstance();
 
-  Shader LoadShader(std::string name);
   Shader GetShader(std::string name);
-  Texture2D LoadTexture(std::string name, bool alpha);
   Texture2D GetTexture(std::string name);
 
 public:
@@ -32,7 +30,7 @@ public:
 
 private:
   Shader loadShaderFromFile(std::string shaderName);
-  Texture2D loadTextureFromFile(std::string file, bool alpha);
+  Texture2D loadTextureFromFile(std::string file_patch);
 
 private:
   static std::unique_ptr<ResourceManager> _instance;

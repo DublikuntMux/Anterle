@@ -1,4 +1,5 @@
 #include <cstdint>
+#include <filesystem>
 #include <fstream>
 #include <iostream>
 #include <sstream>
@@ -19,25 +20,23 @@ std::unique_ptr<ResourceManager> &ResourceManager::getInstance()
   return _instance;
 }
 
-Shader ResourceManager::LoadShader(std::string name)
-{
-  Shaders[name] = loadShaderFromFile(name);
-  return Shaders[name];
-}
-
 Shader ResourceManager::GetShader(std::string name) { return Shaders[name]; }
-
-Texture2D ResourceManager::LoadTexture(std::string name, bool alpha)
-{
-  Textures[name] = loadTextureFromFile(name, alpha);
-  return Textures[name];
-}
-
 Texture2D ResourceManager::GetTexture(std::string name) { return Textures[name]; }
 
 ResourceManager::ResourceManager()
 {
   fpng::fpng_init();
+
+  for (const auto &entry : std::filesystem::recursive_directory_iterator("resources/")) {
+    if (entry.path().extension() == ".png") {
+      std::string name = entry.path().stem().string();
+      Textures[name] = loadTextureFromFile(entry.path().string());
+    } else if (entry.path().extension() == ".vert" || entry.path().extension() == ".frag") {
+      std::filesystem::path path = entry.path();
+      std::string name = path.stem().string();
+      Shaders[name] = loadShaderFromFile(path.replace_extension("").string());
+    }
+  }
 }
 
 ResourceManager::~ResourceManager()
@@ -48,8 +47,8 @@ ResourceManager::~ResourceManager()
 
 Shader ResourceManager::loadShaderFromFile(std::string shaderName)
 {
-  std::string vertexShaderFile("./resources/shaders/" + shaderName + ".vert");
-  std::string fragmentShaderFile("./resources/shaders/" + shaderName + ".frag");
+  std::string vertexShaderFile(shaderName + ".vert");
+  std::string fragmentShaderFile(shaderName + ".frag");
 
   std::string vertexCode;
   std::string fragmentCode;
@@ -80,16 +79,11 @@ Shader ResourceManager::loadShaderFromFile(std::string shaderName)
   return shader;
 }
 
-Texture2D ResourceManager::loadTextureFromFile(std::string file, bool alpha)
+Texture2D ResourceManager::loadTextureFromFile(std::string file_patch)
 {
   Texture2D texture;
-  if (alpha) {
-    texture.Internal_Format = GL_RGBA;
-    texture.Image_Format = GL_RGBA;
-  }
-
-  std::string file_patch = "./resources/textures/" + file + ".png";
   std::ifstream file_stream;
+
   file_stream.exceptions(std::ifstream::failbit | std::ifstream::badbit);
   try {
     file_stream.open(file_patch);
@@ -102,6 +96,10 @@ Texture2D ResourceManager::loadTextureFromFile(std::string file, bool alpha)
   std::vector<uint8_t> out;
   fpng::fpng_decode_file(file_patch.c_str(), out, width, height, nrChannels, 4);
 
+  if (nrChannels > 3) {
+    texture.Internal_Format = GL_RGBA;
+    texture.Image_Format = GL_RGBA;
+  }
   texture.Generate(width, height, out.data());
 
   return texture;
