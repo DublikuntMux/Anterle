@@ -1,5 +1,8 @@
-#include <cpptrace/cpptrace.hpp>
+#include <mimalloc-new-delete.h>
+#include <mimalloc-override.h>
+
 #include <anterle_engine.hpp>
+#include <cpptrace/cpptrace.hpp>
 
 #include "AnterleGame.hpp"
 

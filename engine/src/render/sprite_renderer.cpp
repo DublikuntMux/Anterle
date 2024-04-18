@@ -1,55 +1,46 @@
 #include <array>
-#include <glad/glad.h>
 
+#include <glad/glad.h>
 #include <glm/ext.hpp>
 #include <glm/glm.hpp>
 
 #include "render/sprite_renderer.hpp"
 
 namespace Anterle {
-const std::array<float, 24> vertices = { 0.0f,
-  1.0f,
-  0.0f,
-  1.0f,
-  1.0f,
-  0.0f,
-  1.0f,
-  0.0f,
-  0.0f,
-  0.0f,
-  0.0f,
-  0.0f,
 
-  0.0f,
-  1.0f,
-  0.0f,
-  1.0f,
-  1.0f,
-  1.0f,
-  1.0f,
-  1.0f,
-  1.0f,
-  0.0f,
-  1.0f,
-  0.0f };
+// clang-format off
+const std::array<float, 24> vertices = {
+0.0f,1.0f, 0.0f, 1.0f, 
+1.0f,0.0f, 1.0f, 0.0f,
+0.0f,0.0f, 0.0f,0.0f,
+0.0f,1.0f, 0.0f, 1.0f,
+1.0f,1.0f, 1.0f, 1.0f,
+1.0f,0.0f, 1.0f, 0.0f
+};
+// clang-format on
 
 SpriteRenderer::SpriteRenderer(Shader shader) : _shader(shader)
 {
-  uint32_t VBO = 0;
-  glGenVertexArrays(1, &_quadVAO);
+  glGenVertexArrays(1, &VAO);
   glGenBuffers(1, &VBO);
+
+  glBindVertexArray(VAO);
 
   glBindBuffer(GL_ARRAY_BUFFER, VBO);
   glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices.data(), GL_STATIC_DRAW);
 
-  glBindVertexArray(_quadVAO);
+  glBindVertexArray(VAO);
   glEnableVertexAttribArray(0);
   glVertexAttribPointer(0, 4, GL_FLOAT, GL_FALSE, 4 * sizeof(float), nullptr);
   glBindBuffer(GL_ARRAY_BUFFER, 0);
   glBindVertexArray(0);
 }
 
-SpriteRenderer::~SpriteRenderer() { glDeleteVertexArrays(1, &_quadVAO); }
+SpriteRenderer::~SpriteRenderer()
+{
+  glDeleteVertexArrays(1, &VAO);
+  glDeleteBuffers(1, &VBO);
+}
 
 void SpriteRenderer::DrawSprite(Texture2D texture, glm::vec2 position, glm::vec2 size, float rotate, glm::vec3 color)
 {
@@ -69,7 +60,7 @@ void SpriteRenderer::DrawSprite(Texture2D texture, glm::vec2 position, glm::vec2
   glActiveTexture(GL_TEXTURE0);
   texture.Bind();
 
-  glBindVertexArray(_quadVAO);
+  glBindVertexArray(VAO);
   glDrawArrays(GL_TRIANGLES, 0, 6);
   glBindVertexArray(0);
 }

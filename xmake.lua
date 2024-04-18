@@ -10,7 +10,7 @@ add_requires("freetype", {configs={bzip2=false, png=false, woff2=false, zlib=fal
 add_requires("imgui", {configs={opengl3=true, glfw=true}})
 add_requires("fpng", {configs={sse4=true}})
 add_requires("openrestry-luajit", {configs={gc64=true}})
-add_requires("miniaudio", "stb", "glad", "toml11", "cpptrace")
+add_requires("miniaudio", "stb", "glad", "toml11", "cpptrace", "mimalloc")
 
 includes("deps")
 includes("engine")
