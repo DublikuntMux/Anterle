@@ -4,7 +4,7 @@
 #include <glad/glad.h>
 
 #include <SDL.h>
-#include <SDL_opengl.h>
+#include <SDL_opengles2.h>
 
 #include <fpng.h>
 #include <glm/ext.hpp>
@@ -36,9 +36,10 @@ Game::Game(uint16_t width, uint16_t height, const char *title)
     abort();
   }
 
-  SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 4);
-  SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 6);
-  SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE);
+  SDL_GL_SetAttribute(SDL_GL_CONTEXT_FLAGS, 0);
+  SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_ES);
+  SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 3);
+  SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 1);
 #ifdef __APPLE__
   SDL_GL_SetAttribute(SDL_GL_CONTEXT_FLAGS, SDL_GL_CONTEXT_FORWARD_COMPATIBLE_FLAG);
 #endif
@@ -66,7 +67,7 @@ Game::Game(uint16_t width, uint16_t height, const char *title)
     abort();
   }
 
-  gladLoadGLLoader((GLADloadproc)SDL_GL_GetProcAddress);
+  gladLoadGLES2Loader((GLADloadproc)SDL_GL_GetProcAddress);
 
   SDL_GL_MakeCurrent(Window, glContext);
   SDL_GL_SetSwapInterval(1);
@@ -88,7 +89,7 @@ Game::Game(uint16_t width, uint16_t height, const char *title)
   Utils::SetupImGuiStyle();
 
   ImGui_ImplSDL2_InitForOpenGL(Window, glContext);
-  ImGui_ImplOpenGL3_Init("#version 150");
+  ImGui_ImplOpenGL3_Init("#version 300 es");
 }
 
 Game::~Game()
