@@ -106,13 +106,13 @@ void Shader::checkCompileErrors(uint32_t object, std::string type)
     glGetShaderiv(object, GL_COMPILE_STATUS, &success);
     if (!success) {
       glGetShaderInfoLog(object, 1024, nullptr, infoLog.data());
-      Logger::getInstance()->log("Shader compile-time error: Type: %s\n%s", type.c_str(), infoLog);
+      Logger::getInstance()->log(LogLevel::ERROR, "Shader compile-time error: Type: %s\n%s", type.c_str(), infoLog);
     }
   } else {
     glGetProgramiv(object, GL_LINK_STATUS, &success);
     if (!success) {
       glGetProgramInfoLog(object, 1024, nullptr, infoLog.data());
-      Logger::getInstance()->log("Shader link-time error: Type: %s\n%s", type.c_str(), infoLog);
+      Logger::getInstance()->log(LogLevel::ERROR, "Shader link-time error: Type: %s\n%s", type.c_str(), infoLog);
     }
   }
 }

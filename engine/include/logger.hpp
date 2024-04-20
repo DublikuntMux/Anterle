@@ -7,6 +7,8 @@
 
 
 namespace Anterle {
+enum class LogLevel { INFO, WARN, ERROR, CRITICAL };
+
 class Logger
 {
 public:
@@ -20,7 +22,7 @@ public:
 
   static std::unique_ptr<Logger> &getInstance();
 
-  void log(const char *format, ...);
+  void log(LogLevel level, const char *format, ...);
 
 private:
   void workerThread();

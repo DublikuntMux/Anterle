@@ -1,16 +1,8 @@
-#include <chrono>
 #include <cstdarg>
-#include <ctime>
 #include <filesystem>
 #include <fstream>
-#include <iomanip>
 #include <iostream>
-#include <mutex>
-#include <queue>
 #include <sstream>
-#include <string>
-#include <thread>
-
 
 #include "logger.hpp"
 
@@ -92,7 +84,7 @@ std::unique_ptr<Logger> &Logger::getInstance()
   return _instance;
 }
 
-void Logger::log(const char *format, ...)
+void Logger::log(LogLevel level, const char *format, ...)
 {
   va_list args = nullptr;
   va_start(args, format);
@@ -101,14 +93,32 @@ void Logger::log(const char *format, ...)
   vsnprintf(&buffer[0], size, format, args);
   va_end(args);
 
+  std::string levelText;
+  switch (level) {
+  case LogLevel::INFO:
+    levelText = "[Info]: ";
+    break;
+  case LogLevel::WARN:
+    levelText = "[Warning]: ";
+    break;
+  case LogLevel::ERROR:
+    levelText = "[Error]: ";
+    break;
+  case LogLevel::CRITICAL:
+    levelText = "[Critical]: ";
+    break;
+  }
+
   auto now = std::chrono::system_clock::now();
   std::time_t now_c = std::chrono::system_clock::to_time_t(now);
   std::tm now_tm{};
   localtime_s(&now_tm, &now_c);
   std::stringstream ss;
-  ss << "[" << std::put_time(&now_tm, "%H:%M:%S") << "]: " << buffer;
+  ss << "[" << std::put_time(&now_tm, "%H:%M:%S") << "]: " << levelText << buffer;
 
   std::unique_lock<std::mutex> lock(_mtx);
   _logQueue.push(ss.str());
+
+  if (level == LogLevel::CRITICAL) { abort(); }
 }
 }// namespace Anterle

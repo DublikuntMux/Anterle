@@ -29,11 +29,10 @@ namespace Anterle {
 Game::Game(uint16_t width, uint16_t height, const char *title)
   : State(GameState::GAME_MENU), Width(width), Height(height), Title(title)
 {
-  Logger::getInstance()->log("Starting game.");
+  Logger::getInstance()->log(LogLevel::INFO, "Starting game.");
 
-  if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_TIMER | SDL_INIT_GAMECONTROLLER | SDL_INIT_SENSOR) < 0) {
-    Logger::getInstance()->log("Failed to initialize GLFW.");
-    abort();
+  if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_TIMER | SDL_INIT_GAMECONTROLLER | SDL_INIT_AUDIO) < 0) {
+    Logger::getInstance()->log(LogLevel::CRITICAL, "Failed to initialize GLFW.");
   }
 
   SDL_GL_SetAttribute(SDL_GL_CONTEXT_FLAGS, 0);
@@ -57,14 +56,10 @@ Game::Game(uint16_t width, uint16_t height, const char *title)
     Width,
     Height,
     SDL_WINDOW_OPENGL | SDL_WINDOW_SHOWN | SDL_WINDOW_ALLOW_HIGHDPI);
-  if (!Window) {
-    Logger::getInstance()->log("Failed to create window: %s", SDL_GetError());
-    abort();
-  }
+  if (!Window) { Logger::getInstance()->log(LogLevel::CRITICAL, "Failed to create window: %s", SDL_GetError()); }
   glContext = SDL_GL_CreateContext(Window);
   if (!glContext) {
-    Logger::getInstance()->log("Failed to create OpenGL context: %s", SDL_GetError());
-    abort();
+    Logger::getInstance()->log(LogLevel::CRITICAL, "Failed to create OpenGL context: %s", SDL_GetError());
   }
 
   gladLoadGLES2Loader((GLADloadproc)SDL_GL_GetProcAddress);
@@ -181,7 +176,7 @@ void Game::Start()
 
 void Game::Init()
 {
-  Logger::getInstance()->log("Init assets.");
+  Logger::getInstance()->log(LogLevel::INFO, "Init assets.");
   auto &resource = ResourceManager::getInstance();
 
   glm::mat4 projection = glm::ortho(0.0F, static_cast<float>(Width), static_cast<float>(Height), 0.0F, -1.0F, 1.0F);
@@ -189,16 +184,16 @@ void Game::Init()
   resource->GetShader("sprite").Use().SetInteger("sprite", 0);
   resource->GetShader("sprite").SetMatrix4("projection", projection);
 
-  Logger::getInstance()->log("Load renderer.");
+  Logger::getInstance()->log(LogLevel::INFO, "Load renderer.");
   Renderer = std::make_unique<Anterle::SpriteRenderer>(resource->GetShader("sprite"));
 
-  Logger::getInstance()->log("Load text rendering.");
+  Logger::getInstance()->log(LogLevel::INFO, "Load text rendering.");
   Text = std::make_unique<Anterle::TextRenderer>(Width, Height);
   Text->Load("tahoma");
-  Logger::getInstance()->log("Load audio system.");
+  Logger::getInstance()->log(LogLevel::INFO, "Load audio system.");
   Audio = std::make_unique<Anterle::AudioSystem>();
 
-  Logger::getInstance()->log("Load lua scripting.");
+  Logger::getInstance()->log(LogLevel::INFO, "Load lua scripting.");
   Lua = std::make_shared<sol::state>();
   Lua->open_libraries(sol::lib::base,
     sol::lib::string,
@@ -218,7 +213,6 @@ void Game::Render() {}
 
 void Game::saveScreenshot(const char *filename)
 {
-  Logger::getInstance()->log("Screenshot saved to %s", filename);
   std::vector<GLubyte> pixels(3 * Width * Height);
 
   glReadPixels(0, 0, Width, Height, GL_RGB, GL_UNSIGNED_BYTE, pixels.data());
@@ -235,15 +229,16 @@ void Game::saveScreenshot(const char *filename)
   SDL_Surface *surface =
     SDL_CreateRGBSurfaceWithFormatFrom(flippedPixels.data(), Width, Height, 24, 3 * Width, SDL_PIXELFORMAT_RGB24);
   if (!surface) {
-    Logger::getInstance()->log("Failed to create surface: %s\n", SDL_GetError());
+    Logger::getInstance()->log(LogLevel::ERROR, "Failed to create surface: %s\n", SDL_GetError());
     return;
   }
 
   if (IMG_SavePNG(surface, filename) != 0) {
-    Logger::getInstance()->log("Failed to save screenshot: %s\n", IMG_GetError());
+    Logger::getInstance()->log(LogLevel::ERROR, "Failed to save screenshot: %s\n", IMG_GetError());
   }
 
   SDL_FreeSurface(surface);
+  Logger::getInstance()->log(LogLevel::INFO, "Screenshot saved to %s", filename);
 }
 
 void Game::HandleEvents()

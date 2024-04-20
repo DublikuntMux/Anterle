@@ -53,21 +53,18 @@ void TextRenderer::Load(std::string font)
 
   FT_Library ft = nullptr;
   if (FT_Init_FreeType(&ft) != 0) {
-    Logger::getInstance()->log("Could not init FreeType Library.");
-    abort();
+    Logger::getInstance()->log(LogLevel::CRITICAL, "Could not init FreeType Library.");
   }
 
   auto [fontBuffer, fileSize] = Utils::LoadRawDataFromFile(file_font);
   if (fontBuffer == nullptr) {
-    Logger::getInstance()->log("Failed to load font file: %s", file_font.c_str());
-    abort();
+    Logger::getInstance()->log(LogLevel::CRITICAL, "Failed to load font file: %s", file_font.c_str());
   }
 
   FT_Face face = nullptr;
   if (FT_New_Memory_Face(ft, reinterpret_cast<FT_Byte *>(fontBuffer.get()), static_cast<FT_Long>(fileSize), 0, &face)
       != 0) {
-    Logger::getInstance()->log("Failed to load font from memory.");
-    abort();
+    Logger::getInstance()->log(LogLevel::CRITICAL, "Failed to load font from memory.");
   }
 
   FT_Select_Charmap(face, ft_encoding_unicode);
@@ -83,7 +80,7 @@ void TextRenderer::Load(std::string font)
   auto char_code = static_cast<wchar_t>(FT_Get_First_Char(face, &index));
   while (true) {
     if (FT_Load_Char(face, char_code, FT_LOAD_RENDER | FT_LOAD_TARGET_LIGHT) != 0) {
-      Logger::getInstance()->log("Failed to load Glyph.");
+      Logger::getInstance()->log(LogLevel::ERROR, "Failed to load Glyph.");
       continue;
     }
 

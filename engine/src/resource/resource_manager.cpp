@@ -45,7 +45,7 @@ Texture2D ResourceManager::GetTexture(std::string name)
 ResourceManager::ResourceManager()
 {
   if (!(IMG_Init(IMG_INIT_PNG) & IMG_INIT_PNG)) {
-    Logger::getInstance()->log("SDL image could not initialize! Error: %s", IMG_GetError());
+    Logger::getInstance()->log(LogLevel::CRITICAL, "SDL image could not initialize! Error: %s", IMG_GetError());
   }
 }
 
@@ -64,14 +64,12 @@ Shader ResourceManager::loadShaderFromFile(std::string shaderName)
 
   auto [vertexShaderBuffer, vertexShaderSize] = Utils::LoadRawDataFromFile(vertexShaderFile);
   if (vertexShaderBuffer == nullptr) {
-    Logger::getInstance()->log("Failed to load vertex shader file: %s", vertexShaderFile.c_str());
-    abort();
+    Logger::getInstance()->log(LogLevel::ERROR, "Failed to load vertex shader file: %s", vertexShaderFile.c_str());
   }
 
   auto [fragmentShaderBuffer, fragmentShaderSize] = Utils::LoadRawDataFromFile(fragmentShaderFile);
   if (fragmentShaderBuffer == nullptr) {
-    Logger::getInstance()->log("Failed to load fragment shader file: %s", fragmentShaderFile.c_str());
-    abort();
+    Logger::getInstance()->log(LogLevel::ERROR, "Failed to load fragment shader file: %s", fragmentShaderFile.c_str());
   }
 
   Shader shader;
@@ -92,13 +90,15 @@ Texture2D ResourceManager::loadTextureFromFile(std::string file_path)
   SDL_RWops *rw = SDL_RWFromFile((prefix + file_path + ".png").c_str(), "rb");
 
   if (rw == nullptr) {
-    Logger::getInstance()->log("Unable to load image %s! SDL_image Error: %s", file_path.c_str(), SDL_GetError());
+    Logger::getInstance()->log(
+      LogLevel::ERROR, "Unable to load image %s! SDL_image Error: %s", file_path.c_str(), SDL_GetError());
     return texture;
   }
 
   SDL_Surface *loadedSurface = IMG_Load_RW(rw, 1);
   if (loadedSurface == nullptr) {
-    Logger::getInstance()->log("Unable to load image %s! SDL_image Error: %s", file_path.c_str(), IMG_GetError());
+    Logger::getInstance()->log(
+      LogLevel::ERROR, "Unable to load image %s! SDL_image Error: %s", file_path.c_str(), IMG_GetError());
     SDL_RWclose(rw);
     return texture;
   }
