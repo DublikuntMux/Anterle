@@ -1,26 +1,24 @@
 #pragma once
 
-#include <array>
-#include <stdexcept>
-#include <string>
-#include <unordered_map>
+#include <vector>
 
-#include <miniaudio.h>
+#include "resource/audio.hpp"
 
 namespace Anterle {
-struct Channel
-{
-  ma_decoder decoder;
-  bool isPlaying;
-  bool isLooping;
-  bool isPaused;
-  float volume;
-};
-
-class AudioException : public std::runtime_error
+class AudioChannel
 {
 public:
-  AudioException(const std::string &message) : std::runtime_error(message) {}
+  AudioChannel(int channel);
+
+  void play(Audio audio, int loops = 0);
+  void pause();
+  void resume();
+  void stop();
+  void setVolume(int volume);
+  void setSpeed(int speed);
+
+private:
+  int channel;
 };
 
 class AudioSystem
@@ -34,27 +32,24 @@ public:
   AudioSystem(AudioSystem &&) noexcept = default;
   AudioSystem &operator=(AudioSystem &&) noexcept = default;
 
-  void createChannel(const std::string &channelName, const char *filePath);
+  AudioChannel *getChannel(int channel);
 
-  void setSound(const std::string &channelName, const char *filePath);
-  void removeChannel(const std::string &channelName);
-  void update();
+  void play(int channel, Audio audio, int loops = 0);
+  void pause(int channel);
+  void resume(int channel);
+  void stop(int channel);
 
-  void play(const std::string &channelName);
-  void stop(const std::string &channelName);
-  void pause(const std::string &channelName);
-  void resume(const std::string &channelName);
-  void loop(const std::string &channelName, bool enable);
-  void setVolume(const std::string &channelName, float volume);
+  void pauseAll();
+  void resumeAll();
+  void stopAll();
 
-  [[nodiscard]] float getChannelVolume(const std::string &channelName) const;
-  [[nodiscard]] bool isChannelLooped(const std::string &channelName) const;
-  [[nodiscard]] bool isChannelPaused(const std::string &channelName) const;
+  void setVolume(int channel, int volume);
+  void setSpeed(int channel, int speed);
+
+  void setVolumeAll(int volume);
+  void setSpeedAll(int speed);
 
 private:
-  ma_context _context{};
-  ma_device _device{};
-  std::unordered_map<std::string, Channel> _channels;
-  std::array<float, 4096> _buffer{};
+  std::vector<AudioChannel> channels;
 };
 }// namespace Anterle
