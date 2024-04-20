@@ -4,17 +4,22 @@
 #include <iostream>
 #include <sstream>
 
+#include <SDL.h>
+
 #include "logger.hpp"
+#include "utils.hpp"
 
 namespace Anterle {
 std::unique_ptr<Logger> Logger::_instance = nullptr;
 
 Logger::Logger()
 {
-  std::filesystem::path logDir("log");
+  std::string baseFolder = SDL_GetPrefPath("Dublikunt", "Anterle");
+
+  std::filesystem::path logDir(baseFolder + "/log");
   if (!std::filesystem::exists(logDir)) {
     if (!std::filesystem::create_directory(logDir)) {
-      std::cerr << "Failed to create log directory: " << logDir << std::endl;
+      Logger::getInstance()->log(LogLevel::ERROR, "Failed to create log directory.");
       return;
     }
   }
@@ -32,13 +37,7 @@ Logger::Logger()
     logFiles.pop_back();
   }
 
-  auto now = std::chrono::system_clock::now();
-  std::time_t now_c = std::chrono::system_clock::to_time_t(now);
-  std::tm now_tm{};
-  localtime_s(&now_tm, &now_c);
-  std::stringstream ss;
-  ss << "log/" << std::put_time(&now_tm, "%Y-%m-%d_%H-%M-%S") << ".log";
-  _logFileName = ss.str();
+  _logFileName = baseFolder + "log/" + Utils::CurrentTimeAsString() + ".log";
 
   _worker = std::thread(&Logger::workerThread, this);
 }

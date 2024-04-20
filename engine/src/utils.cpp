@@ -1,6 +1,10 @@
+#include <chrono>
 #include <cstddef>
+#include <iomanip>
 #include <memory>
+#include <sstream>
 #include <string>
+
 
 #include <SDL.h>
 #include <imgui.h>
@@ -33,6 +37,19 @@ std::pair<std::shared_ptr<char>, size_t> LoadRawDataFromFile(const std::string &
   SDL_RWclose(rw);
 
   return { dataBuffer, static_cast<size_t>(fileSize) };
+}
+
+std::string CurrentTimeAsString()
+{
+  auto now = std::chrono::system_clock::now();
+  std::time_t now_c = std::chrono::system_clock::to_time_t(now);
+  std::tm now_tm{};
+  localtime_s(&now_tm, &now_c);
+
+  std::stringstream ss;
+  ss << std::put_time(&now_tm, "%Y-%m-%d_%H-%M-%S");
+
+  return ss.str();
 }
 
 void SetupImGuiStyle()

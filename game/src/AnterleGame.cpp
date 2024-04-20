@@ -44,7 +44,7 @@ void AnterleGame::ProcessInput(SDL_Keycode key)
     if (key == SDLK_e) { State = Anterle::GameState::GAME_MENU; }
   }
   if (key == SDLK_F11) {
-    saveScreenshot("screenshot.png");
+    saveScreenshot();
     ImGui::InsertNotification({ Anterle::ImGuiToastType::Info, 3000, "Screenshot created!" });
   }
 }

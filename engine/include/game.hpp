@@ -25,7 +25,7 @@ public:
   Game(Game &&) noexcept = delete;
   Game &operator=(Game &&) noexcept = delete;
 
-  void saveScreenshot(const char *filename);
+  void saveScreenshot();
 
   void Start();
 
@@ -45,7 +45,9 @@ public:
   ImGuiIO *io;
 
   bool quit = false;
-  bool debug_mode = false;
+  bool debugMode = false;
+  std::string saveLoaction;
+
   std::shared_ptr<sol::state> Lua;
 
   std::unique_ptr<Anterle::SpriteRenderer> Renderer;

@@ -1,5 +1,7 @@
 #include <cstdint>
+#include <filesystem>
 #include <memory>
+#include <string>
 
 #include <glad/glad.h>
 
@@ -14,7 +16,6 @@
 
 #include <sol/sol.hpp>
 
-#include "SDL_video.h"
 #include "debug/profiler.hpp"
 #include "game.hpp"
 #include "imgui/notify.hpp"
@@ -83,6 +84,8 @@ Game::Game(uint16_t width, uint16_t height, const char *title)
 
   Utils::SetupImGuiStyle();
 
+  saveLoaction = SDL_GetPrefPath("Dublikunt", "Anterle");
+
   ImGui_ImplSDL2_InitForOpenGL(Window, glContext);
   ImGui_ImplOpenGL3_Init("#version 300 es");
 }
@@ -127,7 +130,7 @@ void Game::Start()
     ImGui_ImplSDL2_NewFrame();
     ImGui::NewFrame();
 
-    if (debug_mode) {
+    if (debugMode) {
       ImGui::SetNextWindowSize(ImVec2(470, 200));
       {
         ImGui::Begin("Debug window");
@@ -169,7 +172,6 @@ void Game::Start()
 
     profiler.Begin(Profiler::Stage::SwapBuffer);
     SDL_GL_SwapWindow(Window);
-    SDL_Delay(1);
     profiler.End(Profiler::Stage::SwapBuffer);
   }
 }
@@ -211,7 +213,7 @@ void Game::FixedUpdate() {}
 void Game::ProcessInput(SDL_Keycode _) {}
 void Game::Render() {}
 
-void Game::saveScreenshot(const char *filename)
+void Game::saveScreenshot()
 {
   std::vector<GLubyte> pixels(3 * Width * Height);
 
@@ -233,12 +235,21 @@ void Game::saveScreenshot(const char *filename)
     return;
   }
 
-  if (IMG_SavePNG(surface, filename) != 0) {
+  if (!std::filesystem::exists(saveLoaction + "screenshots/")) {
+    if (!std::filesystem::create_directory(saveLoaction + "screenshots/")) {
+      Logger::getInstance()->log(LogLevel::ERROR, "Failed to create screenshot directory directory");
+      return;
+    }
+  }
+
+  std::string screenshotFile = saveLoaction + "screenshots/" + Utils::CurrentTimeAsString() + ".png";
+
+  if (IMG_SavePNG(surface, screenshotFile.c_str()) != 0) {
     Logger::getInstance()->log(LogLevel::ERROR, "Failed to save screenshot: %s\n", IMG_GetError());
   }
 
   SDL_FreeSurface(surface);
-  Logger::getInstance()->log(LogLevel::INFO, "Screenshot saved to %s", filename);
+  Logger::getInstance()->log(LogLevel::INFO, "Screenshot saved to %s", screenshotFile.c_str());
 }
 
 void Game::HandleEvents()
@@ -252,8 +263,8 @@ void Game::HandleEvents()
       if (event.key.keysym.sym == SDLK_ESCAPE) {
         quit = true;
       } else if (event.key.keysym.sym == SDLK_d) {
-        debug_mode = !debug_mode;
-        if (debug_mode) {
+        debugMode = !debugMode;
+        if (debugMode) {
           ImGui::InsertNotification({ ImGuiToastType::Info, 3000, "Enable debug mode." });
         } else {
           ImGui::InsertNotification({ ImGuiToastType::Info, 3000, "Disable debug mode." });
