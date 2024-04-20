@@ -1,12 +1,9 @@
-#include <mimalloc-new-delete.h>
-#include <mimalloc-override.h>
-
 #include <filesystem>
 #include <iostream>
 #include <string>
 
+#include <SDL_image.h>
 #include <cpptrace/cpptrace.hpp>
-#include <fpng.h>
 
 #include "type/image.hpp"
 #include "type/lua_bind.hpp"
@@ -15,13 +12,22 @@ namespace fs = std::filesystem;
 
 void processResourceDirectory(const fs::path &sourceDir, const fs::path &destDir)
 {
-  std::vector<std::string> imageExtensions = { ".png", ".jpg", ".png", ".bmp", ".tga", ".gif", ".hdr", ".pnm", ".psd" };
+  std::vector<std::string> imageExtensions = {
+    ".png",
+    ".jpg",
+    ".jxl",
+    ".webp",
+    ".tif",
+    ".avif",
+  };
 
   for (const auto &entry : fs::recursive_directory_iterator(sourceDir)) {
     if (std::find(imageExtensions.begin(), imageExtensions.end(), entry.path().extension().string())
         != imageExtensions.end()) {
       fs::path relativePath = fs::relative(entry.path(), sourceDir);
       fs::path destFile = destDir / relativePath;
+
+      std::cout << "Processing: " << relativePath << "\n";
 
       fs::create_directories(destFile.parent_path());
       std::string sourcePath = entry.path().string();
@@ -48,16 +54,18 @@ void processBindingDirectory(const fs::path &sourceDir, const fs::path &destDir)
   }
 }
 
+#undef main
 int main(int argc, char *argv[])
 {
   cpptrace::register_terminate_handler();
-
-  fpng::fpng_init();
 
   if (argc != 4) {
     std::cerr << "Usage: " << argv[0] << "<source_directory> <destination_directory> <mode>\n";
     return 1;
   }
+
+  int imgFlags = IMG_INIT_PNG | IMG_INIT_JPG | IMG_INIT_JXL | IMG_INIT_TIF | IMG_INIT_WEBP | IMG_INIT_AVIF;
+  IMG_Init(imgFlags);
 
   fs::path sourceDir = argv[1];
   fs::path destDir = argv[2];
@@ -82,6 +90,8 @@ int main(int argc, char *argv[])
   } else {
     std::cerr << "Mode must be: binding or asset.\n";
   }
+
+  IMG_Quit();
 
   return 0;
 }

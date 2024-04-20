@@ -6,6 +6,7 @@
 #include <anterle_engine.hpp>
 
 #include "AnterleGame.hpp"
+#include "resource/resource_manager.hpp"
 
 AnterleGame::AnterleGame(uint16_t width, uint16_t height, const char *title)
   : Game(width, height, title), Configs(new GameConfigs())
@@ -22,7 +23,8 @@ void AnterleGame::Init()
   (void)io;
   ImFontConfig font_cfg;
   font_cfg.FontDataOwnedByAtlas = false;
-  io.Fonts->AddFontFromFileTTF("resources/fonts/tahoma.ttf", 17.f, &font_cfg);
+  auto font_data = Anterle::Utils::LoadRawDataFromFile("fonts/tahoma.ttf");
+  io.Fonts->AddFontFromMemoryTTF(font_data.first.get(), font_data.second, 17.0f, &font_cfg);
 
   ImGui::MergeIconsWithLatestFont(16.f, false);
 

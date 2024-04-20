@@ -208,6 +208,6 @@ void MergeIconsWithLatestFont(float font_size, bool FontDataOwnedByAtlas)
   icons_config.GlyphMinAdvanceX = 13.0f;
   icons_config.FontDataOwnedByAtlas = FontDataOwnedByAtlas;
 
-  GetIO().Fonts->AddFontFromFileTTF("resources/fonts/fa-solid-900.ttf", font_size, &icons_config, icons_ranges.data());
+  GetIO().Fonts->AddFontFromFileTTF("assets/fonts/fa-solid-900.ttf", font_size, &icons_config, icons_ranges.data());
 }
 }// namespace ImGui

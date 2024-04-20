@@ -8,7 +8,7 @@ class Texture2D
 public:
   Texture2D();
 
-  void Generate(uint32_t width, uint32_t height, uint8_t *data);
+  void Generate(uint32_t width, uint32_t height, void *data);
   void Bind() const;
 
 public:

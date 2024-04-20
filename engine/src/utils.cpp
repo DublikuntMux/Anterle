@@ -1,6 +1,40 @@
+#include <cstddef>
+#include <memory>
+#include <string>
+
+#include <SDL.h>
 #include <imgui.h>
 
 namespace Anterle::Utils {
+std::pair<std::shared_ptr<char>, size_t> LoadRawDataFromFile(const std::string &filePath)
+{
+#ifdef __ANDROID__
+  std::string file_font = filePath;
+#else
+  std::string prefixed_path = "assets/" + filePath;
+#endif
+
+  SDL_RWops *rw = SDL_RWFromFile(prefixed_path.c_str(), "rb");
+  if (rw == nullptr) { return { nullptr, 0 }; }
+
+  Sint64 fileSize = SDL_RWsize(rw);
+  if (fileSize <= 0) {
+    SDL_RWclose(rw);
+    return { nullptr, 0 };
+  }
+
+  std::shared_ptr<char> dataBuffer(new char[fileSize], std::default_delete<char[]>());
+
+  if (SDL_RWread(rw, dataBuffer.get(), 1, fileSize) != static_cast<size_t>(fileSize)) {
+    SDL_RWclose(rw);
+    return { nullptr, 0 };
+  }
+
+  SDL_RWclose(rw);
+
+  return { dataBuffer, static_cast<size_t>(fileSize) };
+}
+
 void SetupImGuiStyle()
 {
   ImGuiStyle &style = ImGui::GetStyle();

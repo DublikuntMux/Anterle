@@ -24,15 +24,14 @@ public:
   Shader GetShader(std::string name);
   Texture2D GetTexture(std::string name);
 
-public:
+private:
+  Shader loadShaderFromFile(std::string shaderName);
+  Texture2D loadTextureFromFile(std::string file_path);
+
+private:
   std::map<std::string, Shader> Shaders;
   std::map<std::string, Texture2D> Textures;
 
-private:
-  Shader loadShaderFromFile(std::string shaderName);
-  Texture2D loadTextureFromFile(std::string file_patch);
-
-private:
   static std::unique_ptr<ResourceManager> _instance;
 };
 }// namespace Anterle

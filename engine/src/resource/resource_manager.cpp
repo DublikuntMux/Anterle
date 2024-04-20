@@ -1,15 +1,13 @@
-#include <cstdint>
-#include <filesystem>
-#include <fstream>
-#include <iostream>
-#include <sstream>
 #include <string>
 
-#include <fpng.h>
 #include <glad/glad.h>
+
+#include <SDL.h>
+#include <SDL_image.h>
 
 #include "logger.hpp"
 #include "resource/resource_manager.hpp"
+#include "utils.hpp"
 
 namespace Anterle {
 std::unique_ptr<ResourceManager> ResourceManager::_instance = nullptr;
@@ -20,22 +18,34 @@ std::unique_ptr<ResourceManager> &ResourceManager::getInstance()
   return _instance;
 }
 
-Shader ResourceManager::GetShader(std::string name) { return Shaders[name]; }
-Texture2D ResourceManager::GetTexture(std::string name) { return Textures[name]; }
+Shader ResourceManager::GetShader(std::string name)
+{
+  auto it = Shaders.find(name);
+  if (it != Shaders.end()) {
+    return it->second;
+  } else {
+    Shader shader = loadShaderFromFile(name);
+    Shaders[name] = shader;
+    return shader;
+  }
+}
+
+Texture2D ResourceManager::GetTexture(std::string name)
+{
+  auto it = Textures.find(name);
+  if (it != Textures.end()) {
+    return it->second;
+  } else {
+    Texture2D texture = loadTextureFromFile(name);
+    Textures[name] = texture;
+    return texture;
+  }
+}
 
 ResourceManager::ResourceManager()
 {
-  fpng::fpng_init();
-
-  for (const auto &entry : std::filesystem::recursive_directory_iterator("resources/")) {
-    if (entry.path().extension() == ".png") {
-      std::string name = entry.path().stem().string();
-      Textures[name] = loadTextureFromFile(entry.path().string());
-    } else if (entry.path().extension() == ".vert" || entry.path().extension() == ".frag") {
-      std::filesystem::path path = entry.path();
-      std::string name = path.stem().string();
-      Shaders[name] = loadShaderFromFile(path.replace_extension("").string());
-    }
+  if (!(IMG_Init(IMG_INIT_PNG) & IMG_INIT_PNG)) {
+    Logger::getInstance()->log("SDL image could not initialize! Error: %s", IMG_GetError());
   }
 }
 
@@ -43,64 +53,63 @@ ResourceManager::~ResourceManager()
 {
   for (auto &iter : Shaders) glDeleteProgram(iter.second.ID);
   for (auto &iter : Textures) glDeleteTextures(1, &iter.second.ID);
+
+  IMG_Quit();
 }
 
 Shader ResourceManager::loadShaderFromFile(std::string shaderName)
 {
-  std::string vertexShaderFile(shaderName + ".vert");
-  std::string fragmentShaderFile(shaderName + ".frag");
+  std::string vertexShaderFile("shaders/" + shaderName + ".vert");
+  std::string fragmentShaderFile("shaders/" + shaderName + ".frag");
 
-  std::string vertexCode;
-  std::string fragmentCode;
-  std::ifstream vShaderFile;
-  std::ifstream fShaderFile;
-
-  vShaderFile.exceptions(std::ifstream::failbit | std::ifstream::badbit);
-  fShaderFile.exceptions(std::ifstream::failbit | std::ifstream::badbit);
-  try {
-    vShaderFile.open(vertexShaderFile);
-    fShaderFile.open(fragmentShaderFile);
-    std::stringstream vShaderStream, fShaderStream;
-
-    vShaderStream << vShaderFile.rdbuf();
-    fShaderStream << fShaderFile.rdbuf();
-
-    vShaderFile.close();
-    fShaderFile.close();
-
-    vertexCode = vShaderStream.str();
-    fragmentCode = fShaderStream.str();
-  } catch (std::ifstream::failure &e) {
-    Logger::getInstance()->log("Failed to read sheader: %s", e.what());
-  }
-
-  Shader shader;
-  shader.Compile(vertexCode.c_str(), fragmentCode.c_str());
-  return shader;
-}
-
-Texture2D ResourceManager::loadTextureFromFile(std::string file_patch)
-{
-  Texture2D texture;
-  std::ifstream file_stream;
-
-  file_stream.exceptions(std::ifstream::failbit | std::ifstream::badbit);
-  try {
-    file_stream.open(file_patch);
-  } catch (std::ifstream::failure &e) {
-    Logger::getInstance()->log("Failed to load texture: %s.\nBecause: %s", file_patch.c_str(), e.what());
+  auto [vertexShaderBuffer, vertexShaderSize] = Utils::LoadRawDataFromFile(vertexShaderFile);
+  if (vertexShaderBuffer == nullptr) {
+    Logger::getInstance()->log("Failed to load vertex shader file: %s", vertexShaderFile.c_str());
     abort();
   }
 
-  uint32_t width = 0, height = 0, nrChannels = 0;
-  std::vector<uint8_t> out;
-  fpng::fpng_decode_file(file_patch.c_str(), out, width, height, nrChannels, 4);
+  auto [fragmentShaderBuffer, fragmentShaderSize] = Utils::LoadRawDataFromFile(fragmentShaderFile);
+  if (fragmentShaderBuffer == nullptr) {
+    Logger::getInstance()->log("Failed to load fragment shader file: %s", fragmentShaderFile.c_str());
+    abort();
+  }
 
-  if (nrChannels > 3) {
+  Shader shader;
+  shader.Compile(vertexShaderBuffer.get(), fragmentShaderBuffer.get());
+  return shader;
+}
+
+Texture2D ResourceManager::loadTextureFromFile(std::string file_path)
+{
+  Texture2D texture;
+
+#ifdef __ANDROID__
+  std::string prefix = "textures/";
+#else
+  std::string prefix = "assets/textures/";
+#endif
+
+  SDL_RWops *rw = SDL_RWFromFile((prefix + file_path + ".png").c_str(), "rb");
+
+  if (rw == nullptr) {
+    Logger::getInstance()->log("Unable to load image %s! SDL_image Error: %s", file_path.c_str(), SDL_GetError());
+    return texture;
+  }
+
+  SDL_Surface *loadedSurface = IMG_Load_RW(rw, 1);
+  if (loadedSurface == nullptr) {
+    Logger::getInstance()->log("Unable to load image %s! SDL_image Error: %s", file_path.c_str(), IMG_GetError());
+    SDL_RWclose(rw);
+    return texture;
+  }
+
+  if (loadedSurface->format->Amask != 0) {
     texture.Internal_Format = GL_RGBA;
     texture.Image_Format = GL_RGBA;
   }
-  texture.Generate(width, height, out.data());
+  texture.Generate(loadedSurface->w, loadedSurface->h, loadedSurface->pixels);
+
+  SDL_FreeSurface(loadedSurface);
 
   return texture;
 }

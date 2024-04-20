@@ -27,6 +27,19 @@ Logger::Logger()
     }
   }
 
+  std::vector<std::filesystem::directory_entry> logFiles;
+  for (const auto &entry : std::filesystem::directory_iterator(logDir)) {
+    if (entry.path().extension() == ".log") { logFiles.push_back(entry); }
+  }
+  std::sort(logFiles.begin(), logFiles.end(), [](const auto &a, const auto &b) {
+    return a.last_write_time() > b.last_write_time();
+  });
+
+  while (logFiles.size() > 5) {
+    std::filesystem::remove(logFiles.back().path());
+    logFiles.pop_back();
+  }
+
   auto now = std::chrono::system_clock::now();
   std::time_t now_c = std::chrono::system_clock::to_time_t(now);
   std::tm now_tm{};

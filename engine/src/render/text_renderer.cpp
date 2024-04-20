@@ -5,6 +5,7 @@
 #include <ft2build.h>
 #include FT_FREETYPE_H
 
+#include <SDL.h>
 #include <glad/glad.h>
 #include <glm/ext.hpp>
 #include <glm/glm.hpp>
@@ -13,6 +14,7 @@
 #include "render/text_renderer.hpp"
 #include "resource/resource_manager.hpp"
 #include "resource/shader.hpp"
+#include "utils.hpp"
 
 const int ARRAY_LIMIT = 255;
 
@@ -47,7 +49,7 @@ void TextRenderer::Load(std::string font)
 {
   _characters.clear();
 
-  std::string file_font = "resources/fonts/" + font + ".ttf";
+  std::string file_font = "fonts/" + font + ".ttf";
 
   FT_Library ft = nullptr;
   if (FT_Init_FreeType(&ft) != 0) {
@@ -55,9 +57,16 @@ void TextRenderer::Load(std::string font)
     abort();
   }
 
+  auto [fontBuffer, fileSize] = Utils::LoadRawDataFromFile(file_font);
+  if (fontBuffer == nullptr) {
+    Logger::getInstance()->log("Failed to load font file: %s", file_font.c_str());
+    abort();
+  }
+
   FT_Face face = nullptr;
-  if (FT_New_Face(ft, file_font.c_str(), 0, &face) != 0) {
-    Logger::getInstance()->log("Failed to load font: %s", file_font.c_str());
+  if (FT_New_Memory_Face(ft, reinterpret_cast<FT_Byte *>(fontBuffer.get()), static_cast<FT_Long>(fileSize), 0, &face)
+      != 0) {
+    Logger::getInstance()->log("Failed to load font from memory.");
     abort();
   }
 

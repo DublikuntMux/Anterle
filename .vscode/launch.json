@@ -4,8 +4,16 @@
         {
             "type": "lldb",
             "request": "launch",
-            "name": "Debug",
+            "name": "Debug Game",
             "program": "${workspaceFolder}/build/windows/x64/debug/AnterleGame.exe",
+            "args": [],
+            "cwd": "${workspaceFolder}/build/windows/x64/debug"
+        },
+        {
+            "type": "lldb",
+            "request": "launch",
+            "name": "Debug Tool",
+            "program": "${workspaceFolder}/build/windows/x64/debug/AnterleTool.exe",
             "args": [],
             "cwd": "${workspaceFolder}/build/windows/x64/debug"
         }

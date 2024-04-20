@@ -4,9 +4,9 @@
 #include <glad/glad.h>
 
 #include <SDL.h>
+#include <SDL_image.h>
 #include <SDL_opengles2.h>
 
-#include <fpng.h>
 #include <glm/ext.hpp>
 #include <imgui.h>
 #include <imgui_impl_opengl3.h>
@@ -181,7 +181,7 @@ void Game::Start()
 
 void Game::Init()
 {
-  Logger::getInstance()->log("Init resources.");
+  Logger::getInstance()->log("Init assets.");
   auto &resource = ResourceManager::getInstance();
 
   glm::mat4 projection = glm::ortho(0.0F, static_cast<float>(Width), static_cast<float>(Height), 0.0F, -1.0F, 1.0F);
@@ -232,7 +232,18 @@ void Game::saveScreenshot(const char *filename)
     }
   }
 
-  if (!fpng::fpng_encode_image_to_file(filename, flippedPixels.data(), Width, Height, 3, fpng::FPNG_ENCODE_SLOWER)) {}
+  SDL_Surface *surface =
+    SDL_CreateRGBSurfaceWithFormatFrom(flippedPixels.data(), Width, Height, 24, 3 * Width, SDL_PIXELFORMAT_RGB24);
+  if (!surface) {
+    Logger::getInstance()->log("Failed to create surface: %s\n", SDL_GetError());
+    return;
+  }
+
+  if (IMG_SavePNG(surface, filename) != 0) {
+    Logger::getInstance()->log("Failed to save screenshot: %s\n", IMG_GetError());
+  }
+
+  SDL_FreeSurface(surface);
 }
 
 void Game::HandleEvents()
