@@ -7,7 +7,7 @@
 #include "sol/sol.hpp"
 
 
-namespace Andterle::Scripting {
+namespace Anterle::Scripting {
 void BindVectorOperation(sol::state &lua)
 {
   lua.set_function("distance",
@@ -33,4 +33,4 @@ void BindGLMVectors(sol::state &lua)
   bind_vec4(lua);
   BindVectorOperation(lua);
 }
-}// namespace Andterle::Scripting
+}// namespace Anterle::Scripting

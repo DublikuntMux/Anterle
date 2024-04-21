@@ -23,7 +23,6 @@
 #include "logger.hpp"
 #include "resource/resource_manager.hpp"
 #include "resource/time.hpp"
-#include "scripting/glm/vector.hpp"
 #include "utils.hpp"
 
 namespace Anterle {
@@ -56,7 +55,7 @@ Game::Game(uint16_t width, uint16_t height, const char *title)
     SDL_WINDOWPOS_CENTERED,
     Width,
     Height,
-    SDL_WINDOW_OPENGL | SDL_WINDOW_SHOWN | SDL_WINDOW_ALLOW_HIGHDPI);
+    SDL_WINDOW_OPENGL | SDL_WINDOW_HIDDEN | SDL_WINDOW_ALLOW_HIGHDPI);
   if (!Window) { Logger::getInstance()->log(LogLevel::CRITICAL, "Failed to create window: %s", SDL_GetError()); }
   glContext = SDL_GL_CreateContext(Window);
   if (!glContext) {
@@ -73,7 +72,6 @@ Game::Game(uint16_t width, uint16_t height, const char *title)
   glEnable(GL_BLEND);
   glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
-  IMGUI_CHECKVERSION();
   ImGui::CreateContext();
   io = &ImGui::GetIO();
   (void)io;
@@ -196,16 +194,9 @@ void Game::Init()
   Audio = std::make_unique<Anterle::AudioSystem>();
 
   Logger::getInstance()->log(LogLevel::INFO, "Load lua scripting.");
-  Lua = std::make_shared<sol::state>();
-  Lua->open_libraries(sol::lib::base,
-    sol::lib::string,
-    sol::lib::math,
-    sol::lib::io,
-    sol::lib::table,
-    sol::lib::package,
-    sol::lib::utf8,
-    sol::lib::count);
-  Andterle::Scripting::BindGLMVectors(*Lua);
+  Scripting = std::make_unique<Anterle::ScriptManager>();
+
+  SDL_ShowWindow(Window);
 }
 
 void Game::Update() {}

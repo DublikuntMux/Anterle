@@ -6,7 +6,7 @@
 #include <glm/glm.hpp>
 #include <sol/sol.hpp>
 
-namespace Andterle::Scripting {
+namespace Anterle::Scripting {
 void bind_vec4(sol::state &lua);
-}// namespace Andterle::Scripting
+}// namespace Anterle::Scripting
 // clang-format on

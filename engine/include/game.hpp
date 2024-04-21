@@ -5,11 +5,11 @@
 
 #include <SDL.h>
 #include <imgui.h>
-#include <sol/sol.hpp>
 
 #include "audio/auidio_server.hpp"
 #include "render/sprite_renderer.hpp"
 #include "render/text_renderer.hpp"
+#include "scripting/script_manager.hpp"
 
 namespace Anterle {
 enum class GameState { GAME_ACTIVE, GAME_MENU, GAME_WIN };
@@ -48,11 +48,10 @@ public:
   bool debugMode = false;
   std::string saveLoaction;
 
-  std::shared_ptr<sol::state> Lua;
-
   std::unique_ptr<Anterle::SpriteRenderer> Renderer;
   std::unique_ptr<Anterle::TextRenderer> Text;
   std::unique_ptr<Anterle::AudioSystem> Audio;
+  std::unique_ptr<Anterle::ScriptManager> Scripting;
 
 private:
   void HandleEvents();

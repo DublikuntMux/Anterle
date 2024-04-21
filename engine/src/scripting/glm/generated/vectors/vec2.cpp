@@ -4,7 +4,7 @@
 
 #include "scripting/glm/generated/vectors/vec2.hpp"
 
-namespace Andterle::Scripting {
+namespace Anterle::Scripting {
 void bind_vec2(sol::state &lua)
 {
 auto multiplication_overloads = sol::overload(
@@ -43,5 +43,5 @@ auto subtraction_overloads = sol::overload(
         "length", [](const glm::vec2 &v) { return glm::length(v); }
     );
 }
-}// namespace Andterle::Scripting
+}// namespace Anterle::Scripting
 // clang-format on

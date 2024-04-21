@@ -2,6 +2,6 @@
 
 #include <sol/sol.hpp>
 
-namespace Andterle::Scripting {
+namespace Anterle::Scripting {
 void BindGLMVectors(sol::state &lua);
 }
