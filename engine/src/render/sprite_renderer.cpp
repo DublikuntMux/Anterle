@@ -42,26 +42,36 @@ SpriteRenderer::~SpriteRenderer()
   glDeleteBuffers(1, &VBO);
 }
 
-void SpriteRenderer::DrawSprite(Texture2D texture, glm::vec2 position, glm::vec2 size, float rotate, glm::vec3 color)
+void SpriteRenderer::AddInstance(const SpriteInstance &instance)
+{
+  instanceBatches[instance.texture.ID].push_back(instance);
+}
+
+void SpriteRenderer::RenderBatches()
 {
   _shader.Use();
-  auto model = glm::mat4(1.0f);
-  model = glm::translate(model, glm::vec3(position, 0.0f));
 
-  model = glm::translate(model, glm::vec3(0.5f * size.x, 0.5f * size.y, 0.0f));
-  model = glm::rotate(model, glm::radians(rotate), glm::vec3(0.0f, 0.0f, 1.0f));
-  model = glm::translate(model, glm::vec3(-0.5f * size.x, -0.5f * size.y, 0.0f));
+  for (auto &batch : instanceBatches) { 
+    glActiveTexture(GL_TEXTURE0);
+    glBindTexture(GL_TEXTURE_2D, batch.first);
 
-  model = glm::scale(model, glm::vec3(size, 1.0f));
+    for (const auto &instance : batch.second) {
+      auto model = glm::mat4(1.0f);
+      model = glm::translate(model, glm::vec3(instance.position, 0.0f));
+      model = glm::translate(model, glm::vec3(0.5f * instance.size.x, 0.5f * instance.size.y, 0.0f));
+      model = glm::rotate(model, glm::radians(instance.rotation), glm::vec3(0.0f, 0.0f, 1.0f));
+      model = glm::translate(model, glm::vec3(-0.5f * instance.size.x, -0.5f * instance.size.y, 0.0f));
+      model = glm::scale(model, glm::vec3(instance.size, 1.0f));
 
-  _shader.SetMatrix4("model", model);
-  _shader.SetVector3f("spriteColor", color);
+      _shader.SetMatrix4("model", model);
+      _shader.SetVector3f("spriteColor", instance.color);
 
-  glActiveTexture(GL_TEXTURE0);
-  texture.Bind();
+      glBindVertexArray(VAO);
+      glDrawArrays(GL_TRIANGLES, 0, 6);
+    }
+  }
 
-  glBindVertexArray(VAO);
-  glDrawArrays(GL_TRIANGLES, 0, 6);
   glBindVertexArray(0);
+  instanceBatches.clear();
 }
 }// namespace Anterle

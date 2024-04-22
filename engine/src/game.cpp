@@ -49,13 +49,15 @@ Game::Game(uint16_t width, uint16_t height, const char *title)
 
   SDL_GL_SetAttribute(SDL_GL_DEPTH_SIZE, 24);
   SDL_GL_SetAttribute(SDL_GL_STENCIL_SIZE, 8);
+  SDL_GL_SetAttribute(SDL_GL_MULTISAMPLEBUFFERS, 1);
+  SDL_GL_SetAttribute(SDL_GL_MULTISAMPLESAMPLES, 4);
 
   Window = SDL_CreateWindow(title,
     SDL_WINDOWPOS_CENTERED,
     SDL_WINDOWPOS_CENTERED,
     Width,
     Height,
-    SDL_WINDOW_OPENGL | SDL_WINDOW_HIDDEN | SDL_WINDOW_ALLOW_HIGHDPI);
+    SDL_WINDOW_OPENGL | SDL_WINDOW_HIDDEN | SDL_WINDOW_ALLOW_HIGHDPI | SDL_WINDOW_RESIZABLE);
   if (!Window) { Logger::getInstance()->log(LogLevel::CRITICAL, "Failed to create window: %s", SDL_GetError()); }
   glContext = SDL_GL_CreateContext(Window);
   if (!glContext) {
@@ -161,6 +163,7 @@ void Game::Start()
     glClear(GL_COLOR_BUFFER_BIT);
     profiler.Begin(Profiler::Stage::GameRender);
     Render();
+    Renderer->RenderBatches();
     profiler.End(Profiler::Stage::GameRender);
     profiler.End(Profiler::Stage::OpenGL);
 

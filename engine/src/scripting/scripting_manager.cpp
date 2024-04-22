@@ -19,8 +19,5 @@ ScriptManager::ScriptManager() : Lua(sol::state())
   Scripting::BindGLMVectors(Lua);
 }
 
-void ScriptManager::loadScript(const char * script)
-{
-    Lua.safe_script(script);
-}
+void ScriptManager::loadScript(const char *script) { Lua.safe_script(script); }
 }// namespace Anterle

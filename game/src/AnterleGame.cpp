@@ -1,6 +1,6 @@
 #include <memory>
 
-#include <glm/ext.hpp>
+#include <glm/glm.hpp>
 #include <imgui.h>
 
 #include <anterle_engine.hpp>
@@ -55,11 +55,11 @@ void AnterleGame::Render()
     Text->RenderText(L"Press ENTER to start", 250.0F, Height / 2.0F, 1.0F);
 
   } else if (State == Anterle::GameState::GAME_ACTIVE) {
-    Renderer->DrawSprite(Anterle::ResourceManager::getInstance()->GetTexture("face"),
+    Renderer->AddInstance({ Anterle::ResourceManager::getInstance()->GetTexture("face"),
       glm::vec2(200.0F, 200.0F),
       glm::vec2(300.0F, 400.0F),
       45.0F,
-      glm::vec3(0.0F, 1.0F, 0.0F));
+      glm::vec3(0.0F, 1.0F, 0.0F) });
 
   } else if (State == Anterle::GameState::GAME_WIN) {
     Text->RenderText(L"You WON!!!", 320.0F, Height / 2.0F - 20.0F, 1.0F, glm::vec3(0.0F, 1.0F, 0.0F));

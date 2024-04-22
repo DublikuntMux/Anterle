@@ -16,6 +16,13 @@ void Texture2D::Generate(uint32_t width, uint32_t height, void *data)
   Height = height;
 
   glBindTexture(GL_TEXTURE_2D, ID);
+
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, Wrap_S);
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, Wrap_T);
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, Filter_Min);
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, Filter_Max);
+  glGenerateMipmap(GL_TEXTURE_2D);
+
   glTexImage2D(GL_TEXTURE_2D,
     0,
     Internal_Format,
@@ -25,11 +32,6 @@ void Texture2D::Generate(uint32_t width, uint32_t height, void *data)
     Image_Format,
     GL_UNSIGNED_BYTE,
     data);
-
-  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, Wrap_S);
-  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, Wrap_T);
-  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, Filter_Min);
-  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, Filter_Max);
 
   glBindTexture(GL_TEXTURE_2D, 0);
 }

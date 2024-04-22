@@ -7,15 +7,15 @@ namespace Anterle {
 class ScriptManager
 {
 public:
-    ScriptManager();
+  ScriptManager();
 
-    void loadScript(const char * script);
+  void loadScript(const char *script);
 
-    void resetSnapshot();
-    void makeSnapshot();
+  void resetSnapshot();
+  void makeSnapshot();
 
 
 private:
-    sol::state Lua;
+  sol::state Lua;
 };
-}
+}// namespace Anterle
