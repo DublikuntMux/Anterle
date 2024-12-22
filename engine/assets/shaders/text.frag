@@ -1,10 +1,4 @@
-#version 310 es
-#extension GL_EXT_shader_io_blocks : enable
-#extension GL_OES_shader_io_blocks : enable
-
-precision mediump float;
-precision highp int;
-precision lowp sampler2DArray;
+#version 330 core
 
 out vec4 color;
 

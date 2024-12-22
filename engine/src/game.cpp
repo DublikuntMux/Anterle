@@ -3,11 +3,11 @@
 #include <memory>
 #include <string>
 
-#include <glad/glad.h>
+#include <glad/gl.h>
 
 #include <SDL.h>
 #include <SDL_image.h>
-#include <SDL_opengles2.h>
+#include <SDL_opengl.h>
 
 #include <glm/ext.hpp>
 #include <imgui.h>
@@ -16,6 +16,7 @@
 
 #include <sol/sol.hpp>
 
+#include "SDL_video.h"
 #include "debug/profiler.hpp"
 #include "game.hpp"
 #include "imgui/notify.hpp"
@@ -35,10 +36,10 @@ Game::Game(uint16_t width, uint16_t height, const char *title)
     Logger::getInstance()->log(LogLevel::CRITICAL, "Failed to initialize GLFW.");
   }
 
-  SDL_GL_SetAttribute(SDL_GL_CONTEXT_FLAGS, 0);
-  SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_ES);
+  SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
   SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 3);
-  SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 1);
+  SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 3);
+  SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE);
 #ifdef __APPLE__
   SDL_GL_SetAttribute(SDL_GL_CONTEXT_FLAGS, SDL_GL_CONTEXT_FORWARD_COMPATIBLE_FLAG);
 #endif
@@ -64,7 +65,7 @@ Game::Game(uint16_t width, uint16_t height, const char *title)
     Logger::getInstance()->log(LogLevel::CRITICAL, "Failed to create OpenGL context: %s", SDL_GetError());
   }
 
-  gladLoadGLES2Loader((GLADloadproc)SDL_GL_GetProcAddress);
+  gladLoadGL((GLADloadfunc)SDL_GL_GetProcAddress);
 
   SDL_GL_MakeCurrent(Window, glContext);
   SDL_GL_SetSwapInterval(1);

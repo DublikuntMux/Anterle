@@ -6,7 +6,7 @@
 #include FT_FREETYPE_H
 
 #include <SDL.h>
-#include <glad/glad.h>
+#include <glad/gl.h>
 #include <glm/ext.hpp>
 #include <glm/glm.hpp>
 

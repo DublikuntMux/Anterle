@@ -20,12 +20,12 @@
 // CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 // This file was generated with a script.
-// Generated 2024-04-17 13:05:43.076303 UTC
-// This header was generated with sol v3.3.1 (revision e8e122e9)
+// Generated 2022-06-25 08:14:19.328625 UTC
+// This header was generated with sol v3.3.0 (revision eba86625)
 // https://github.com/ThePhD/sol2
 
-#ifndef SOL_SINGLE_INCLUDE_SOL_FORWARD_HPP
-#define SOL_SINGLE_INCLUDE_SOL_FORWARD_HPP
+#ifndef SOL_SINGLE_INCLUDE_FORWARD_HPP
+#define SOL_SINGLE_INCLUDE_FORWARD_HPP
 
 // beginning of sol/forward.hpp
 
@@ -33,6 +33,8 @@
 #define SOL_FORWARD_HPP
 
 // beginning of sol/version.hpp
+
+#include <sol/config.hpp>
 
 #define SOL_VERSION_MAJOR 3
 #define SOL_VERSION_MINOR 2
@@ -93,14 +95,6 @@
 	#include <cstddef>
 	#include <cstdint>
 	#include <climits>
-#endif
-
-#if defined(SOL_HAS_BUILTIN)
-	#define SOL_HAS_BUILTIN_I_(...) SOL_HAS_BUILTIN(__VA_ARGS__)
-#elif defined(__has_builtin)
-	#define SOL_HAS_BUILTIN_I_(...) __has_builtin(__VA_ARGS__)
-#else
-	#define SOL_HAS_BUILTIN_I_(...) 0
 #endif
 
 #if defined(SOL_COMPILER_VCXX)
@@ -650,35 +644,34 @@
 
 #if defined(SOL_USING_CXX_LUA)
 	#if (SOL_USING_CXX_LUA != 0)
-		#define SOL_USING_CXX_LUA_I_ SOL_ON
+		#define SOL_USE_CXX_LUA_I_ SOL_ON
 	#else
-		#define SOL_USING_CXX_LUA_I_ SOL_OFF
+		#define SOL_USE_CXX_LUA_I_ SOL_OFF
 	#endif
 #elif defined(SOL_USE_CXX_LUA)
-	// alternative spelling
 	#if (SOL_USE_CXX_LUA != 0)
-		#define SOL_USING_CXX_LUA_I_ SOL_ON
+		#define SOL_USE_CXX_LUA_I_ SOL_ON
 	#else
-		#define SOL_USING_CXX_LUA_I_ SOL_OFF
+		#define SOL_USE_CXX_LUA_I_ SOL_OFF
 	#endif
 #else
-	#define SOL_USING_CXX_LUA_I_ SOL_DEFAULT_OFF
+	#define SOL_USE_CXX_LUA_I_ SOL_DEFAULT_OFF
 #endif
 
 #if defined(SOL_USING_CXX_LUAJIT)
-	#if (SOL_USING_CXX_LUAJIT != 0)
-		#define SOL_USING_CXX_LUAJIT_I_ SOL_ON
+	#if (SOL_USING_CXX_LUA != 0)
+		#define SOL_USE_CXX_LUAJIT_I_ SOL_ON
 	#else
-		#define SOL_USING_CXX_LUAJIT_I_ SOL_OFF
+		#define SOL_USE_CXX_LUAJIT_I_ SOL_OFF
 	#endif
 #elif defined(SOL_USE_CXX_LUAJIT)
-	#if (SOL_USE_CXX_LUAJIT != 0)
-		#define SOL_USING_CXX_LUAJIT_I_ SOL_ON
+	#if (SOL_USE_CXX_LUA != 0)
+		#define SOL_USE_CXX_LUAJIT_I_ SOL_ON
 	#else
-		#define SOL_USING_CXX_LUAJIT_I_ SOL_OFF
+		#define SOL_USE_CXX_LUAJIT_I_ SOL_OFF
 	#endif
 #else
-	#define SOL_USING_CXX_LUAJIT_I_ SOL_DEFAULT_OFF
+	#define SOL_USE_CXX_LUAJIT_I_ SOL_DEFAULT_OFF
 #endif
 
 #if defined(SOL_NO_LUA_HPP)
@@ -687,7 +680,7 @@
 	#else
 		#define SOL_USE_LUA_HPP_I_ SOL_ON
 	#endif
-#elif SOL_IS_ON(SOL_USING_CXX_LUA)
+#elif defined(SOL_USING_CXX_LUA)
 	#define SOL_USE_LUA_HPP_I_ SOL_OFF
 #elif defined(__has_include)
 	#if __has_include(<lua.hpp>)
@@ -773,16 +766,6 @@
 	#define SOL_GET_FUNCTION_POINTER_UNSAFE_I_ SOL_DEFAULT_OFF
 #endif
 
-#if defined(SOL_CONTAINER_CHECK_IS_EXHAUSTIVE)
-	#if (SOL_CONTAINER_CHECK_IS_EXHAUSTIVE != 0)
-		#define SOL_CONTAINER_CHECK_IS_EXHAUSTIVE_I_ SOL_ON
-	#else
-		#define SOL_CONTAINER_CHECK_IS_EXHAUSTIVE_I_ SOL_OFF
-	#endif
-#else
-	#define SOL_CONTAINER_CHECK_IS_EXHAUSTIVE_I_ SOL_DEFAULT_OFF
-#endif
-
 #if defined(SOL_FUNCTION_CALL_VALUE_SEMANTICS)
 	#if (SOL_FUNCTION_CALL_VALUE_SEMANTICS != 0)
 		#define SOL_FUNCTION_CALL_VALUE_SEMANTICS_I_ SOL_ON
@@ -843,16 +826,16 @@
 	#define SOL2_CI_I_ SOL_DEFAULT_OFF
 #endif
 
-#if defined(SOL_ASSERT)
-	#define SOL_USER_ASSERT_I_ SOL_ON
+#if defined(SOL_C_ASSERT)
+	#define SOL_USER_C_ASSERT_I_ SOL_ON
 #else
-	#define SOL_USER_ASSERT_I_ SOL_DEFAULT_OFF
+	#define SOL_USER_C_ASSERT_I_ SOL_DEFAULT_OFF
 #endif
 
-#if defined(SOL_ASSERT_MSG)
-	#define SOL_USER_ASSERT_MSG_I_ SOL_ON
+#if defined(SOL_M_ASSERT)
+	#define SOL_USER_M_ASSERT_I_ SOL_ON
 #else
-	#define SOL_USER_ASSERT_MSG_I_ SOL_DEFAULT_OFF
+	#define SOL_USER_M_ASSERT_I_ SOL_DEFAULT_OFF
 #endif
 
 // beginning of sol/prologue.hpp
@@ -1099,7 +1082,7 @@
 #include <type_traits>
 #include <string_view>
 
-#if SOL_IS_ON(SOL_USING_CXX_LUA) || SOL_IS_ON(SOL_USING_CXX_LUAJIT)
+#if SOL_IS_ON(SOL_USE_CXX_LUA) || SOL_IS_ON(SOL_USE_CXX_LUAJIT)
 struct lua_State;
 #else
 extern "C" {
@@ -1322,7 +1305,7 @@ namespace sol {
 			typedef ::sol::types<__VA_ARGS__> type; \
 		};                                           \
 	}                                                 \
-	static_assert(true, "")
+	void a_sol3_detail_function_decl_please_no_collide()
 #define SOL_DERIVED_CLASSES(T, ...)                    \
 	namespace sol {                                   \
 		template <>                                  \
@@ -1330,9 +1313,9 @@ namespace sol {
 			typedef ::sol::types<__VA_ARGS__> type; \
 		};                                           \
 	}                                                 \
-	static_assert(true, "")
+	void a_sol3_detail_function_decl_please_no_collide()
 
 #endif // SOL_FORWARD_HPP
 // end of sol/forward.hpp
 
-#endif // SOL_SINGLE_INCLUDE_SOL_FORWARD_HPP
+#endif // SOL_SINGLE_INCLUDE_FORWARD_HPP
